@@ -29,15 +29,36 @@ class EventRecyclerAdapter(private val eventList: List<Event>) :
         holder.eventTitle?.text = event.title
         holder.eventLocation?.text = event.location1
         holder.eventDescription?.text = event.description
-        holder.eventImage
-        Picasso.get()
-            .load(event.image)
-            .placeholder(R.mipmap.ic_launcher_round)
-            .error(R.mipmap.ic_launcher_round)
-            .resize(72, 72)
-            .centerCrop()
-            .into(holder.eventImage)
+
+        // If the image property from the feed provides an image url,
+        // the image will be assigned to the ViewHolder.
+        if(event.image != null) {
+            Picasso.get()
+                .load(event.image)
+                .error(R.drawable.placeholder_nomoon)
+                .resize(72, 72)
+                .centerCrop()
+                .into(holder.eventImage)
+        }
+
+        // Setting the placeholder image here instead of in the Picasso builder
+        // statement prevents the user from seeing the placeholder image as the image
+        // is fetched from the feed url.
+        else {
+            holder.eventImage?.setImageResource(R.drawable.placeholder_nomoon)
+        }
+
+        // This implementation will display the placeholder image as the event
+        // image is fetched from the feed url.
+//        Picasso.get()
+//            .load(event.image)
+//            .placeholder(R.drawable.placeholder_nomoon)
+//            .error(R.drawable.placeholder_nomoon)
+//            .resize(72, 72)
+//            .centerCrop()
+//            .into(holder.eventImage)
     }
+
 
     class ViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
         val eventTitle = itemView?.findViewById<TextView>(R.id.event_title)
