@@ -32,31 +32,31 @@ class EventRecyclerAdapter(private val eventList: List<Event>) :
 
         // If the image property from the feed provides an image url,
         // the image will be assigned to the ViewHolder.
-        if(event.image != null) {
-            Picasso.get()
-                .load(event.image)
-                .error(R.drawable.placeholder_nomoon)
-                .resize(72, 72)
-                .centerCrop()
-                .into(holder.eventImage)
-        }
+//        if(event.image != null) {
+//            Picasso.get()
+//                .load(event.image)
+//                .error(R.drawable.placeholder_nomoon)
+//                .resize(72, 72)
+//                .centerCrop()
+//                .into(holder.eventImage)
+//        }
 
         // Setting the placeholder image here instead of in the Picasso builder
         // statement prevents the user from seeing the placeholder image as the image
         // is fetched from the feed url.
-        else {
-            holder.eventImage?.setImageResource(R.drawable.placeholder_nomoon)
-        }
+//        else {
+//            holder.eventImage?.setImageResource(R.drawable.placeholder_nomoon)
+//        }
 
         // This implementation will display the placeholder image as the event
         // image is fetched from the feed url.
-//        Picasso.get()
-//            .load(event.image)
-//            .placeholder(R.drawable.placeholder_nomoon)
-//            .error(R.drawable.placeholder_nomoon)
-//            .resize(72, 72)
-//            .centerCrop()
-//            .into(holder.eventImage)
+        Picasso.get()
+            .load(event.image)
+            .placeholder(R.drawable.placeholder_nomoon)
+            .error(R.drawable.placeholder_nomoon)
+            .resize(72, 72)
+            .centerCrop()
+            .into(holder.eventImage)
     }
 
 
