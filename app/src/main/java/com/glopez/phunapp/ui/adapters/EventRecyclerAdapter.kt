@@ -1,5 +1,6 @@
 package com.glopez.phunapp.ui.adapters
 
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +17,11 @@ class EventRecyclerAdapter(private val eventList: List<Event>) :
         val itemView = LayoutInflater
             .from(parent.context)
             .inflate(R.layout.item_event_list, parent, false)
+
+//        val lp: GridLayoutManager.LayoutParams = itemView.layoutParams as GridLayoutManager.LayoutParams
+//        lp.height = parent.measuredHeight / 4
+//        itemView.layoutParams = lp
+
         return ViewHolder(itemView)
     }
 
@@ -54,7 +60,8 @@ class EventRecyclerAdapter(private val eventList: List<Event>) :
             .load(event.image)
             .placeholder(R.drawable.placeholder_nomoon)
             .error(R.drawable.placeholder_nomoon)
-            .resize(72, 72)
+//            .resize(72, 72)
+            .resize(96, 96)
             .centerCrop()
             .into(holder.eventImage)
     }
