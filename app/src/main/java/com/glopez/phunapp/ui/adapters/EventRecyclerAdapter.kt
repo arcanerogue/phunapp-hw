@@ -1,6 +1,5 @@
 package com.glopez.phunapp.ui.adapters
 
-import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -18,10 +17,6 @@ class EventRecyclerAdapter(private val eventList: List<Event>) :
             .from(parent.context)
             .inflate(R.layout.item_event_list, parent, false)
 
-//        val lp: GridLayoutManager.LayoutParams = itemView.layoutParams as GridLayoutManager.LayoutParams
-//        lp.height = parent.measuredHeight / 4
-//        itemView.layoutParams = lp
-
         return ViewHolder(itemView)
     }
 
@@ -36,32 +31,13 @@ class EventRecyclerAdapter(private val eventList: List<Event>) :
         holder.eventLocation?.text = event.location1
         holder.eventDescription?.text = event.description
 
-        // If the image property from the feed provides an image url,
-        // the image will be assigned to the ViewHolder.
-//        if(event.image != null) {
-//            Picasso.get()
-//                .load(event.image)
-//                .error(R.drawable.placeholder_nomoon)
-//                .resize(72, 72)
-//                .centerCrop()
-//                .into(holder.eventImage)
-//        }
-
-        // Setting the placeholder image here instead of in the Picasso builder
-        // statement prevents the user from seeing the placeholder image as the image
-        // is fetched from the feed url.
-//        else {
-//            holder.eventImage?.setImageResource(R.drawable.placeholder_nomoon)
-//        }
-
         // This implementation will display the placeholder image as the event
         // image is fetched from the feed url.
         Picasso.get()
             .load(event.image)
             .placeholder(R.drawable.placeholder_nomoon)
             .error(R.drawable.placeholder_nomoon)
-//            .resize(72, 72)
-            .resize(96, 96)
+            .resize(72, 72)
             .centerCrop()
             .into(holder.eventImage)
     }

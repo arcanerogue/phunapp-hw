@@ -3,7 +3,6 @@ package com.glopez.phunapp.ui.activities
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import com.glopez.phunapp.R
@@ -33,7 +32,6 @@ class MainActivity : AppCompatActivity() {
         val gridColumnCount = resources.getInteger(R.integer.num_grid_columns)
 
         feed_list.layoutManager = GridLayoutManager(this, gridColumnCount)
-        // feed_list.layoutManager = LinearLayoutManager(this)
     }
 
     private fun eventRepoCallback(): Callback<List<Event>>{
