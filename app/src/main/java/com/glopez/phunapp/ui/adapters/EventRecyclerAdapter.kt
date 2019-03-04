@@ -1,6 +1,8 @@
 package com.glopez.phunapp.ui.adapters
 
+import android.content.Context
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,13 +12,16 @@ import android.widget.TextView
 import com.glopez.phunapp.data.Event
 import com.squareup.picasso.Picasso
 
-class EventRecyclerAdapter(private val eventList: List<Event>) :
+//class EventRecyclerAdapter(private val eventList: List<Event>) :
+class EventRecyclerAdapter (context: Context) :
         RecyclerView.Adapter<EventRecyclerAdapter.ViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val itemView = LayoutInflater
-            .from(parent.context)
-            .inflate(R.layout.item_event_list, parent, false)
 
+    private var eventList = emptyList<Event>()
+    private val inflater: LayoutInflater = LayoutInflater.from(context)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val itemView = inflater
+            .inflate(R.layout.item_event_list, parent, false)
         return ViewHolder(itemView)
     }
 
@@ -40,6 +45,12 @@ class EventRecyclerAdapter(private val eventList: List<Event>) :
             .resize(72, 72)
             .centerCrop()
             .into(holder.eventImage)
+    }
+
+    fun setEvents(events: List<Event>) {
+        this.eventList = events
+        notifyDataSetChanged()
+        Log.d("EventRecyclerAdapter", "Updating events from adapter")
     }
 
 

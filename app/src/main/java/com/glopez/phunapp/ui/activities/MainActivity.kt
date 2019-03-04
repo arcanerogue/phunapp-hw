@@ -1,52 +1,35 @@
 package com.glopez.phunapp.ui.activities
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.util.Log
 import com.glopez.phunapp.R
-import com.glopez.phunapp.data.*
 import com.glopez.phunapp.ui.adapters.EventRecyclerAdapter
+import com.glopez.phunapp.ui.viewmodels.EventViewModel
 import kotlinx.android.synthetic.main.content_main.*
-import retrofit2.Callback
-import retrofit2.Call
-import retrofit2.Response
 
 
 class MainActivity : AppCompatActivity() {
-
-    private val eventFeedRetriever = EventFeedRetriever()
+    private lateinit var eventViewModel: EventViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // initializeEvents()
-
-        // Get event feed from network and create the adapter for the Recycler View
-        eventFeedRetriever.getEventFeed(eventRepoCallback())
-
-
         // Create the layout manager for the Recycler View
         val gridColumnCount = resources.getInteger(R.integer.num_grid_columns)
-
         feed_list.layoutManager = GridLayoutManager(this, gridColumnCount)
-    }
 
-    private fun eventRepoCallback(): Callback<List<Event>>{
-        return object: Callback<List<Event>> {
-            override fun onFailure(call: Call<List<Event>>, t: Throwable) {
-                Log.e("MainActivity", "Problem fetching feed data", t)
-            }
+        // Create the adapter for the Recycler View
+        val adapter = EventRecyclerAdapter(this)
+        feed_list.adapter = adapter
 
-            override fun onResponse(call: Call<List<Event>>, response: Response<List<Event>>?) {
-                response?.isSuccessful.let {
-                    val eventFeedList = response?.body()?.toList() ?: emptyList()
-                    feed_list.adapter = EventRecyclerAdapter(eventFeedList)
-                }
-
-            }
-        }
+        // Get the ViewModel and observe the event feed being set by the adapter
+        eventViewModel = ViewModelProviders.of(this).get(EventViewModel::class.java)
+        eventViewModel.eventFeedList.observe(this, Observer { events ->
+            events?.let { adapter.setEvents(it) }
+        })
     }
 }
