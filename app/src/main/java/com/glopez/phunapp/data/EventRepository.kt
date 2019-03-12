@@ -4,8 +4,10 @@ import android.app.Application
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.content.Context
+import android.os.AsyncTask
 import android.util.Log
 import android.widget.Toast
+import com.glopez.phunapp.data.db.EventDatabase
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -15,12 +17,25 @@ class EventRepository(application: Application) {
     private val eventFeedRetriever = EventFeedRetriever()
     var eventFeedList: List<Event> = emptyList()
     val context = application.applicationContext
+    val eventDb: EventDatabase? = EventDatabase.getDatabase(context)
     val events: MutableLiveData<List<Event>> by lazy { MutableLiveData<List<Event>>() }
 
     fun getEvents(): LiveData<List<Event>> {
-        // Get event feed from network
-        eventFeedRetriever.getEventFeed(eventRepoCallback())
-        return events
+        // Get events from database
+        val dbEvents = eventDb?.eventDao()?.getAllEvents()
+
+        // If database has been created and populated with events,
+        // return the list of events
+        return if(dbEvents != null && dbEvents.count() > 0) {
+            events.value = dbEvents
+            events
+        }
+        // If the database does not exist, or contain events,
+        // fetch events from the network feed
+        else {
+            eventFeedRetriever.getEventFeed(eventRepoCallback())
+            events
+        }
     }
 
     private fun eventRepoCallback(): Callback<List<Event>> {
@@ -44,6 +59,7 @@ class EventRepository(application: Application) {
                         events.value = eventFeedList
                         if (eventFeedList.isNotEmpty()) {
                             Log.d(LOG_TAG, "Retrieved events successfully.")
+                            populateDb(eventDb, eventFeedList)
                         } else {
                             Log.d(LOG_TAG, "Received Response with empty body.")
                             Toast.makeText(context, "Error retrieving events from the server.", Toast.LENGTH_LONG).show()
@@ -59,4 +75,12 @@ class EventRepository(application: Application) {
             }
         }
     }
+
+    fun populateDb(database: EventDatabase?, eventList: List<Event>) {
+        for(event in eventList) {
+            AsyncTask.execute {database?.eventDao()?.insert(event)}
+        }
+    }
+
+
 }

@@ -1,9 +1,13 @@
 package com.glopez.phunapp.data
 
+import android.arch.persistence.room.Entity
+import android.arch.persistence.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
+@Entity(tableName = "events")
 data class Event(
+    @PrimaryKey
     @SerializedName("id")
     @Expose
     val id: Int,
