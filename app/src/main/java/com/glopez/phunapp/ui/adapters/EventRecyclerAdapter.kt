@@ -16,6 +16,7 @@ import com.squareup.picasso.Picasso
 class EventRecyclerAdapter (context: Context) :
         RecyclerView.Adapter<EventRecyclerAdapter.ViewHolder>() {
 
+    private val LOG_TAG = EventRecyclerAdapter::class.java.simpleName
     private var eventList = emptyList<Event>()
     private val inflater: LayoutInflater = LayoutInflater.from(context)
 
@@ -50,7 +51,7 @@ class EventRecyclerAdapter (context: Context) :
     fun setEvents(events: List<Event>) {
         this.eventList = events
         notifyDataSetChanged()
-        Log.d("EventRecyclerAdapter", "Updating events from adapter")
+        Log.d(LOG_TAG, "Updating events from adapter")
     }
 
 

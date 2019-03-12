@@ -7,7 +7,7 @@ import com.glopez.phunapp.data.Event
 import com.glopez.phunapp.data.EventRepository
 
 class EventViewModel(application: Application) : AndroidViewModel(application) {
-    private val eventRepo = EventRepository()
+    private val eventRepo = EventRepository(application)
     val eventFeedList: LiveData<List<Event>>
 
     init {
