@@ -12,7 +12,6 @@ import android.widget.TextView
 import com.glopez.phunapp.data.Event
 import com.squareup.picasso.Picasso
 
-//class EventRecyclerAdapter(private val eventList: List<Event>) :
 class EventRecyclerAdapter (context: Context) :
         RecyclerView.Adapter<EventRecyclerAdapter.ViewHolder>() {
 

@@ -2,40 +2,49 @@ package com.glopez.phunapp.data
 
 import android.app.Application
 import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
 import android.content.Context
-import android.os.AsyncTask
 import android.util.Log
 import android.widget.Toast
+import com.glopez.phunapp.data.db.EventDao
 import com.glopez.phunapp.data.db.EventDatabase
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import android.net.ConnectivityManager
+import com.glopez.phunapp.data.webservice.EventFeedRetriever
 
 class EventRepository(application: Application) {
     private val LOG_TAG = EventRepository::class.java.simpleName
     private val eventFeedRetriever = EventFeedRetriever()
     var eventFeedList: List<Event> = emptyList()
     val context = application.applicationContext
-    val eventDb: EventDatabase? = EventDatabase.getDatabase(context)
-    val events: MutableLiveData<List<Event>> by lazy { MutableLiveData<List<Event>>() }
+
+    private val eventDao: EventDao
+
+    init {
+        val eventDb: EventDatabase = EventDatabase.getDatabase(context)
+        eventDao = eventDb.eventDao()
+    }
 
     fun getEvents(): LiveData<List<Event>> {
-        // Get events from database
-        val dbEvents = eventDb?.eventDao()?.getAllEvents()
+        // Call web service to fetch events from remote source
+        // if a network connection is available
+        if (isNetworkAvailable(context)) {
+                eventFeedRetriever.getEventFeed(eventRepoCallback())
+            }
+        return eventDao.getAllEvents()
+    }
 
-        // If database has been created and populated with events,
-        // return the list of events
-        return if(dbEvents != null && dbEvents.count() > 0) {
-            events.value = dbEvents
-            events
+    fun insertEvent(eventList: List<Event>) {
+        for(event in eventList) {
+            eventDao.insert(event)
         }
-        // If the database does not exist, or contain events,
-        // fetch events from the network feed
-        else {
-            eventFeedRetriever.getEventFeed(eventRepoCallback())
-            events
-        }
+    }
+
+    private fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo = connectivityManager.activeNetworkInfo
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected
     }
 
     private fun eventRepoCallback(): Callback<List<Event>> {
@@ -56,10 +65,10 @@ class EventRepository(application: Application) {
                         // list of events from body. Otherwise, populate with an empty list
                         eventFeedList = response.body() ?: emptyList()
                         Log.d(LOG_TAG, "Response Body list count: ${eventFeedList.size}")
-                        events.value = eventFeedList
+                        // events.value = eventFeedList
                         if (eventFeedList.isNotEmpty()) {
                             Log.d(LOG_TAG, "Retrieved events successfully.")
-                            populateDb(eventDb, eventFeedList)
+                            insertEvent(eventFeedList)
                         } else {
                             Log.d(LOG_TAG, "Received Response with empty body.")
                             Toast.makeText(context, "Error retrieving events from the server.", Toast.LENGTH_LONG).show()
@@ -75,12 +84,4 @@ class EventRepository(application: Application) {
             }
         }
     }
-
-    fun populateDb(database: EventDatabase?, eventList: List<Event>) {
-        for(event in eventList) {
-            AsyncTask.execute {database?.eventDao()?.insert(event)}
-        }
-    }
-
-
 }

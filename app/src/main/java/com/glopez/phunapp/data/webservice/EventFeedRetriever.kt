@@ -1,5 +1,6 @@
-package com.glopez.phunapp.data
+package com.glopez.phunapp.data.webservice
 
+import com.glopez.phunapp.data.Event
 import retrofit2.Callback
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

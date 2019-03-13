@@ -11,7 +11,7 @@ class EventViewModel(application: Application) : AndroidViewModel(application) {
     val eventFeedList: LiveData<List<Event>>
 
     init {
-        // Get event feed
+        // Get events from repository
         eventFeedList = eventRepo.getEvents()
     }
 }
