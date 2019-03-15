@@ -10,8 +10,13 @@ class EventViewModel(application: Application) : AndroidViewModel(application) {
     private val eventRepo = EventRepository(application)
     val eventFeedList: LiveData<List<Event>>
 
+
     init {
         // Get events from repository
         eventFeedList = eventRepo.getEvents()
+    }
+
+    fun getEvent(id: Int): LiveData<Event> {
+        return eventRepo.getSingleEvent(id)
     }
 }

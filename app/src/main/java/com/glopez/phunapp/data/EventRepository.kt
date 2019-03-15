@@ -41,6 +41,10 @@ class EventRepository(application: Application) {
         }
     }
 
+    fun getSingleEvent(id: Int): LiveData<Event> {
+        return eventDao.find(id)
+    }
+
     private fun isNetworkAvailable(context: Context): Boolean {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetworkInfo = connectivityManager.activeNetworkInfo

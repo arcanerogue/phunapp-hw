@@ -16,4 +16,8 @@ interface EventDao {
     // Insert
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(event: Event)
+
+    // Select One By Id
+    @Query("SELECT * FROM events WHERE id = :id")
+    fun find(id: Int): LiveData<Event>
 }
