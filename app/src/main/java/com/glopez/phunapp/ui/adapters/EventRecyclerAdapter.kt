@@ -2,7 +2,11 @@ package com.glopez.phunapp.ui.adapters
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.support.v4.content.ContextCompat.startActivity
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,9 +16,9 @@ import android.widget.ImageView
 import com.glopez.phunapp.R
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.glopez.phunapp.data.Event
 import com.glopez.phunapp.ui.activities.EventDetailActivity
-import com.squareup.picasso.Picasso
 
 class EventRecyclerAdapter (private val context: Context) :
         RecyclerView.Adapter<EventRecyclerAdapter.ViewHolder>() {
@@ -22,6 +26,16 @@ class EventRecyclerAdapter (private val context: Context) :
     private val LOG_TAG = EventRecyclerAdapter::class.java.simpleName
     var eventList = emptyList<Event>()
     private val inflater: LayoutInflater = LayoutInflater.from(context)
+    private val roundedPlaceholderImage: RoundedBitmapDrawable
+
+    init {
+        // Take the placeholder drawable and transform into a circular bitmap.
+        // The Glide library will only apply transformations on the requested resource,
+        // so the placeholder image must be transformed before using Glide
+        val bitmapPlaceholder: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.placeholder_nomoon)
+        roundedPlaceholderImage = RoundedBitmapDrawableFactory.create(context.resources, bitmapPlaceholder)
+        roundedPlaceholderImage.isCircular = true
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemView = inflater
@@ -34,30 +48,22 @@ class EventRecyclerAdapter (private val context: Context) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val event = eventList[position]
+        val event = this.eventList[position]
 
         holder.eventTitle?.text = event.title
         holder.eventLocation?.text = event.location1
         holder.eventDescription?.text = event.description
 
-        // This implementation will display the placeholder image as the event
-        // image is fetched from the feed url.
-//        Picasso.get()
-//            .load(event.image)
-//            .placeholder(R.drawable.placeholder_nomoon)
-//            .error(R.drawable.placeholder_nomoon)
-//            .resize(72, 72)
-//            .centerCrop()
-//            .into(holder.eventImage)
-
-
-        Glide.with(context)
-            .load(event.image)
-            .placeholder(R.drawable.placeholder_nomoon)
-            .error(R.drawable.placeholder_nomoon)
-            .override(72,72)
-            .centerCrop()
-            .into(holder.eventImage)
+        holder.eventImage?.let {
+            // This implementation will display the placeholder image as the event
+            // image is fetched from the feed url.
+            Glide.with(context)
+                .load(event.image)
+                .placeholder(this.roundedPlaceholderImage)
+                .error(this.roundedPlaceholderImage)
+                .apply(RequestOptions.circleCropTransform()) // This transformation applies to the requested resource
+                .into(it)
+        }
     }
 
     fun setEvents(events: List<Event>) {
@@ -65,7 +71,6 @@ class EventRecyclerAdapter (private val context: Context) :
         notifyDataSetChanged()
         Log.d(LOG_TAG, "Updating events from adapter")
     }
-
 
     inner class ViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         init {

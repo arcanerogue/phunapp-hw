@@ -4,6 +4,8 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Entity(tableName = "events")
 data class Event(
@@ -42,4 +44,15 @@ data class Event(
 
     @SerializedName("locationline2")
     @Expose
-    val location2: String?)
+    val location2: String?) {
+
+    fun getEventDate(): Date? {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+        dateFormat.timeZone = TimeZone.getDefault()
+        if (this.date != null) {
+            return dateFormat.parse(this.date)
+        } else {
+           return null
+        }
+    }
+}
