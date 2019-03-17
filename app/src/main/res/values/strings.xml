@@ -1,9 +1,11 @@
 <resources>
-    <string name="app_name">PhunApp</string>
+    <string name="app_name">Phun App</string>
     <string name="event_title_text">Event Title</string>
     <string name="event_location_text">Event Location</string>
     <string name="event_description_text">Event Description</string>
     <string name="share_text">Share</string>
     <string name="event_image_description">Event image</string>
     <string name="detail_event_date">Event Date</string>
+    <string name="detail_action_call_title">Call</string>
+    <string name="detail_action_share_title">Share</string>
 </resources>
