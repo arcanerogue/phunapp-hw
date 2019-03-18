@@ -12,9 +12,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import com.glopez.phunapp.R
 import android.widget.TextView
+import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.glopez.phunapp.data.Event
@@ -27,6 +29,7 @@ class EventRecyclerAdapter (private val context: Context) :
     var eventList = emptyList<Event>()
     private val inflater: LayoutInflater = LayoutInflater.from(context)
     private val roundedPlaceholderImage: RoundedBitmapDrawable
+    private val EVENT_ID: String = "event_id"
 
     init {
         // Take the placeholder drawable and transform into a circular bitmap.
@@ -64,6 +67,10 @@ class EventRecyclerAdapter (private val context: Context) :
                 .apply(RequestOptions.circleCropTransform()) // This transformation applies to the requested resource
                 .into(it)
         }
+
+        holder.eventShareButton?.setOnClickListener {
+            Toast.makeText(context, "Share this ${event.title} event.", Toast.LENGTH_LONG).show()
+        }
     }
 
     fun setEvents(events: List<Event>) {
@@ -76,20 +83,19 @@ class EventRecyclerAdapter (private val context: Context) :
         init {
             itemView?.setOnClickListener(this)
         }
-
         val eventTitle = itemView?.findViewById<TextView>(R.id.event_title)
         val eventLocation = itemView?.findViewById<TextView>(R.id.event_location)
         val eventDescription = itemView?.findViewById<TextView>(R.id.event_description)
         val eventImage = itemView?.findViewById<ImageView>(R.id.event_image)
+        val eventShareButton = itemView?.findViewById<Button>(R.id.share_button)
+
 
         override fun onClick(v: View?) {
             val position = adapterPosition
             val event = eventList[position]
-            val detailIntent = Intent(context, EventDetailActivity::class.java )
-            detailIntent.putExtra("event_id", event.id)
+            val detailIntent = Intent(context, EventDetailActivity::class.java)
+            detailIntent.putExtra(EVENT_ID, event.id)
             startActivity(context, detailIntent, null)
         }
-
     }
-
 }

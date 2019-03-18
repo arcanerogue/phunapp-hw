@@ -73,10 +73,10 @@
                     android:maxLines="2"
                     android:ellipsize="end"
                     app:layout_constraintHorizontal_bias="0.0" android:layout_marginBottom="8dp"
-                    app:layout_constraintBottom_toTopOf="@+id/share"/>
+                    app:layout_constraintBottom_toTopOf="@+id/share_button"/>
 
             <Button
-                    android:id="@+id/share"
+                    android:id="@+id/share_button"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:text="@string/share_text"
                     android:layout_width="wrap_content"
