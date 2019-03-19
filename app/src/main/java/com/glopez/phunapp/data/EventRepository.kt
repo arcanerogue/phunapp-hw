@@ -17,7 +17,7 @@ class EventRepository(application: Application) {
     private val LOG_TAG = EventRepository::class.java.simpleName
     private val eventFeedRetriever = EventFeedRetriever()
     var eventFeedList: List<Event> = emptyList()
-    val context = application.applicationContext
+    val context: Context = application.applicationContext
 
     private val eventDao: EventDao
 

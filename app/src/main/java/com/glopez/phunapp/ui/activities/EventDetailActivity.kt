@@ -16,9 +16,9 @@ import android.widget.TextView
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.glopez.phunapp.R
+import com.glopez.phunapp.data.Event
 import com.glopez.phunapp.ui.viewmodels.EventViewModel
 import kotlinx.android.synthetic.main.activity_event_detail.*
-import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -26,6 +26,7 @@ class EventDetailActivity : AppCompatActivity() {
     private lateinit var eventViewModel: EventViewModel
     private val EVENT_ID: String = "event_id"
     private var eventPhoneNumber: String? = ""
+    private lateinit var eventDetail: Event
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,8 +49,7 @@ class EventDetailActivity : AppCompatActivity() {
         eventViewModel = ViewModelProviders.of(this).get(EventViewModel::class.java)
         eventViewModel.getEvent(ID).observe(this, Observer { event ->
             event?.let {
-                if (it.date != null)
-                {
+                if (it.date != null) {
                     eventDate.text = it.getEventDate()?.toFormatString()
                 } else {
                     eventDate.visibility = View.GONE
@@ -66,11 +66,12 @@ class EventDetailActivity : AppCompatActivity() {
                     .into(eventImage)
 
                 eventPhoneNumber = it.phone
+                eventDetail = it
             }
         })
     }
 
-    private fun Date.toFormatString() : String? {
+    private fun Date.toFormatString(): String? {
         val formatter = SimpleDateFormat("MMMM dd, yyyy 'at' h:mm a", Locale.getDefault())
         formatter.timeZone = TimeZone.getDefault()
         return formatter.format(this)
@@ -88,7 +89,7 @@ class EventDetailActivity : AppCompatActivity() {
                 true
             }
             R.id.detail_action_call -> {
-                if(eventPhoneNumber.isNullOrEmpty()) {
+                if (eventPhoneNumber.isNullOrEmpty()) {
                     Toast.makeText(this, "There is no number for this event.", Toast.LENGTH_LONG).show()
                 } else {
                     val dialerIntent = Intent(Intent.ACTION_DIAL)
@@ -103,14 +104,38 @@ class EventDetailActivity : AppCompatActivity() {
                 true
             }
             R.id.detail_action_share -> {
-                Toast.makeText(this, "Share event.", Toast.LENGTH_LONG).show()
+                val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                    //                    data = CalendarContract.Events.CONTENT_URI
+//                    putExtra(CalendarContract.Events.TITLE, eventDetail.title)
+//                    putExtra(CalendarContract.Events.EVENT_LOCATION,
+//                        "${eventDetail.location1}, ${eventDetail.location2}")
+//                    putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, eventDetail.date)
+//                    putExtra(CalendarContract.Events.DESCRIPTION, eventDetail.description)
+
+//                    val imageUri = Uri.parse("android.resource://$packageName/drawable/placeholder_nomoon.png")
+//                    putExtra(Intent.EXTRA_STREAM, imageUri)
+//                    type = "image/*"
+
+                    val shareMessage: String = "${eventDetail.title}\n${eventDetail.location1}, " +
+                            "${eventDetail.location2}\n${eventDetail.date}\n${eventDetail.description}"
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    putExtra(Intent.EXTRA_TEXT, shareMessage)
+                    type = "text/plain"
+                }
+                if (isIntentSafeToStart(shareIntent)) {
+                    startActivity(Intent.createChooser(shareIntent, "Send with"))
+                } else {
+                    Toast.makeText(this, "Unable to share this event.", Toast.LENGTH_LONG).show()
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
 
-    private fun isIntentSafeToStart(intent: Intent) : Boolean {
+
+    private fun isIntentSafeToStart(intent: Intent): Boolean {
         val activities: List<ResolveInfo> = packageManager.queryIntentActivities(intent, 0)
         return activities.isNotEmpty()
     }
 }
+
