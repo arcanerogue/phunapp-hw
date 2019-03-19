@@ -24,7 +24,6 @@ abstract class EventDatabase: RoomDatabase() {
                         EventDatabase::class.java,
                         "event_database"
                     )
-                        .allowMainThreadQueries()
                         .build()
                     Log.d(LOG_TAG, "Created database")
                 }

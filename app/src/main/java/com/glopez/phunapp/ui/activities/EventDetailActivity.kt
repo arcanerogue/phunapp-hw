@@ -17,13 +17,14 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.glopez.phunapp.R
 import com.glopez.phunapp.data.Event
+import com.glopez.phunapp.ui.viewmodels.EventDetailViewModel
 import com.glopez.phunapp.ui.viewmodels.EventViewModel
 import kotlinx.android.synthetic.main.activity_event_detail.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 class EventDetailActivity : AppCompatActivity() {
-    private lateinit var eventViewModel: EventViewModel
+    private lateinit var eventDetailViewModel: EventDetailViewModel
     private val EVENT_ID: String = "event_id"
     private var eventPhoneNumber: String? = ""
     private lateinit var eventDetail: Event
@@ -46,8 +47,8 @@ class EventDetailActivity : AppCompatActivity() {
 
         val ID: Int = intent.getIntExtra(EVENT_ID, 0)
 
-        eventViewModel = ViewModelProviders.of(this).get(EventViewModel::class.java)
-        eventViewModel.getEvent(ID).observe(this, Observer { event ->
+        eventDetailViewModel = ViewModelProviders.of(this).get(EventDetailViewModel::class.java)
+        eventDetailViewModel.getEvent(ID).observe(this, Observer { event ->
             event?.let {
                 if (it.date != null) {
                     eventDate.text = it.getEventDate()?.toFormatString()
@@ -105,17 +106,6 @@ class EventDetailActivity : AppCompatActivity() {
             }
             R.id.detail_action_share -> {
                 val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                    //                    data = CalendarContract.Events.CONTENT_URI
-//                    putExtra(CalendarContract.Events.TITLE, eventDetail.title)
-//                    putExtra(CalendarContract.Events.EVENT_LOCATION,
-//                        "${eventDetail.location1}, ${eventDetail.location2}")
-//                    putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, eventDetail.date)
-//                    putExtra(CalendarContract.Events.DESCRIPTION, eventDetail.description)
-
-//                    val imageUri = Uri.parse("android.resource://$packageName/drawable/placeholder_nomoon.png")
-//                    putExtra(Intent.EXTRA_STREAM, imageUri)
-//                    type = "image/*"
-
                     val shareMessage: String = "${eventDetail.title}\n${eventDetail.location1}, " +
                             "${eventDetail.location2}\n${eventDetail.date}\n${eventDetail.description}"
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
