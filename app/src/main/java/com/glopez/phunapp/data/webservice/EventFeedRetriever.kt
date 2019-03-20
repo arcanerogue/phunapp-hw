@@ -25,6 +25,4 @@ class EventFeedRetriever{
         val call = service.getEvents()
         call.enqueue(callback)
     }
-
-
 }

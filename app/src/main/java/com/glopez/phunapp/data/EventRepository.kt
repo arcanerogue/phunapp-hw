@@ -36,9 +36,8 @@ class EventRepository(context: Context, eventDatabase: EventDatabase) {
 
     init {
         // Call web service to fetch events from remote source
-        // if a network connection is available
         if (isNetworkAvailable(context)) {
-            eventFeedRetriever.getEventFeed(eventRepoCallback())
+            eventFeedRetriever.getEventFeed(eventRepoCallback(context))
         }
         eventDao = eventDatabase.eventDao()
     }
@@ -63,14 +62,15 @@ class EventRepository(context: Context, eventDatabase: EventDatabase) {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected
     }
 
-    private fun eventRepoCallback(): Callback<List<Event>> {
+    private fun eventRepoCallback(context: Context): Callback<List<Event>> {
         return object: Callback<List<Event>> {
             // Network exception occurred talking to the server or
             // Or an unexpected exception occurred creating the request
             // Or processing the response
             override fun onFailure(call: Call<List<Event>>, t: Throwable) {
                 Log.d(LOG_TAG, "Problem fetching feed data.", t)
-//                Toast.makeText(context, "Problem fetching feed data from the server", Toast.LENGTH_LONG).show()
+                t.printStackTrace()
+                Toast.makeText(context.applicationContext, "Unable to retrieve events from the server.", Toast.LENGTH_LONG).show()
             }
             // Received an HTTP Response
             override fun onResponse(call: Call<List<Event>>, response: Response<List<Event>>) {
@@ -87,16 +87,13 @@ class EventRepository(context: Context, eventDatabase: EventDatabase) {
                             insertEvent(eventFeedList)
                         } else {
                             Log.d(LOG_TAG, "Received Response with empty body.\n${response.body().toString()}")
-//                            Toast.makeText(context, "Error retrieving events from the server.", Toast.LENGTH_LONG).show()
                         }
                     }
                 }
                 // HTTP Response Code is in the 300's, 400's, 500's, or
                 // application-level failure.
                 else {
-                    val error: String = GsonBuilder().create().fromJson(response.errorBody().toString(), String::class.java)
-                    Log.d(LOG_TAG, "Failed to retrieve events. Response code: ${response.code()} with error body:\n$error")
-//                    Toast.makeText(context, "Unable to retrieve events from the server.", Toast.LENGTH_LONG).show()
+                    Log.d(LOG_TAG, "Failed to retrieve events. Response code: ${response.code()} with error body:\n${response.body()}")
                 }
             }
         }
