@@ -8,7 +8,6 @@ import android.support.v4.content.ContextCompat.startActivity
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,16 +24,18 @@ import com.glopez.phunapp.ui.activities.EventDetailActivity
 class EventRecyclerAdapter (private val context: Context) :
         RecyclerView.Adapter<EventRecyclerAdapter.ViewHolder>() {
 
-    private val LOG_TAG = EventRecyclerAdapter::class.java.simpleName
-    var eventList = emptyList<Event>()
+    var eventList: List<Event> = emptyList()
     private val inflater: LayoutInflater = LayoutInflater.from(context)
     private val roundedPlaceholderImage: RoundedBitmapDrawable
-    private val EVENT_ID: String = "event_id"
+
+    companion object {
+        private const val EVENT_ID: String = "event_id"
+    }
 
     init {
         // Take the placeholder drawable and transform into a circular bitmap.
-        // The Glide library will only apply transformations on the requested resource,
-        // so the placeholder image must be transformed before using Glide
+        // The Glide library will only apply transformations on the remotely requested resource,
+        // so the placeholder image must be transformed before using Glide.
         val bitmapPlaceholder: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.placeholder_nomoon)
         roundedPlaceholderImage = RoundedBitmapDrawableFactory.create(context.resources, bitmapPlaceholder)
         roundedPlaceholderImage.isCircular = true
@@ -64,7 +65,7 @@ class EventRecyclerAdapter (private val context: Context) :
                 .load(event.image)
                 .placeholder(this.roundedPlaceholderImage)
                 .error(this.roundedPlaceholderImage)
-                .apply(RequestOptions.circleCropTransform()) // This transformation applies to the requested resource
+                .apply(RequestOptions.circleCropTransform()) // This transformation applies to the remotely requested resource
                 .into(it)
         }
 
@@ -76,7 +77,6 @@ class EventRecyclerAdapter (private val context: Context) :
     fun setEvents(events: List<Event>) {
         this.eventList = events
         notifyDataSetChanged()
-        Log.d(LOG_TAG, "Updating events from adapter")
     }
 
     inner class ViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
@@ -94,8 +94,10 @@ class EventRecyclerAdapter (private val context: Context) :
             val position = adapterPosition
             val event = eventList[position]
             val detailIntent = Intent(context, EventDetailActivity::class.java)
-            detailIntent.putExtra(EVENT_ID, event.id)
+            detailIntent.putExtra(Companion.EVENT_ID, event.id)
             startActivity(context, detailIntent, null)
         }
     }
+
+
 }

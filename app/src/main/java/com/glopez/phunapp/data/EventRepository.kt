@@ -3,17 +3,13 @@ package com.glopez.phunapp.data
 import android.arch.lifecycle.LiveData
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import com.glopez.phunapp.data.db.EventDao
 import com.glopez.phunapp.data.db.EventDatabase
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import android.net.ConnectivityManager
 import android.os.AsyncTask
 import com.glopez.phunapp.data.webservice.EventFeedRetriever
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 
 class EventRepository(context: Context, eventDatabase: EventDatabase) {
     private val LOG_TAG = EventRepository::class.java.simpleName
@@ -36,9 +32,7 @@ class EventRepository(context: Context, eventDatabase: EventDatabase) {
 
     init {
         // Call web service to fetch events from remote source
-        if (isNetworkAvailable(context)) {
-            eventFeedRetriever.getEventFeed(eventRepoCallback(context))
-        }
+        eventFeedRetriever.getEventFeed(eventRepoCallback())
         eventDao = eventDatabase.eventDao()
     }
 
@@ -56,13 +50,7 @@ class EventRepository(context: Context, eventDatabase: EventDatabase) {
         return eventDao.find(id)
     }
 
-    private fun isNetworkAvailable(context: Context): Boolean {
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetworkInfo = connectivityManager.activeNetworkInfo
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected
-    }
-
-    private fun eventRepoCallback(context: Context): Callback<List<Event>> {
+    private fun eventRepoCallback(): Callback<List<Event>> {
         return object: Callback<List<Event>> {
             // Network exception occurred talking to the server or
             // Or an unexpected exception occurred creating the request
@@ -70,7 +58,6 @@ class EventRepository(context: Context, eventDatabase: EventDatabase) {
             override fun onFailure(call: Call<List<Event>>, t: Throwable) {
                 Log.d(LOG_TAG, "Problem fetching feed data.", t)
                 t.printStackTrace()
-                Toast.makeText(context.applicationContext, "Unable to retrieve events from the server.", Toast.LENGTH_LONG).show()
             }
             // Received an HTTP Response
             override fun onResponse(call: Call<List<Event>>, response: Response<List<Event>>) {

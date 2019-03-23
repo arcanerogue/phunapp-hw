@@ -12,5 +12,4 @@ class PhunApp: Application() {
     fun getRepository(): EventRepository {
         return EventRepository.getInstance(this, getDatabase())
     }
-
 }
