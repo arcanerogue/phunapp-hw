@@ -18,7 +18,6 @@ import com.bumptech.glide.Glide
 import com.glopez.phunapp.R
 import com.glopez.phunapp.data.Event
 import com.glopez.phunapp.ui.viewmodels.EventDetailViewModel
-import com.glopez.phunapp.ui.viewmodels.EventViewModel
 import kotlinx.android.synthetic.main.activity_event_detail.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -34,28 +33,30 @@ class EventDetailActivity : AppCompatActivity() {
         setContentView(R.layout.activity_event_detail)
         setSupportActionBar(detail_toolbar)
 
+        val eventImage: ImageView = findViewById(R.id.detail_event_image)
+        val eventDate: TextView = findViewById(R.id.detail_event_date)
+        val eventTitle: TextView = findViewById(R.id.detail_event_title)
+        val eventDescription: TextView = findViewById(R.id.detail_event_description)
+        val ID: Int = intent.getIntExtra(EVENT_ID, 0)
+
         // Show the Up button in the action bar and
         // hide the app name.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-
-        val eventImage: ImageView = findViewById(R.id.detail_event_image)
-        val eventDate: TextView = findViewById(R.id.detail_event_date)
-        val eventTitle: TextView = findViewById(R.id.detail_event_title)
-        val eventDescription: TextView = findViewById(R.id.detail_event_description)
-
-        val ID: Int = intent.getIntExtra(EVENT_ID, 0)
-
+        // Get the ViewModel and observe the single event specified by the user click
+        // from the list of events in MainActivity
         eventDetailViewModel = ViewModelProviders.of(this).get(EventDetailViewModel::class.java)
         eventDetailViewModel.getEvent(ID).observe(this, Observer { event ->
             event?.let {
+                eventDetail = it
+                eventPhoneNumber = it.phone
+
                 if (it.date != null) {
-                    eventDate.text = it.getEventDate()?.toFormatString()
+                    eventDate.text = it.getEventDateFormatString()
                 } else {
                     eventDate.visibility = View.GONE
                 }
-
                 eventTitle.text = it.title
                 eventDescription.text = it.description
 
@@ -65,17 +66,8 @@ class EventDetailActivity : AppCompatActivity() {
                     .error(R.drawable.placeholder_nomoon)
                     .centerCrop()
                     .into(eventImage)
-
-                eventPhoneNumber = it.phone
-                eventDetail = it
             }
         })
-    }
-
-    private fun Date.toFormatString(): String? {
-        val formatter = SimpleDateFormat("MMMM dd, yyyy 'at' h:mm a", Locale.getDefault())
-        formatter.timeZone = TimeZone.getDefault()
-        return formatter.format(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -83,7 +75,7 @@ class EventDetailActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) =
+    override fun onOptionsItemSelected(item: MenuItem): Boolean =
         when (item.itemId) {
             android.R.id.home -> {
                 navigateUpTo(Intent(this, MainActivity::class.java))
@@ -91,7 +83,8 @@ class EventDetailActivity : AppCompatActivity() {
             }
             R.id.detail_action_call -> {
                 if (eventPhoneNumber.isNullOrEmpty()) {
-                    Toast.makeText(this, "There is no number for this event.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "There is no number for this event.",
+                        Toast.LENGTH_LONG).show()
                 } else {
                     val dialerIntent = Intent(Intent.ACTION_DIAL)
                     dialerIntent.data = Uri.parse("tel:$eventPhoneNumber")
@@ -99,15 +92,17 @@ class EventDetailActivity : AppCompatActivity() {
                         startActivity(dialerIntent)
                     } else {
                         Log.d("EventDetailActivity", "Can't handle phone call!")
-                        Toast.makeText(this, "Unable to place a call.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, "Unable to place a call.",
+                            Toast.LENGTH_LONG).show()
                     }
                 }
                 true
             }
             R.id.detail_action_share -> {
                 val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                    val shareMessage: String = "${eventDetail.title}\n${eventDetail.location1}, " +
-                            "${eventDetail.location2}\n${eventDetail.date}\n${eventDetail.description}"
+                    val shareMessage: String = "${eventDetail.title}\n${eventDetail.location1}," +
+                            " ${eventDetail.location2}\n${eventDetail.getEventDateFormatString()}" +
+                            "\n${eventDetail.description}"
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     putExtra(Intent.EXTRA_TEXT, shareMessage)
                     type = "text/plain"
@@ -115,13 +110,13 @@ class EventDetailActivity : AppCompatActivity() {
                 if (isIntentSafeToStart(shareIntent)) {
                     startActivity(Intent.createChooser(shareIntent, "Send with"))
                 } else {
-                    Toast.makeText(this, "Unable to share this event.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Unable to share this event.",
+                        Toast.LENGTH_LONG).show()
                 }
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
-
 
     private fun isIntentSafeToStart(intent: Intent): Boolean {
         val activities: List<ResolveInfo> = packageManager.queryIntentActivities(intent, 0)

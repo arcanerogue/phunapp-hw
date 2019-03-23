@@ -8,7 +8,8 @@ import android.util.Log
 import com.glopez.phunapp.data.Event
 
 @Database(entities = [Event::class], version = 1)
-abstract class EventDatabase: RoomDatabase() {
+abstract class EventDatabase : RoomDatabase() {
+
     abstract fun eventDao(): EventDao
 
     companion object {

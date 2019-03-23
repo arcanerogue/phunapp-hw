@@ -1,12 +1,13 @@
 package com.glopez.phunapp.data.webservice
 
 import com.glopez.phunapp.data.Event
+import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class EventFeedRetriever{
-    private val service: GetEventFeed
+class EventFeedProvider {
+    private val service: FeedProvider
 
     companion object {
         const val BASE_URL = "https://raw.githubusercontent.com/"
@@ -18,11 +19,11 @@ class EventFeedRetriever{
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-        service = retrofit.create(GetEventFeed::class.java)
+        service = retrofit.create(FeedProvider::class.java)
     }
 
-    fun getEventFeed(callback: Callback<List<Event>>){
-        val call = service.getEvents()
+    fun getEventFeed(callback: Callback<List<Event>>) {
+        val call: Call<List<Event>> = service.getEvents()
         call.enqueue(callback)
     }
 }

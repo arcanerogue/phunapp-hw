@@ -46,11 +46,13 @@ data class Event(
     @Expose
     val location2: String?) {
 
-    fun getEventDate(): Date? {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
-        dateFormat.timeZone = TimeZone.getDefault()
+    fun getEventDateFormatString(): String? {
         if (this.date != null) {
-            return dateFormat.parse(this.date)
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+            dateFormat.timeZone = TimeZone.getDefault()
+            val eventDate: Date = dateFormat.parse((this.date))
+            val formatter = SimpleDateFormat("MMMM dd, yyyy 'at' h:mm a", Locale.getDefault())
+            return formatter.format(eventDate)
         } else {
            return null
         }

@@ -4,7 +4,7 @@ import android.app.Application
 import com.glopez.phunapp.data.EventRepository
 import com.glopez.phunapp.data.db.EventDatabase
 
-class PhunApp: Application() {
+class PhunApp : Application() {
     private fun getDatabase(): EventDatabase {
         return EventDatabase.getDatabase(this)
     }

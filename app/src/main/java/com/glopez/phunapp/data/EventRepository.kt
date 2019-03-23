@@ -9,16 +9,17 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import android.os.AsyncTask
-import com.glopez.phunapp.data.webservice.EventFeedRetriever
+import com.glopez.phunapp.data.webservice.EventFeedProvider
 
 class EventRepository(context: Context, eventDatabase: EventDatabase) {
     private val LOG_TAG = EventRepository::class.java.simpleName
-    private val eventFeedRetriever = EventFeedRetriever()
+    private val eventFeedRetriever = EventFeedProvider()
     var eventFeedList: List<Event> = emptyList()
     private val eventDao: EventDao
 
     companion object {
         private var INSTANCE: EventRepository? = null
+
         fun getInstance(context: Context, eventDb: EventDatabase): EventRepository {
             synchronized(this) {
                 if (INSTANCE == null) {
@@ -41,7 +42,7 @@ class EventRepository(context: Context, eventDatabase: EventDatabase) {
     }
 
     fun insertEvent(eventList: List<Event>) {
-        for(event in eventList) {
+        for (event: Event in eventList) {
            AsyncTask.execute{ eventDao.insert(event) }
         }
     }
@@ -56,31 +57,30 @@ class EventRepository(context: Context, eventDatabase: EventDatabase) {
             // Or an unexpected exception occurred creating the request
             // Or processing the response
             override fun onFailure(call: Call<List<Event>>, t: Throwable) {
-                Log.d(LOG_TAG, "Problem fetching feed data.", t)
+                Log.d(LOG_TAG, "Problem fetching feed data.")
                 t.printStackTrace()
             }
+
             // Received an HTTP Response
             override fun onResponse(call: Call<List<Event>>, response: Response<List<Event>>) {
                 // HTTP Response Code is in the 200-300 range
                 if (response.isSuccessful) {
-                    let {
-                        // If the Response body is not empty, populate eventFeedList with
-                        // list of events from body. Otherwise, populate with an empty list
-                        eventFeedList = response.body() ?: emptyList()
-                        Log.d(LOG_TAG, "Response Body list count: ${eventFeedList.size}")
-//                         events.value = eventFeedList
-                        if (eventFeedList.isNotEmpty()) {
-                            Log.d(LOG_TAG, "Retrieved events successfully.")
-                            insertEvent(eventFeedList)
-                        } else {
-                            Log.d(LOG_TAG, "Received Response with empty body.\n${response.body().toString()}")
-                        }
+                    // If the Response body is not empty, populate eventFeedList with
+                    // list of events from body. Otherwise, populate with an empty list
+                    eventFeedList = response.body() ?: emptyList()
+                    Log.d(LOG_TAG, "Response Body list count: ${eventFeedList.size}")
+                    if (eventFeedList.isNotEmpty()) {
+                        Log.d(LOG_TAG, "Retrieved events successfully.")
+                        insertEvent(eventFeedList)
+                    } else {
+                        Log.d(LOG_TAG, "Received Response with empty body." +
+                                "\n${response.body().toString()}")
                     }
-                }
-                // HTTP Response Code is in the 300's, 400's, 500's, or
-                // application-level failure.
-                else {
-                    Log.d(LOG_TAG, "Failed to retrieve events. Response code: ${response.code()} with error body:\n${response.body()}")
+                } else {
+                    // HTTP Response Code is in the 300's, 400's, 500's,
+                    // or application-level failure.
+                    Log.d(LOG_TAG, "Failed to retrieve events. Response code: " +
+                            "${response.code()} with error body:\n${response.body()}")
                 }
             }
         }

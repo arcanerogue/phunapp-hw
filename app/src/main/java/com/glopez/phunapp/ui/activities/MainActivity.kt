@@ -26,7 +26,8 @@ class MainActivity : AppCompatActivity() {
 
         // Create the layout manager for the Recycler View
         val gridColumnCount: Int = resources.getInteger(R.integer.num_grid_columns)
-        feed_list.layoutManager = GridLayoutManager(this, gridColumnCount)
+        val gridLayoutManager = GridLayoutManager(this, gridColumnCount)
+        feed_list.layoutManager = gridLayoutManager
 
         // Create the adapter for the Recycler View
         val adapter = EventRecyclerAdapter(this)
@@ -39,16 +40,21 @@ class MainActivity : AppCompatActivity() {
                 // Display toast when there was no data retrieved from the database
                 // and a network connection is unavailable.
                 if (events.isEmpty() && !isNetworkAvailable(this)) {
-                    Log.d(LOG_TAG, "Unable to retrieve data from the database to populate the RecyclerView adapter. No network connection")
-                    Toast.makeText(this, "Unable to retrieve events from the server.", Toast.LENGTH_LONG).show()
+                    Log.d(LOG_TAG, "Unable to retrieve data from the database to populate the " +
+                            "RecyclerView adapter. No network connection to populate database from" +
+                            " remote source.")
+                    Toast.makeText(this, "Unable to retrieve events from the server.",
+                        Toast.LENGTH_LONG).show()
+                } else {
+                    adapter.setEvents(it)
                 }
-                else adapter.setEvents(it)
             }
         })
     }
 
     private fun isNetworkAvailable(context: Context): Boolean {
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE)
+                as ConnectivityManager
         val activeNetworkInfo = connectivityManager.activeNetworkInfo
         return activeNetworkInfo != null && activeNetworkInfo.isConnected
     }
