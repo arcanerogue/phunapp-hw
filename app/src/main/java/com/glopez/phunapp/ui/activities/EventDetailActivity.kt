@@ -3,6 +3,7 @@ package com.glopez.phunapp.ui.activities
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
@@ -19,14 +20,16 @@ import com.glopez.phunapp.R
 import com.glopez.phunapp.data.Event
 import com.glopez.phunapp.ui.viewmodels.EventDetailViewModel
 import kotlinx.android.synthetic.main.activity_event_detail.*
-import java.text.SimpleDateFormat
-import java.util.*
 
 class EventDetailActivity : AppCompatActivity() {
     private lateinit var eventDetailViewModel: EventDetailViewModel
-    private val EVENT_ID: String = "event_id"
-    private var eventPhoneNumber: String? = ""
+    private lateinit var eventPhoneNumber: String
     private lateinit var eventDetail: Event
+
+    companion object {
+        private const val EVENT_ID: String = "event_id"
+        private val LOG_TAG: String = EventDetailActivity::class.java.simpleName
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,18 +42,17 @@ class EventDetailActivity : AppCompatActivity() {
         val eventDescription: TextView = findViewById(R.id.detail_event_description)
         val ID: Int = intent.getIntExtra(EVENT_ID, 0)
 
-        // Show the Up button in the action bar and
-        // hide the app name.
+        // Show the Up button in the action bar and hide the app name.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        // Get the ViewModel and observe the single event specified by the user click
-        // from the list of events in MainActivity
+        // Get the ViewModel and observe the single event specified by the user click from
+        // the list of events in MainActivity
         eventDetailViewModel = ViewModelProviders.of(this).get(EventDetailViewModel::class.java)
         eventDetailViewModel.getEvent(ID).observe(this, Observer { event ->
             event?.let {
                 eventDetail = it
-                eventPhoneNumber = it.phone
+                eventPhoneNumber = it.phone ?: ""
 
                 if (it.date != null) {
                     eventDate.text = it.getEventDateFormatString()
@@ -72,6 +74,10 @@ class EventDetailActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.detail_menu, menu)
+        if(!deviceCanCall() || eventPhoneNumber.isEmpty()) {
+            val callIcon: MenuItem? = menu?.findItem(R.id.detail_action_call)
+            callIcon?.isVisible = false
+        }
         return true
     }
 
@@ -82,8 +88,8 @@ class EventDetailActivity : AppCompatActivity() {
                 true
             }
             R.id.detail_action_call -> {
-                if (eventPhoneNumber.isNullOrEmpty()) {
-                    Toast.makeText(this, "There is no number for this event.",
+                if (eventPhoneNumber.isEmpty()) {
+                    Toast.makeText(this, getString(R.string.event_detail_no_number),
                         Toast.LENGTH_LONG).show()
                 } else {
                     val dialerIntent = Intent(Intent.ACTION_DIAL)
@@ -91,8 +97,8 @@ class EventDetailActivity : AppCompatActivity() {
                     if (isIntentSafeToStart(dialerIntent)) {
                         startActivity(dialerIntent)
                     } else {
-                        Log.d("EventDetailActivity", "Can't handle phone call!")
-                        Toast.makeText(this, "Unable to place a call.",
+                        Log.d(LOG_TAG, getString(R.string.event_detail_unable_call))
+                        Toast.makeText(this, getString(R.string.event_detail_unable_call),
                             Toast.LENGTH_LONG).show()
                     }
                 }
@@ -100,17 +106,22 @@ class EventDetailActivity : AppCompatActivity() {
             }
             R.id.detail_action_share -> {
                 val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                    val shareMessage: String = "${eventDetail.title}\n${eventDetail.location1}," +
-                            " ${eventDetail.location2}\n${eventDetail.getEventDateFormatString()}" +
-                            "\n${eventDetail.description}"
+//                    val message: String = "${eventDetail.title}\n${eventDetail.location1}," +
+//                            " ${eventDetail.location2}\n${eventDetail.getEventDateFormatString()}" +
+//                            "\n${eventDetail.description}"
+                    val message = getString(R.string.share_message, eventDetail.title,
+                        eventDetail.location1, eventDetail.location2,
+                        eventDetail.getEventDateFormatString(),
+                        eventDetail.description)
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    putExtra(Intent.EXTRA_TEXT, shareMessage)
+                    putExtra(Intent.EXTRA_TEXT, message)
                     type = "text/plain"
                 }
                 if (isIntentSafeToStart(shareIntent)) {
-                    startActivity(Intent.createChooser(shareIntent, "Send with"))
+                    startActivity(Intent.createChooser(shareIntent,
+                        getString(R.string.share_intent_title)))
                 } else {
-                    Toast.makeText(this, "Unable to share this event.",
+                    Toast.makeText(this, getString(R.string.share_failed),
                         Toast.LENGTH_LONG).show()
                 }
                 true
@@ -121,6 +132,10 @@ class EventDetailActivity : AppCompatActivity() {
     private fun isIntentSafeToStart(intent: Intent): Boolean {
         val activities: List<ResolveInfo> = packageManager.queryIntentActivities(intent, 0)
         return activities.isNotEmpty()
+    }
+
+    private fun deviceCanCall(): Boolean {
+        return packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY)
     }
 }
 

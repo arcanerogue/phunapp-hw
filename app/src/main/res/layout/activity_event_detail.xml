@@ -27,7 +27,7 @@
             <ImageView
                     android:id="@+id/detail_event_image"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="@dimen/mobile_image_view_height"
                     tools:src="@drawable/placeholder_nomoon"
                     android:scaleType="centerCrop"
                     app:layout_constraintEnd_toEndOf="parent"

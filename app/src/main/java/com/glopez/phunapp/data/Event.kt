@@ -7,42 +7,53 @@ import com.google.gson.annotations.SerializedName
 import java.text.SimpleDateFormat
 import java.util.*
 
-@Entity(tableName = "events")
+const val TABLE_NAME: String = "events"
+const val DESCRIPTION: String = "description"
+const val ID: String = "id"
+const val TITLE: String = "title"
+const val TIMESTAMP: String = "timestamp"
+const val IMAGE = "image"
+const val PHONE = "phone"
+const val DATE = "date"
+const val LOCATION_LINE_1 = "locationline1"
+const val LOCATION_LINE_2 = "locationline2"
+
+@Entity(tableName = TABLE_NAME)
 data class Event(
     @PrimaryKey
-    @SerializedName("id")
+    @SerializedName(ID)
     @Expose
     val id: Int,
 
-    @SerializedName("description")
+    @SerializedName(DESCRIPTION)
     @Expose
     val description: String?,
 
-    @SerializedName("title")
+    @SerializedName(TITLE)
     @Expose
     val title: String?,
 
-    @SerializedName("timestamp")
+    @SerializedName(TIMESTAMP)
     @Expose
     val timestamp: String?,
 
-    @SerializedName("image")
+    @SerializedName(IMAGE)
     @Expose
     val image: String?,
 
-    @SerializedName("phone")
+    @SerializedName(PHONE)
     @Expose
     val phone: String?,
 
-    @SerializedName("date")
+    @SerializedName(DATE)
     @Expose
     val date: String?,
 
-    @SerializedName("locationline1")
+    @SerializedName(LOCATION_LINE_1)
     @Expose
     val location1: String?,
 
-    @SerializedName("locationline2")
+    @SerializedName(LOCATION_LINE_2)
     @Expose
     val location2: String?) {
 

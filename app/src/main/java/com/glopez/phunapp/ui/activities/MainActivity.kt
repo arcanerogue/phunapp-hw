@@ -37,13 +37,11 @@ class MainActivity : AppCompatActivity() {
         eventViewModel = ViewModelProviders.of(this).get(EventViewModel::class.java)
         eventViewModel.eventFeedList.observe(this, Observer { events ->
             events?.let {
-                // Display toast when there was no data retrieved from the database
-                // and a network connection is unavailable.
+                // Display toast when there was no data retrieved from the database and
+                // a network connection is unavailable.
                 if (events.isEmpty() && !isNetworkAvailable(this)) {
-                    Log.d(LOG_TAG, "Unable to retrieve data from the database to populate the " +
-                            "RecyclerView adapter. No network connection to populate database from" +
-                            " remote source.")
-                    Toast.makeText(this, "Unable to retrieve events from the server.",
+                    Log.d(LOG_TAG, getString(R.string.main_no_network_no_database))
+                    Toast.makeText(this, getString(R.string.main_toast_events_fetch_fail),
                         Toast.LENGTH_LONG).show()
                 } else {
                     adapter.setEvents(it)

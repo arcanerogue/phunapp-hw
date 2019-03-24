@@ -11,6 +11,7 @@ class EventFeedProvider {
 
     companion object {
         const val BASE_URL = "https://raw.githubusercontent.com/"
+        const val FEED_PATH = "/phunware-services/dev-interview-homework/master/feed.json"
     }
 
     init {
@@ -23,7 +24,7 @@ class EventFeedProvider {
     }
 
     fun getEventFeed(callback: Callback<List<Event>>) {
-        val call: Call<List<Event>> = service.getEvents()
+        val call: Call<List<Event>> = service.getEvents(FEED_PATH)
         call.enqueue(callback)
     }
 }
