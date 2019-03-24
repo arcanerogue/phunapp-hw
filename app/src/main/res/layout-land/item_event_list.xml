@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:app="http://schemas.android.com/apk/res-auto"
-             xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-             android:layout_height="wrap_content" android:id="@+id/frameLayout">
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:id="@+id/frameLayout">
 
     <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardElevation="4dp"
-            app:contentPadding="12dp"
+            app:contentPadding="8dp"
             app:cardCornerRadius="4dp"
             app:cardUseCompatPadding="true"
             android:id="@+id/cardView">
@@ -25,12 +27,12 @@
                     android:scaleType="centerCrop"
                     android:padding="4dp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:layout_marginBottom="12dp"
-                    android:contentDescription="@string/event_image_description"
                     app:layout_constraintBottom_toTopOf="@+id/event_description"
                     app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:contentDescription="@string/event_image_description"
                     app:layout_constraintVertical_chainStyle="packed"/>
 
             <TextView
@@ -38,12 +40,12 @@
                     android:text="@string/event_title_text"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginEnd="12dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="24dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                    android:textColor="@color/textColor"
                     app:layout_constraintEnd_toStartOf="@+id/event_image"
                     app:layout_constraintTop_toTopOf="parent"
             />
@@ -54,25 +56,29 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginStart="12dp"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:layout_marginEnd="12dp"
                     app:layout_constraintEnd_toStartOf="@+id/event_image"
                     app:layout_constraintTop_toBottomOf="@id/event_title"
-            />
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="@color/textColor"
+                    />
             <TextView
                     android:id="@+id/event_description"
                     android:text="@string/event_description_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp" app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginEnd="12dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:textSize="20sp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/textColor"
                     android:maxLines="2"
                     android:ellipsize="end"
-                    app:layout_constraintHorizontal_bias="0.0" android:layout_marginBottom="8dp"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintBottom_toTopOf="@+id/share_button"/>
 
             <Button
@@ -82,10 +88,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginEnd="8dp"
-                    android:textSize="18sp"
-                    android:layout_marginBottom="8dp"
-                    android:textColor="@android:color/tertiary_text_dark"
+                    android:minWidth="0dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:textColor="@color/textColor"
                     app:layout_constraintBottom_toBottomOf="parent"/>
 
         </android.support.constraint.ConstraintLayout>
