@@ -1,13 +1,10 @@
 package com.glopez.phunapp.data.db
 
-import android.app.Application
 import android.arch.persistence.room.Database
 import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.content.Context
-import android.content.res.Resources
 import android.util.Log
-import com.glopez.phunapp.PhunApp
 import com.glopez.phunapp.R
 import com.glopez.phunapp.data.Event
 

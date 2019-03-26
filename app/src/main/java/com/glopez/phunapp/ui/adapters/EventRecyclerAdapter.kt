@@ -15,7 +15,6 @@ import android.widget.Button
 import android.widget.ImageView
 import com.glopez.phunapp.R
 import android.widget.TextView
-import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.glopez.phunapp.data.Event
@@ -70,9 +69,8 @@ class EventRecyclerAdapter(private val context: Context) :
                 .apply(RequestOptions.circleCropTransform())
                 .into(it)
         }
-
         holder.eventShareButton?.setOnClickListener {
-            Toast.makeText(context, "Share this ${event.title} event.", Toast.LENGTH_LONG).show()
+            event.shareEvent(context)
         }
     }
 
@@ -103,6 +101,4 @@ class EventRecyclerAdapter(private val context: Context) :
             startActivity(context, detailIntent, null)
         }
     }
-
-
 }

@@ -4,17 +4,13 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
-import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.glopez.phunapp.R
 import com.glopez.phunapp.data.Event
@@ -88,51 +84,15 @@ class EventDetailActivity : AppCompatActivity() {
                 true
             }
             R.id.detail_action_call -> {
-                if (eventPhoneNumber.isEmpty()) {
-                    Toast.makeText(this, getString(R.string.event_detail_no_number),
-                        Toast.LENGTH_LONG).show()
-                } else {
-                    val dialerIntent = Intent(Intent.ACTION_DIAL)
-                    dialerIntent.data = Uri.parse("tel:$eventPhoneNumber")
-                    if (isIntentSafeToStart(dialerIntent)) {
-                        startActivity(dialerIntent)
-                    } else {
-                        Log.d(LOG_TAG, getString(R.string.event_detail_unable_call))
-                        Toast.makeText(this, getString(R.string.event_detail_unable_call),
-                            Toast.LENGTH_LONG).show()
-                    }
-                }
+                eventDetail.callEventNumber(this, eventPhoneNumber)
                 true
             }
             R.id.detail_action_share -> {
-                val shareIntent = Intent(Intent.ACTION_SEND).apply {
-//                    val message: String = "${eventDetail.title}\n${eventDetail.location1}," +
-//                            " ${eventDetail.location2}\n${eventDetail.getEventDateFormatString()}" +
-//                            "\n${eventDetail.description}"
-                    val message = getString(R.string.share_message, eventDetail.title,
-                        eventDetail.location1, eventDetail.location2,
-                        eventDetail.getEventDateFormatString(),
-                        eventDetail.description)
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    putExtra(Intent.EXTRA_TEXT, message)
-                    type = "text/plain"
-                }
-                if (isIntentSafeToStart(shareIntent)) {
-                    startActivity(Intent.createChooser(shareIntent,
-                        getString(R.string.share_intent_title)))
-                } else {
-                    Toast.makeText(this, getString(R.string.share_failed),
-                        Toast.LENGTH_LONG).show()
-                }
+                eventDetail.shareEvent(this)
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
-
-    private fun isIntentSafeToStart(intent: Intent): Boolean {
-        val activities: List<ResolveInfo> = packageManager.queryIntentActivities(intent, 0)
-        return activities.isNotEmpty()
-    }
 
     private fun deviceCanCall(): Boolean {
         return packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY)

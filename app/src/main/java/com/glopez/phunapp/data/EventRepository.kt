@@ -59,8 +59,7 @@ class EventRepository(context: Context, eventDatabase: EventDatabase) {
             // Network exception occurred talking to the server or an unexpected exception
             // occurred creating the request or processing the response
             override fun onFailure(call: Call<List<Event>>, t: Throwable) {
-                Log.d(LOG_TAG, resources.getString(R.string.repo_fetch_error), t)
-//                t.printStackTrace()
+                Log.e(LOG_TAG, resources.getString(R.string.repo_fetch_error), t)
             }
 
             // Received an HTTP Response
