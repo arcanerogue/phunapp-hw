@@ -76,6 +76,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     android:textColor="@color/textColor"
+                    android:minLines="2"
                     android:maxLines="2"
                     android:ellipsize="end"
                     app:layout_constraintHorizontal_bias="0.0"
