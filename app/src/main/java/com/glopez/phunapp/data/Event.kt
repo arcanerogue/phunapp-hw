@@ -7,11 +7,8 @@ import android.content.Intent
 import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.support.v4.content.ContextCompat.startActivity
-import android.text.TextUtils.isEmpty
-import android.util.Log
 import android.widget.Toast
 import com.glopez.phunapp.R
-import com.glopez.phunapp.ui.activities.EventDetailActivity
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import java.text.SimpleDateFormat

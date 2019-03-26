@@ -60,7 +60,7 @@ class EventDetailActivity : AppCompatActivity() {
 
                 Glide.with(this)
                     .load(it.image)
-                    .placeholder(R.drawable.placeholder_nomoon)
+                    .onlyRetrieveFromCache(true)
                     .error(R.drawable.placeholder_nomoon)
                     .centerCrop()
                     .into(eventImage)

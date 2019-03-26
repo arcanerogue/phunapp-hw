@@ -8,7 +8,7 @@ import android.util.Log
 import com.glopez.phunapp.R
 import com.glopez.phunapp.data.Event
 
-@Database(entities = [Event::class], version = 1)
+@Database(entities = [Event::class], version = 1, exportSchema = false)
 abstract class EventDatabase : RoomDatabase() {
 
     abstract fun eventDao(): EventDao

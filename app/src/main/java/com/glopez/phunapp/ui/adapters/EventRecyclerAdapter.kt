@@ -7,7 +7,9 @@ import android.graphics.BitmapFactory
 import android.support.v4.content.ContextCompat.startActivity
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
+import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,9 +18,11 @@ import android.widget.ImageView
 import com.glopez.phunapp.R
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.glopez.phunapp.data.Event
 import com.glopez.phunapp.ui.activities.EventDetailActivity
+import java.lang.Exception
 
 class EventRecyclerAdapter(private val context: Context) :
         RecyclerView.Adapter<EventRecyclerAdapter.ViewHolder>() {
@@ -29,16 +33,21 @@ class EventRecyclerAdapter(private val context: Context) :
 
     companion object {
         private const val EVENT_ID: String = "event_id"
+        private val LOG_TAG: String = EventRecyclerAdapter::class.java.simpleName
     }
 
     init {
         // Take the placeholder drawable and transform into a circular bitmap.
         // The Glide library will only apply transformations on the remotely requested resource,
         // so the placeholder image must be transformed before using Glide.
-        val bitmapPlaceholder: Bitmap = BitmapFactory.decodeResource(context.resources,
-            R.drawable.placeholder_nomoon)
-        roundedPlaceholderImage = RoundedBitmapDrawableFactory.create(context.resources,
-            bitmapPlaceholder)
+        val bitmapPlaceholder: Bitmap = BitmapFactory.decodeResource(
+            context.resources,
+            R.drawable.placeholder_nomoon
+        )
+        roundedPlaceholderImage = RoundedBitmapDrawableFactory.create(
+            context.resources,
+            bitmapPlaceholder
+        )
         roundedPlaceholderImage.isCircular = true
     }
 
@@ -58,19 +67,33 @@ class EventRecyclerAdapter(private val context: Context) :
         holder.eventTitle?.text = event.title
         holder.eventLocation?.text = event.location1
         holder.eventDescription?.text = event.description
+
         holder.eventImage?.let {
             // This implementation will display the placeholder image as the event
             // image is fetched from the feed url.
-            Glide.with(context)
-                .load(event.image)
-                .placeholder(this.roundedPlaceholderImage)
-                .error(this.roundedPlaceholderImage)
-                // This transformation applies to the remotely requested resource
-                .apply(RequestOptions.circleCropTransform())
-                .into(it)
+            try {
+                Glide.with(context)
+                    .load(event.image)
+//                    .onlyRetrieveFromCache(false)
+                    .placeholder(this.roundedPlaceholderImage)
+                    .error(this.roundedPlaceholderImage)
+                    // This transformation applies to the remotely requested resource
+                    .apply(RequestOptions.circleCropTransform())
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(it)
+            } catch (exception: Exception) {
+                Log.e(LOG_TAG, exception.message)
+            }
         }
+
         holder.eventShareButton?.setOnClickListener {
             event.shareEvent(context)
+        }
+
+        holder.eventCardView?.setOnClickListener {
+            val detailIntent = Intent(context, EventDetailActivity::class.java)
+            detailIntent.putExtra(EVENT_ID, event.id)
+            startActivity(context, detailIntent, null)
         }
     }
 
@@ -79,26 +102,12 @@ class EventRecyclerAdapter(private val context: Context) :
         notifyDataSetChanged()
     }
 
-    inner class ViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView),
-        View.OnClickListener {
-
-        init {
-            itemView?.setOnClickListener(this)
-        }
-
+    inner class ViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
         val eventTitle = itemView?.findViewById<TextView>(R.id.event_title)
         val eventLocation = itemView?.findViewById<TextView>(R.id.event_location)
         val eventDescription = itemView?.findViewById<TextView>(R.id.event_description)
         val eventImage = itemView?.findViewById<ImageView>(R.id.event_image)
         val eventShareButton = itemView?.findViewById<Button>(R.id.share_button)
-
-        override fun onClick(v: View?) {
-            val position: Int = adapterPosition
-            val event: Event = eventList[position]
-            val detailIntent = Intent(context, EventDetailActivity::class.java)
-
-            detailIntent.putExtra(Companion.EVENT_ID, event.id)
-            startActivity(context, detailIntent, null)
-        }
+        val eventCardView = itemView?.findViewById<CardView>(R.id.cardView)
     }
 }
