@@ -12,6 +12,7 @@ import android.widget.Toast
 import com.glopez.phunapp.R
 import com.glopez.phunapp.ui.adapters.EventRecyclerAdapter
 import com.glopez.phunapp.ui.viewmodels.EventViewModel
+import com.glopez.phunapp.utils.Utils
 import kotlinx.android.synthetic.main.content_main.*
 
 
@@ -39,7 +40,8 @@ class MainActivity : AppCompatActivity() {
             events?.let {
                 // Display toast when there was no data retrieved from the database and
                 // a network connection is unavailable.
-                if (events.isEmpty() && !isNetworkAvailable(this)) {
+//                if (events.isEmpty() && !isNetworkAvailable(this)) {
+                if (events.isEmpty() && !Utils.isNetworkAvailable(this)) {
                     Log.d(LOG_TAG, getString(R.string.main_no_network_no_database))
                     Toast.makeText(this, getString(R.string.main_toast_events_fetch_fail),
                         Toast.LENGTH_LONG).show()
@@ -48,12 +50,5 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-    }
-
-    private fun isNetworkAvailable(context: Context): Boolean {
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE)
-                as ConnectivityManager
-        val activeNetworkInfo = connectivityManager.activeNetworkInfo
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected
     }
 }

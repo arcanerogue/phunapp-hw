@@ -3,7 +3,6 @@ package com.glopez.phunapp.ui.activities
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -14,7 +13,9 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.glopez.phunapp.R
 import com.glopez.phunapp.data.Event
+import com.glopez.phunapp.data.EventUtils
 import com.glopez.phunapp.ui.viewmodels.EventDetailViewModel
+import com.glopez.phunapp.utils.Utils
 import kotlinx.android.synthetic.main.activity_event_detail.*
 
 class EventDetailActivity : AppCompatActivity() {
@@ -51,7 +52,8 @@ class EventDetailActivity : AppCompatActivity() {
                 eventPhoneNumber = it.phone ?: ""
 
                 if (it.date != null) {
-                    eventDate.text = it.getEventDateFormatString()
+//                    eventDate.text = it.getEventDateFormatString()
+                    eventDate.text = EventUtils.getEventDateFormatString(it.date)
                 } else {
                     eventDate.visibility = View.GONE
                 }
@@ -70,7 +72,7 @@ class EventDetailActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.detail_menu, menu)
-        if(!deviceCanCall() || eventPhoneNumber.isEmpty()) {
+        if(!Utils.deviceCanCall(this.applicationContext) || eventPhoneNumber.isEmpty()) {
             val callIcon: MenuItem? = menu?.findItem(R.id.detail_action_call)
             callIcon?.isVisible = false
         }
@@ -84,18 +86,18 @@ class EventDetailActivity : AppCompatActivity() {
                 true
             }
             R.id.detail_action_call -> {
-                eventDetail.callEventNumber(this, eventPhoneNumber)
+//                eventDetail.callEventNumber(this, eventPhoneNumber)
+                Utils.createCallIntent(this, eventPhoneNumber)
                 true
             }
             R.id.detail_action_share -> {
-                eventDetail.shareEvent(this)
+                val shareMessage = EventUtils.createShareEventMessage(this,
+                    eventDetail)
+                Utils.createShareIntent(this, shareMessage)
+//                eventDetail.shareEvent(this)
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
-
-    private fun deviceCanCall(): Boolean {
-        return packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY)
-    }
 }
 
