@@ -12,8 +12,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.glopez.phunapp.R
-import com.glopez.phunapp.data.Event
-import com.glopez.phunapp.data.EventUtils
+import com.glopez.phunapp.data.createEventDateFormatString
+import com.glopez.phunapp.data.createShareEventMessage
 import com.glopez.phunapp.ui.viewmodels.EventDetailViewModel
 import com.glopez.phunapp.utils.Utils
 import kotlinx.android.synthetic.main.activity_event_detail.*
@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.activity_event_detail.*
 class EventDetailActivity : AppCompatActivity() {
     private lateinit var eventDetailViewModel: EventDetailViewModel
     private lateinit var eventPhoneNumber: String
-    private lateinit var eventDetail: Event
+    private lateinit var eventShareMessage: String
 
     companion object {
         private const val EVENT_ID: String = "event_id"
@@ -36,6 +36,7 @@ class EventDetailActivity : AppCompatActivity() {
         val eventImage: ImageView = findViewById(R.id.detail_event_image)
         val eventDate: TextView = findViewById(R.id.detail_event_date)
         val eventTitle: TextView = findViewById(R.id.detail_event_title)
+        val eventLocation: TextView = findViewById(R.id.detail_event_location)
         val eventDescription: TextView = findViewById(R.id.detail_event_description)
         val ID: Int = intent.getIntExtra(EVENT_ID, 0)
 
@@ -48,16 +49,16 @@ class EventDetailActivity : AppCompatActivity() {
         eventDetailViewModel = ViewModelProviders.of(this).get(EventDetailViewModel::class.java)
         eventDetailViewModel.getEvent(ID).observe(this, Observer { event ->
             event?.let {
-                eventDetail = it
                 eventPhoneNumber = it.phone ?: ""
 
                 if (it.date != null) {
-//                    eventDate.text = it.getEventDateFormatString()
-                    eventDate.text = EventUtils.getEventDateFormatString(it.date)
+                    eventDate.text = it.createEventDateFormatString()
                 } else {
                     eventDate.visibility = View.GONE
                 }
+                eventShareMessage = it.createShareEventMessage()
                 eventTitle.text = it.title
+                eventLocation.text = it.location2
                 eventDescription.text = it.description
 
                 Glide.with(this)
@@ -66,6 +67,7 @@ class EventDetailActivity : AppCompatActivity() {
                     .error(R.drawable.placeholder_nomoon)
                     .centerCrop()
                     .into(eventImage)
+
             }
         })
     }
@@ -86,15 +88,13 @@ class EventDetailActivity : AppCompatActivity() {
                 true
             }
             R.id.detail_action_call -> {
-//                eventDetail.callEventNumber(this, eventPhoneNumber)
                 Utils.createCallIntent(this, eventPhoneNumber)
                 true
             }
             R.id.detail_action_share -> {
-                val shareMessage = EventUtils.createShareEventMessage(this,
-                    eventDetail)
-                Utils.createShareIntent(this, shareMessage)
-//                eventDetail.shareEvent(this)
+//                val shareMessage = eventDetail.createShareEventMessage()
+//                Utils.createShareIntent(this, shareMessage)
+                Utils.createShareIntent(this, eventShareMessage)
                 true
             }
             else -> super.onOptionsItemSelected(item)

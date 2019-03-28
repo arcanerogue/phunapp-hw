@@ -2,17 +2,8 @@ package com.glopez.phunapp.data
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
-import android.content.Context
-import android.content.Intent
-import android.content.pm.ResolveInfo
-import android.net.Uri
-import android.support.v4.content.ContextCompat.startActivity
-import android.widget.Toast
-import com.glopez.phunapp.R
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import java.text.SimpleDateFormat
-import java.util.*
 
 const val TABLE_NAME: String = "events"
 const val DESCRIPTION: String = "description"
@@ -26,7 +17,7 @@ const val LOCATION_LINE_1 = "locationline1"
 const val LOCATION_LINE_2 = "locationline2"
 
 @Entity(tableName = TABLE_NAME)
-class Event(
+data class Event(
     @PrimaryKey
     @SerializedName(ID)
     @Expose

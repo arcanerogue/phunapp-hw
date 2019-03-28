@@ -21,7 +21,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.glopez.phunapp.data.Event
-import com.glopez.phunapp.data.EventUtils
+import com.glopez.phunapp.data.createShareEventMessage
 import com.glopez.phunapp.ui.activities.EventDetailActivity
 import com.glopez.phunapp.utils.Utils
 import java.lang.Exception
@@ -89,9 +89,7 @@ class EventRecyclerAdapter(private val context: Context) :
         }
 
         holder.eventShareButton?.setOnClickListener {
-//            event.shareEvent(context)
-            val shareMessage = EventUtils.createShareEventMessage(context,
-                event)
+            val shareMessage = event.createShareEventMessage()
             Utils.createShareIntent(context, shareMessage)
         }
 

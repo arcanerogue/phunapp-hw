@@ -83,11 +83,23 @@
                     android:layout_marginTop="8dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="@color/textColor"/>
+
+            <TextView
+                    android:id="@+id/detail_event_location"
+                    android:text="@string/event_location_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/tablet_detail_vertical_margin"
+                    android:layout_marginEnd="@dimen/tablet_detail_vertical_margin"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                    android:textColor="@color/textColor"/>
+
             <TextView
                     android:id="@+id/detail_event_description"
                     android:text="@string/event_description_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:layout_marginStart="@dimen/tablet_detail_vertical_margin"
                     android:layout_marginEnd="@dimen/tablet_detail_vertical_margin"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
