@@ -1,11 +1,11 @@
-package com.glopez.phunapp.ui.viewmodels
+package com.glopez.phunapp.view.viewmodels
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import com.glopez.phunapp.PhunApp
-import com.glopez.phunapp.data.Event
-import com.glopez.phunapp.data.EventRepository
+import com.glopez.phunapp.model.Event
+import com.glopez.phunapp.model.EventRepository
 
 class EventDetailViewModel(application: Application) : AndroidViewModel(application)  {
 

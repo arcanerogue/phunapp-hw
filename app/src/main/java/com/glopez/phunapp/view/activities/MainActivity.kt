@@ -1,4 +1,4 @@
-package com.glopez.phunapp.ui.activities
+package com.glopez.phunapp.view.activities
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -7,9 +7,11 @@ import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.util.Log
 import android.widget.Toast
+import com.glopez.phunapp.PhunApp
 import com.glopez.phunapp.R
-import com.glopez.phunapp.ui.adapters.EventRecyclerAdapter
-import com.glopez.phunapp.ui.viewmodels.EventViewModel
+import com.glopez.phunapp.view.adapters.EventRecyclerAdapter
+import com.glopez.phunapp.view.viewmodels.EventViewModel
+import com.glopez.phunapp.ViewModelFactory
 import com.glopez.phunapp.utils.Utils
 import kotlinx.android.synthetic.main.content_main.*
 
@@ -33,12 +35,14 @@ class MainActivity : AppCompatActivity() {
         feed_list.adapter = adapter
 
         // Get the ViewModel and observe the event feed being set by the adapter
-        eventViewModel = ViewModelProviders.of(this).get(EventViewModel::class.java)
-        eventViewModel.eventFeedList.observe(this, Observer { events ->
+        eventViewModel = ViewModelProviders.of(this, ViewModelFactory
+            .getInstance(application as PhunApp))
+            .get(EventViewModel::class.java)
+
+        eventViewModel.events.observe(this, Observer { events ->
             events?.let {
-                // Display toast when there was no data retrieved from the database and
+                // Display toast when there was no model retrieved from the database and
                 // a network connection is unavailable.
-//                if (events.isEmpty() && !isNetworkAvailable(this)) {
                 if (events.isEmpty() && !Utils.isNetworkAvailable(this)) {
                     Log.d(LOG_TAG, getString(R.string.main_no_network_no_database))
                     Toast.makeText(this, getString(R.string.main_toast_events_fetch_fail),

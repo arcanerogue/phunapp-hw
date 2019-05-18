@@ -1,6 +1,6 @@
-package com.glopez.phunapp.data.webservice
+package com.glopez.phunapp.model.webservice
 
-import com.glopez.phunapp.data.Event
+import com.glopez.phunapp.model.Event
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Retrofit

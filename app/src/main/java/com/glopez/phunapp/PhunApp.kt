@@ -1,10 +1,8 @@
 package com.glopez.phunapp
 
 import android.app.Application
-import android.content.Intent
-import android.content.pm.ResolveInfo
-import com.glopez.phunapp.data.EventRepository
-import com.glopez.phunapp.data.db.EventDatabase
+import com.glopez.phunapp.model.EventRepository
+import com.glopez.phunapp.model.db.EventDatabase
 
 class PhunApp : Application() {
     private fun getDatabase(): EventDatabase {

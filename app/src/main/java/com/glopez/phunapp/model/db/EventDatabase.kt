@@ -1,4 +1,4 @@
-package com.glopez.phunapp.data.db
+package com.glopez.phunapp.model.db
 
 import android.arch.persistence.room.Database
 import android.arch.persistence.room.Room
@@ -6,7 +6,7 @@ import android.arch.persistence.room.RoomDatabase
 import android.content.Context
 import android.util.Log
 import com.glopez.phunapp.R
-import com.glopez.phunapp.data.Event
+import com.glopez.phunapp.model.Event
 
 @Database(entities = [Event::class], version = 1, exportSchema = false)
 abstract class EventDatabase : RoomDatabase() {
