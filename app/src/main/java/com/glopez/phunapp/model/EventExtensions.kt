@@ -1,4 +1,4 @@
-package com.glopez.phunapp.data
+package com.glopez.phunapp.model
 
 import java.lang.StringBuilder
 import java.text.SimpleDateFormat

@@ -16,18 +16,18 @@
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning" tools:targetApi="n">
 
-        <activity android:name=".ui.activities.MainActivity">
+        <activity android:name=".view.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activities.EventDetailActivity"
-                  android:parentActivityName=".ui.activities.EventDetailActivity"
+        <activity android:name=".view.activities.EventDetailActivity"
+                  android:parentActivityName=".view.activities.EventDetailActivity"
                   android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value=".ui.activities.EventDetailActivity"/>
+                    android:value=".view.activities.EventDetailActivity"/>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <data android:mimeType="vnd.android.cursor.dir/event" />

@@ -1,4 +1,4 @@
-package com.glopez.phunapp.data
+package com.glopez.phunapp.model
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey

@@ -1,4 +1,4 @@
-package com.glopez.phunapp.ui.activities
+package com.glopez.phunapp.view.activities
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
@@ -11,11 +11,14 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.glopez.phunapp.PhunApp
 import com.glopez.phunapp.R
-import com.glopez.phunapp.data.createEventDateFormatString
-import com.glopez.phunapp.data.createShareEventMessage
-import com.glopez.phunapp.ui.viewmodels.EventDetailViewModel
+import com.glopez.phunapp.ViewModelFactory
+import com.glopez.phunapp.model.createEventDateFormatString
+import com.glopez.phunapp.model.createShareEventMessage
+import com.glopez.phunapp.view.viewmodels.EventDetailViewModel
 import com.glopez.phunapp.utils.Utils
+import com.glopez.phunapp.view.viewmodels.EventViewModel
 import kotlinx.android.synthetic.main.activity_event_detail.*
 
 class EventDetailActivity : AppCompatActivity() {
@@ -46,7 +49,10 @@ class EventDetailActivity : AppCompatActivity() {
 
         // Get the ViewModel and observe the single event specified by the user click from
         // the list of events in MainActivity
-        eventDetailViewModel = ViewModelProviders.of(this).get(EventDetailViewModel::class.java)
+        eventDetailViewModel = ViewModelProviders.of(this, ViewModelFactory
+            .getInstance(application as PhunApp))
+            .get(EventDetailViewModel::class.java)
+
         eventDetailViewModel.getEvent(ID).observe(this, Observer { event ->
             event?.let {
                 eventPhoneNumber = it.phone ?: ""

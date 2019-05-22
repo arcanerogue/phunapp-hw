@@ -1,4 +1,4 @@
-package com.glopez.phunapp.ui.adapters
+package com.glopez.phunapp.view.adapters
 
 import android.content.Context
 import android.content.Intent
@@ -20,9 +20,9 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.glopez.phunapp.data.Event
-import com.glopez.phunapp.data.createShareEventMessage
-import com.glopez.phunapp.ui.activities.EventDetailActivity
+import com.glopez.phunapp.model.Event
+import com.glopez.phunapp.model.createShareEventMessage
+import com.glopez.phunapp.view.activities.EventDetailActivity
 import com.glopez.phunapp.utils.Utils
 import java.lang.Exception
 

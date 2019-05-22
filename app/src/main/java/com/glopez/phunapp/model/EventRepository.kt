@@ -1,17 +1,17 @@
-package com.glopez.phunapp.data
+package com.glopez.phunapp.model
 
 import android.arch.lifecycle.LiveData
 import android.content.Context
 import android.content.res.Resources
 import android.util.Log
-import com.glopez.phunapp.data.db.EventDao
-import com.glopez.phunapp.data.db.EventDatabase
+import com.glopez.phunapp.model.db.EventDao
+import com.glopez.phunapp.model.db.EventDatabase
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import android.os.AsyncTask
 import com.glopez.phunapp.R
-import com.glopez.phunapp.data.webservice.EventFeedProvider
+import com.glopez.phunapp.model.webservice.EventFeedProvider
 
 class EventRepository(context: Context, eventDatabase: EventDatabase) {
     private val LOG_TAG = EventRepository::class.java.simpleName

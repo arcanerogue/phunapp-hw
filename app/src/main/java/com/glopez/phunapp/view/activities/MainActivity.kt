@@ -36,8 +36,8 @@ class MainActivity : AppCompatActivity() {
 
         // Get the ViewModel and observe the event feed being set by the adapter
         eventViewModel = ViewModelProviders.of(this, ViewModelFactory
-        .getInstance(application as PhunApp))
-        .get(EventViewModel::class.java)
+            .getInstance(application as PhunApp))
+            .get(EventViewModel::class.java)
 
         eventViewModel.events.observe(this, Observer { events ->
             events?.let {
