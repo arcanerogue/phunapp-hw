@@ -17,6 +17,6 @@ class EventDetailViewModel(private val eventRepo: EventRepository) : ViewModel()
      * @return The requested Event object.
      */
     fun getEvent(id: Int): LiveData<Event> {
-        return eventRepo.getSingleEvent(id)
+        return eventRepo.getSingleEventFromDatabase(id)
     }
 }

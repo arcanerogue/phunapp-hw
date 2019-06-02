@@ -12,12 +12,11 @@ import com.glopez.phunapp.R
 import com.glopez.phunapp.view.adapters.EventRecyclerAdapter
 import com.glopez.phunapp.view.viewmodels.EventViewModel
 import com.glopez.phunapp.ViewModelFactory
+import com.glopez.phunapp.model.network.ApiResponse
 import com.glopez.phunapp.utils.Utils
 import kotlinx.android.synthetic.main.content_main.*
 
-
 class MainActivity : AppCompatActivity() {
-
     private val LOG_TAG: String = MainActivity::class.java.simpleName
     private lateinit var eventViewModel: EventViewModel
 
@@ -39,6 +38,14 @@ class MainActivity : AppCompatActivity() {
             .getInstance(application as PhunApp))
             .get(EventViewModel::class.java)
 
+        eventViewModel.apiResponseStatus.observe(this, Observer { status ->
+            when(status) {
+                is ApiResponse.Loading<*> -> Log.d(LOG_TAG, "Api Loading State")
+                is ApiResponse.Success<*> -> Log.d(LOG_TAG, "Api Success State")
+                is ApiResponse.Error -> Log.d(LOG_TAG, "Api Error State")
+            }
+        })
+
         eventViewModel.events.observe(this, Observer { events ->
             events?.let {
                 // Display toast when there was no model retrieved from the database and
@@ -52,5 +59,10 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+//        eventViewModel.updateEventsFromNetwork()
     }
 }

@@ -5,52 +5,41 @@ import android.arch.persistence.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-const val TABLE_NAME: String = "events"
-const val DESCRIPTION: String = "description"
-const val ID: String = "id"
-const val TITLE: String = "title"
-const val TIMESTAMP: String = "timestamp"
-const val IMAGE = "image"
-const val PHONE = "phone"
-const val DATE = "date"
-const val LOCATION_LINE_1 = "locationline1"
-const val LOCATION_LINE_2 = "locationline2"
-
-@Entity(tableName = TABLE_NAME)
+@Entity(tableName = "events")
 data class Event(
     @PrimaryKey
-    @SerializedName(ID)
+    @SerializedName("id")
     @Expose
     val id: Int,
 
-    @SerializedName(DESCRIPTION)
+    @SerializedName("description")
     @Expose
     val description: String?,
 
-    @SerializedName(TITLE)
+    @SerializedName("title")
     @Expose
     val title: String?,
 
-    @SerializedName(TIMESTAMP)
+    @SerializedName("timestamp")
     @Expose
     val timestamp: String?,
 
-    @SerializedName(IMAGE)
+    @SerializedName("image")
     @Expose
     val image: String?,
 
-    @SerializedName(PHONE)
+    @SerializedName("phone")
     @Expose
     val phone: String?,
 
-    @SerializedName(DATE)
+    @SerializedName("date")
     @Expose
     val date: String?,
 
-    @SerializedName(LOCATION_LINE_1)
+    @SerializedName("locationline1")
     @Expose
     val location1: String?,
 
-    @SerializedName(LOCATION_LINE_2)
+    @SerializedName("locationline2")
     @Expose
     val location2: String?)

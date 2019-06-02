@@ -4,17 +4,6 @@ import java.lang.StringBuilder
 import java.text.SimpleDateFormat
 import java.util.*
 
-
-class EventExtensions {
-    fun createEventDateFormatString(event: Event) {
-        event.createEventDateFormatString()
-    }
-
-    fun createShareEventMessage(event: Event) {
-        event.createShareEventMessage()
-    }
-}
-
 fun Event.createEventDateFormatString(): String {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
     dateFormat.timeZone = TimeZone.getTimeZone("UTC")

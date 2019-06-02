@@ -29,7 +29,7 @@ abstract class EventDatabase : RoomDatabase() {
                         .build()
                     Log.d(LOG_TAG, context.getString(R.string.database_created))
                 }
-                return INSTANCE!!
+                return INSTANCE as EventDatabase
             }
         }
     }
