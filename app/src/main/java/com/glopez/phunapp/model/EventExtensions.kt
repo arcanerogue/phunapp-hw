@@ -1,24 +1,28 @@
 package com.glopez.phunapp.model
 
+import timber.log.Timber
 import java.lang.StringBuilder
 import java.text.SimpleDateFormat
 import java.util.*
 
 fun Event.createEventDateFormatString(): String {
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
-    dateFormat.timeZone = TimeZone.getTimeZone("UTC")
-    val formattedEventDate: Date
+    val inputPattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    val outputPattern = "MMMM dd, yyyy 'at' h:mm a"
+    val dateFormat = SimpleDateFormat(inputPattern, Locale.getDefault())
 
-    formattedEventDate = if(this.date.isNullOrEmpty()) {
+    dateFormat.timeZone = TimeZone.getTimeZone("UTC")
+
+    val formattedEventDate: Date = if (this.date.isNullOrEmpty()) {
         dateFormat.parse(Calendar.getInstance()
             .time.toString())
     } else {
         dateFormat.parse((this.date))
     }
 
-    val formatter = SimpleDateFormat("MMMM dd, yyyy 'at' h:mm a", Locale.getDefault())
-    formatter.timeZone = TimeZone.getDefault()
-    return formatter.format(formattedEventDate)
+    dateFormat.applyPattern(outputPattern)
+    dateFormat.timeZone = TimeZone.getDefault()
+    Timber.d("SimpleDateFormat has hashCode: ${dateFormat.hashCode()}")
+    return dateFormat.format(formattedEventDate)
 }
 
 fun Event.createShareEventMessage(): String {

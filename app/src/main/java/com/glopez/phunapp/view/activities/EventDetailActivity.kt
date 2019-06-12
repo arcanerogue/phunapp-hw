@@ -16,20 +16,16 @@ import com.glopez.phunapp.R
 import com.glopez.phunapp.ViewModelFactory
 import com.glopez.phunapp.model.createEventDateFormatString
 import com.glopez.phunapp.model.createShareEventMessage
+import com.glopez.phunapp.utils.*
 import com.glopez.phunapp.view.viewmodels.EventDetailViewModel
-import com.glopez.phunapp.utils.Utils
-import com.glopez.phunapp.view.viewmodels.EventViewModel
 import kotlinx.android.synthetic.main.activity_event_detail.*
+
+private const val EVENT_ID: String = "event_id"
 
 class EventDetailActivity : AppCompatActivity() {
     private lateinit var eventDetailViewModel: EventDetailViewModel
     private lateinit var eventPhoneNumber: String
     private lateinit var eventShareMessage: String
-
-    companion object {
-        private const val EVENT_ID: String = "event_id"
-        private val LOG_TAG: String = EventDetailActivity::class.java.simpleName
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +37,7 @@ class EventDetailActivity : AppCompatActivity() {
         val eventTitle: TextView = findViewById(R.id.detail_event_title)
         val eventLocation: TextView = findViewById(R.id.detail_event_location)
         val eventDescription: TextView = findViewById(R.id.detail_event_description)
-        val ID: Int = intent.getIntExtra(EVENT_ID, 0)
+        val eventId: Int = intent.getIntExtra(EVENT_ID, 0)
 
         // Show the Up button in the action bar and hide the app name.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -53,7 +49,7 @@ class EventDetailActivity : AppCompatActivity() {
             .getInstance(application as PhunApp))
             .get(EventDetailViewModel::class.java)
 
-        eventDetailViewModel.getEvent(ID).observe(this, Observer { event ->
+        eventDetailViewModel.getEvent(eventId).observe(this, Observer { event ->
             event?.let {
                 eventPhoneNumber = it.phone ?: ""
 
@@ -80,7 +76,8 @@ class EventDetailActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.detail_menu, menu)
-        if(!Utils.deviceCanCall(this.applicationContext) || eventPhoneNumber.isEmpty()) {
+        val packageManager = this.applicationContext.packageManager
+        if(deviceCanCall(packageManager) || eventPhoneNumber.isEmpty()) {
             val callIcon: MenuItem? = menu?.findItem(R.id.detail_action_call)
             callIcon?.isVisible = false
         }
@@ -94,13 +91,11 @@ class EventDetailActivity : AppCompatActivity() {
                 true
             }
             R.id.detail_action_call -> {
-                Utils.createCallIntent(this, eventPhoneNumber)
+                createCallIntent(this, eventPhoneNumber)
                 true
             }
             R.id.detail_action_share -> {
-//                val shareMessage = eventDetail.createShareEventMessage()
-//                Utils.createShareIntent(this, shareMessage)
-                Utils.createShareIntent(this, eventShareMessage)
+                createShareIntent(this, eventShareMessage)
                 true
             }
             else -> super.onOptionsItemSelected(item)

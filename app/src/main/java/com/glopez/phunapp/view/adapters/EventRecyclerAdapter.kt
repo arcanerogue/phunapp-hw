@@ -9,7 +9,6 @@ import android.support.v4.graphics.drawable.RoundedBitmapDrawable
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory
 import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,21 +21,19 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.glopez.phunapp.model.Event
 import com.glopez.phunapp.model.createShareEventMessage
+import com.glopez.phunapp.utils.createShareIntent
 import com.glopez.phunapp.view.activities.EventDetailActivity
-import com.glopez.phunapp.utils.Utils
+import timber.log.Timber
 import java.lang.Exception
+
+private const val EVENT_ID: String = "event_id"
 
 class EventRecyclerAdapter(private val context: Context) :
         RecyclerView.Adapter<EventRecyclerAdapter.ViewHolder>() {
 
-    var eventList: List<Event> = emptyList()
+    private var eventList: List<Event> = emptyList()
     private val inflater: LayoutInflater = LayoutInflater.from(context)
     private val roundedPlaceholderImage: RoundedBitmapDrawable
-
-    companion object {
-        private const val EVENT_ID: String = "event_id"
-        private val LOG_TAG: String = EventRecyclerAdapter::class.java.simpleName
-    }
 
     init {
         // Take the placeholder drawable and transform into a circular bitmap.
@@ -84,13 +81,14 @@ class EventRecyclerAdapter(private val context: Context) :
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(it)
             } catch (exception: Exception) {
-                Log.e(LOG_TAG, exception.message)
+                Timber.e(exception)
             }
         }
 
         holder.eventShareButton?.setOnClickListener {
             val shareMessage = event.createShareEventMessage()
-            Utils.createShareIntent(context, shareMessage)
+//            IntentUtils.createShareIntent(context, shareMessage)
+            createShareIntent(context, shareMessage)
         }
 
         holder.eventCardView?.setOnClickListener {

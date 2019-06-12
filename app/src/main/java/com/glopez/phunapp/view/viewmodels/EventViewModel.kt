@@ -15,7 +15,7 @@ class EventViewModel(private val eventRepo: EventRepository) : ViewModel() {
         get() = getEventsList()
 
     val apiResponseStatus: LiveData<ApiResponse>
-        get() = eventRepo.getNetworkResponseStatus()
+        get() = eventRepo.getApiResponseState()
     /**
      * Retrieves the list of Events, wrapped in a LiveData object, from the
      * repository.
