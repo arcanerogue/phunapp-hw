@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
                 is ApiResponse.Error -> {
                     Timber.d("Api Error State")
                     Timber.e(status.error, getString(R.string.repo_fetch_error))
-                    showLoading()
+                    hideLoading()
                 }
                 is ApiResponse.ResponseEmptyBody -> {
                     Timber.d(getString(R.string.repo_events_fetch_empty_body, status.responseCode))

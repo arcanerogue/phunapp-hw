@@ -61,18 +61,17 @@ class EventRepository(eventDatabase: EventDatabase) {
     private fun setApiResponseState(response: Response<List<Event>>) {
         val responseBody = response.body()
         val responseCode:String = response.code().toString()
-        val errorBody = response.errorBody()
+        val errorBody = response.errorBody().toString()
 
-        // HTTP Response Code is in the 200-300 range. Populate database with events
-        // retrieved from remote data source.
+        // HTTP Response Code is in the 200-300 range.
         if (response.isSuccessful && !responseBody.isNullOrEmpty()) {
-            // If the Response errorBody is not empty, populate eventFeedList with list of
-            // events from errorBody.
+            // If the Response body is not empty, populate eventFeedList with list of
+            // events from body. Populate database with events retrieved from remote data source.
             apiResultState.postValue(ApiResponse.Success(responseBody))
             insertEventsIntoDatabase(responseBody)
             Timber.d("Received response with count: ${responseBody.size}")
         } else if (response.isSuccessful && responseBody.isNullOrEmpty()) {
-            // Received Response with empty errorBody.
+            // Received Response with empty body.
             apiResultState.postValue(ApiResponse.ResponseEmptyBody(responseCode))
         } else {
             // HTTP Response Code is in the 300's, 400's, 500's, or application-level failure.

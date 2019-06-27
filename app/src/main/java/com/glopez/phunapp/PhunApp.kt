@@ -39,7 +39,9 @@ class PhunApp : Application() {
 
             StrictMode.setVmPolicy(
                 StrictMode.VmPolicy.Builder()
-                    .detectAll()
+                    .detectActivityLeaks()
+                    .detectLeakedClosableObjects()
+                    .detectLeakedSqlLiteObjects()
                     .penaltyLog()
                     .build())
         }

@@ -12,7 +12,7 @@ fun Event.createEventDateFormatString(): String {
 
     dateFormat.timeZone = TimeZone.getTimeZone("UTC")
 
-    val formattedEventDate: Date = if (this.date.isNullOrEmpty()) {
+    val formattedEventDate: Date = if (this.date.isNullOrBlank()) {
         dateFormat.parse(Calendar.getInstance()
             .time.toString())
     } else {
@@ -27,23 +27,20 @@ fun Event.createEventDateFormatString(): String {
 
 fun Event.createShareEventMessage(): String {
     val shareString = StringBuilder()
-    if(!this.title.isNullOrEmpty()) {
-        shareString.append(this.title)
-        shareString.appendln()
+    if(!this.title.isNullOrBlank()) {
+        shareString.append("${this.title}\n")
     }
-    if(!this.location1.isNullOrEmpty()) {
+    if(!this.location1.isNullOrBlank()) {
         shareString.append("${this.location1}, ")
     }
-    if(!this.location2.isNullOrEmpty()) {
-        shareString.append(this.location2)
-        shareString.appendln()
+    if(!this.location2.isNullOrBlank()) {
+        shareString.append("${this.location2}\n")
     }
-    if(!this.date.isNullOrEmpty()) {
-        shareString.append(this.createEventDateFormatString())
-        shareString.appendln()
+    if(!this.date.isNullOrBlank()) {
+        shareString.append("${this.createEventDateFormatString()}\n")
     }
-    if(!this.description.isNullOrEmpty()) {
-        shareString.append(this.description)
+    if(!this.description.isNullOrBlank()) {
+        shareString.append("${this.description}")
     }
     return shareString.toString()
 }
