@@ -29,7 +29,7 @@ import java.lang.Exception
 class EventRecyclerAdapter(private val context: Context) :
         RecyclerView.Adapter<EventRecyclerAdapter.ViewHolder>() {
 
-    var eventList: List<Event> = emptyList()
+    private var eventList: List<Event> = emptyList()
     private val inflater: LayoutInflater = LayoutInflater.from(context)
     private val roundedPlaceholderImage: RoundedBitmapDrawable
 
@@ -76,7 +76,6 @@ class EventRecyclerAdapter(private val context: Context) :
             try {
                 Glide.with(context)
                     .load(event.image)
-//                    .onlyRetrieveFromCache(false)
                     .placeholder(this.roundedPlaceholderImage)
                     .error(this.roundedPlaceholderImage)
                     // This transformation applies to the remotely requested resource

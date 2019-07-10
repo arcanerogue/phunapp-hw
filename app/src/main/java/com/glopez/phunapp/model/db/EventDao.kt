@@ -20,5 +20,4 @@ interface EventDao {
     // Select One By Id
     @Query("SELECT * FROM events WHERE id = :id")
     fun find(id: Int): LiveData<Event>
-
 }

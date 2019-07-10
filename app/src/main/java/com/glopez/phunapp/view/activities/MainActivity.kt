@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
             .getInstance(application as PhunApp))
             .get(EventViewModel::class.java)
 
-        eventViewModel.events.observe(this, Observer { events ->
+        eventViewModel.getEventsList().observe(this, Observer { events ->
             events?.let {
                 // Display toast when there was no model retrieved from the database and
                 // a network connection is unavailable.

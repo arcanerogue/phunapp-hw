@@ -13,8 +13,9 @@ import android.os.AsyncTask
 import com.glopez.phunapp.R
 import com.glopez.phunapp.model.webservice.EventFeedProvider
 
+private val LOG_TAG = EventRepository::class.java.simpleName
+
 class EventRepository(context: Context, eventDatabase: EventDatabase) {
-    private val LOG_TAG = EventRepository::class.java.simpleName
     private val eventFeedRetriever = EventFeedProvider()
     var eventFeedList: List<Event> = emptyList()
     private val eventDao: EventDao
@@ -29,7 +30,7 @@ class EventRepository(context: Context, eventDatabase: EventDatabase) {
                     // Create repository
                     INSTANCE = EventRepository(context, eventDb)
                 }
-                return INSTANCE!!
+                return INSTANCE as EventRepository
             }
         }
     }
@@ -46,7 +47,9 @@ class EventRepository(context: Context, eventDatabase: EventDatabase) {
 
     fun insertEvent(eventList: List<Event>) {
         for (event: Event in eventList) {
-           AsyncTask.execute{ eventDao.insert(event) }
+            if (event.id > 0) {
+                AsyncTask.execute { eventDao.insert(event) }
+            }
         }
     }
 
@@ -70,19 +73,19 @@ class EventRepository(context: Context, eventDatabase: EventDatabase) {
                     // events from body. Otherwise, populate with an empty list
                     eventFeedList = response.body() ?: emptyList()
                     Log.d(LOG_TAG, resources.getString(R.string.repo_response_body_count,
-                            eventFeedList.size))
+                        eventFeedList.size))
                     if (eventFeedList.isNotEmpty()) {
                         Log.d(LOG_TAG, resources.getString(R.string.repo_events_fetch_success))
                         insertEvent(eventFeedList)
                     } else {
                         Log.d(LOG_TAG, resources.getString(R.string.repo_events_fetch_empty_body,
-                                response.body()))
+                            response.body()))
                     }
                 } else {
                     // HTTP Response Code is in the 300's, 400's, 500's, or
                     // application-level failure.
                     Log.d(LOG_TAG, resources.getString(R.string.repo_success_http_error,
-                            response.code().toString(), response.body()))
+                        response.code().toString(), response.body()))
                 }
             }
         }

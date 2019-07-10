@@ -10,14 +10,23 @@ import com.glopez.phunapp.model.EventRepository
  * @param[eventRepo] The application's repository instance.
  */
 class EventViewModel(private val eventRepo: EventRepository) : ViewModel() {
-    val events: LiveData<List<Event>>
-        get() = getEventsList()
+
+    private val eventsList: LiveData<List<Event>>
+
+    init {
+        eventsList = setEventsList()
+    }
+
     /**
      * Retrieves the list of Events, wrapped in a LiveData object, from the
      * repository.
      * @return The list of Events wrapped in LiveData.
      */
-    private fun getEventsList(): LiveData<List<Event>> {
+    fun getEventsList(): LiveData<List<Event>> {
+        return eventsList
+    }
+
+    private fun setEventsList(): LiveData<List<Event>> {
         return eventRepo.getEvents()
     }
 }
