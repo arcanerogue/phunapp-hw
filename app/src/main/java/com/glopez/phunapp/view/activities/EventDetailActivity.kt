@@ -35,7 +35,6 @@ class EventDetailActivity : AppCompatActivity() {
         setSupportActionBar(detail_toolbar)
 
         val eventDetailId: Int = intent?.extras?.getInt(EVENT_ID) ?: 0
-//        val eventDetailId = 15
 
         // Show the Up button in the action bar and hide the app name.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -111,9 +110,15 @@ class EventDetailActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Displays an "empty" View when the database cannot locate an Event to display to the user
+     */
     private fun handleViewsOnError() {
+        // Collapses the app bar
         app_bar.setExpanded(false)
         hideMenuOptions = true
+
+        // Recreate the options menu so the toolbar icons will be hidden
         invalidateOptionsMenu()
         nested_scroll_view_group.visibility = View.GONE
         Toast.makeText(this@EventDetailActivity, "Unable to locate Event details.", Toast.LENGTH_LONG)

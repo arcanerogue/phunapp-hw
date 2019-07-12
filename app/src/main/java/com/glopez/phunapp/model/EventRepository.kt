@@ -47,6 +47,8 @@ class EventRepository(context: Context, eventDatabase: EventDatabase) {
 
     fun insertEvent(eventList: List<Event>) {
         for (event: Event in eventList) {
+            // If the id field was not present in the Response object, the default value of 0 will be set.
+            // If this is the case, the Event will not be inserted into the database.
             if (event.id > 0) {
                 AsyncTask.execute { eventDao.insert(event) }
             }

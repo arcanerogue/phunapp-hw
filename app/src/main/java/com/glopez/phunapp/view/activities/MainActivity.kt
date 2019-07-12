@@ -15,7 +15,6 @@ import com.glopez.phunapp.ViewModelFactory
 import com.glopez.phunapp.utils.Utils
 import kotlinx.android.synthetic.main.content_main.*
 
-
 class MainActivity : AppCompatActivity() {
 
     private val LOG_TAG: String = MainActivity::class.java.simpleName

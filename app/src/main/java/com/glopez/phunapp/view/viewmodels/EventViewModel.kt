@@ -18,14 +18,18 @@ class EventViewModel(private val eventRepo: EventRepository) : ViewModel() {
     }
 
     /**
-     * Retrieves the list of Events, wrapped in a LiveData object, from the
-     * repository.
+     * Provides the list of Events, wrapped in a LiveData object.
      * @return The list of Events wrapped in LiveData.
      */
     fun getEventsList(): LiveData<List<Event>> {
         return eventsList
     }
 
+    /**
+     * Retrieves the list of Events, wrapped in a LiveData object, from the
+     * repository.
+     * @return The list of Events wrapped in LiveData.
+     */
     private fun setEventsList(): LiveData<List<Event>> {
         return eventRepo.getEvents()
     }
