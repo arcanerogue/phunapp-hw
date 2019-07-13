@@ -5,7 +5,6 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -16,12 +15,12 @@ import com.glopez.phunapp.R
 import com.glopez.phunapp.ViewModelFactory
 import com.glopez.phunapp.model.createEventDateFormatString
 import com.glopez.phunapp.model.createShareEventMessage
+import com.glopez.phunapp.utils.*
 import com.glopez.phunapp.view.viewmodels.EventDetailViewModel
-import com.glopez.phunapp.utils.Utils
 import kotlinx.android.synthetic.main.activity_event_detail.*
+import timber.log.Timber
 
 private const val EVENT_ID: String = "event_id"
-private val LOG_TAG: String = EventDetailActivity::class.java.simpleName
 
 class EventDetailActivity : AppCompatActivity() {
     private lateinit var eventDetailViewModel: EventDetailViewModel
@@ -51,8 +50,11 @@ class EventDetailActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.detail_menu, menu)
-        val canCall: Boolean = Utils.deviceCanCall(this.applicationContext)
-        if (eventPhoneNumber.isBlank() || !canCall) {
+        val packageManager = this.applicationContext.packageManager
+        val canCall: Boolean = deviceCanCall(packageManager)
+        if(eventPhoneNumber.isEmpty() || !canCall) {
+//        val canCall: Boolean = Utils.deviceCanCall(this.applicationContext)
+//        if (eventPhoneNumber.isBlank() || !canCall) {
             val callIcon: MenuItem? = menu?.findItem(R.id.detail_action_call)
             callIcon?.isVisible = false
         }
@@ -71,11 +73,11 @@ class EventDetailActivity : AppCompatActivity() {
                 true
             }
             R.id.detail_action_call -> {
-                Utils.createCallIntent(this, eventPhoneNumber)
+                createCallIntent(this, eventPhoneNumber)
                 true
             }
             R.id.detail_action_share -> {
-                Utils.createShareIntent(this, eventShareMessage)
+                createShareIntent(this, eventShareMessage)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -123,7 +125,7 @@ class EventDetailActivity : AppCompatActivity() {
         nested_scroll_view_group.visibility = View.GONE
         Toast.makeText(this@EventDetailActivity, "Unable to locate Event details.", Toast.LENGTH_LONG)
             .show()
-        Log.e(LOG_TAG, "Invalid EVENT_ID passed to EventDetailActivity.")
+        Timber.e("Invalid EVENT_ID passed to EventDetailActivity.")
     }
 }
 

@@ -1,4 +1,4 @@
-package com.glopez.phunapp.model.webservice
+package com.glopez.phunapp.model.network
 
 import com.glopez.phunapp.model.Event
 import retrofit2.Call
