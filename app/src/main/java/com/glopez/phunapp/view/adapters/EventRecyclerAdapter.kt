@@ -91,9 +91,6 @@ class EventRecyclerAdapter(private val context: Context) :
 
         holder.eventCardView?.setOnClickListener {
             val detailIntent = Intent(context, EventDetailActivity::class.java)
-//            val testId = 52.0
-//            detailIntent.putExtra(EVENT_ID, testId)
-//            detailIntent.putExtra(EVENT_ID, testId.toInt())
             detailIntent.putExtra(EVENT_ID, event.id)
             startActivity(context, detailIntent, null)
         }

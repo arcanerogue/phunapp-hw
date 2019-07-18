@@ -14,6 +14,7 @@ import com.glopez.phunapp.R
 import com.glopez.phunapp.view.adapters.EventRecyclerAdapter
 import com.glopez.phunapp.view.viewmodels.EventViewModel
 import com.glopez.phunapp.ViewModelFactory
+import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.model.network.ApiResponse
 import com.glopez.phunapp.utils.isNetworkAvailable
 import kotlinx.android.synthetic.main.content_main.*
@@ -40,8 +41,7 @@ class MainActivity : AppCompatActivity() {
             .getInstance(application as PhunApp))
             .get(EventViewModel::class.java)
 
-        observeApiResponseStatus()
-
+//        observeApiResponseStatus()
         observeEventsList(adapter)
     }
 
@@ -66,29 +66,66 @@ class MainActivity : AppCompatActivity() {
                     Timber.e(status.error, getString(R.string.repo_fetch_error))
                     hideLoading()
                 }
-                is ApiResponse.ResponseEmptyBody -> {
-                    Timber.d(getString(R.string.repo_events_fetch_empty_body, status.responseCode))
+                is ApiResponse.EmptyBody -> {
+                    Timber.d(getString(R.string.repo_events_fetch_empty_body, status.responseCode.toString()))
                 }
                 is ApiResponse.ResponseError<*> -> {
                     Timber.d(getString(R.string.repo_success_http_error,
-                        status.responseCode, status.errorBody))
+                        status.responseCode.toString(), status.errorBody))
                 }
             }
         })
     }
 
+//    private fun observeEventsList(adapter: EventRecyclerAdapter) {
+//        eventViewModel.getEventsList().observe(this, Observer { events ->
+//            events?.let {
+//                // Display toast when there was no model retrieved from the database and
+//                // a network connection is unavailable.
+//                val connectivityManager = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+//                if (events.isEmpty() && !isNetworkAvailable(connectivityManager)) {
+//                    Timber.d(getString(R.string.main_no_network_no_database))
+//                    Toast.makeText(this, getString(R.string.main_toast_events_fetch_fail),
+//                        Toast.LENGTH_LONG).show()
+//                } else {
+//                    adapter.setEvents(it)
+//                }
+//            }
+//        })
+//    }
+
     private fun observeEventsList(adapter: EventRecyclerAdapter) {
-        eventViewModel.getEventsList().observe(this, Observer { events ->
-            events?.let {
-                // Display toast when there was no model retrieved from the database and
-                // a network connection is unavailable.
-                val connectivityManager = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                if (events.isEmpty() && !isNetworkAvailable(connectivityManager)) {
-                    Timber.d(getString(R.string.main_no_network_no_database))
-                    Toast.makeText(this, getString(R.string.main_toast_events_fetch_fail),
-                        Toast.LENGTH_LONG).show()
-                } else {
-                    adapter.setEvents(it)
+        eventViewModel.dbResourceStatus.observe(this, Observer { resource ->
+            resource?.let {
+                when (resource) {
+                    is Resource.Success -> {
+                        hideLoading()
+                        val connectivityManager =
+                            this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                        if (resource.data.isNullOrEmpty() && !isNetworkAvailable(connectivityManager)) {
+                            Timber.d(getString(R.string.main_no_network_no_database))
+//                            Toast.makeText(
+//                                this, getString(R.string.main_toast_events_fetch_fail),
+//                                Toast.LENGTH_LONG
+//                            ).show()
+                        } else {
+                            if (resource.data == null)
+                                Toast.makeText(this, "null resource data", Toast.LENGTH_LONG).show()
+                            else
+                                adapter.setEvents(resource.data)
+                        }
+                    }
+                    is Resource.Loading -> {
+                        showLoading()
+                    }
+                    is Resource.Error -> {
+                        Timber.e(resource.error, getString(R.string.repo_fetch_error))
+                        Toast.makeText(
+                            this, getString(R.string.main_toast_events_fetch_fail),
+                            Toast.LENGTH_LONG
+                        ).show()
+                        hideLoading()
+                    }
                 }
             }
         })

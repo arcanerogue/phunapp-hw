@@ -24,8 +24,7 @@ abstract class EventDatabase : RoomDatabase() {
                         context.applicationContext,
                         EventDatabase::class.java,
                         context.getString(R.string.database_name)
-                    )
-                        .build()
+                    ).build()
                     Timber.d(context.getString(R.string.database_created))
                 }
                 return INSTANCE as EventDatabase

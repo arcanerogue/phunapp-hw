@@ -27,13 +27,14 @@ class EventDetailActivity : AppCompatActivity() {
     private var eventPhoneNumber: String = ""
     private var eventShareMessage: String = ""
     private var hideMenuOptions: Boolean = false
+    private val defaultValueSetForMissingIdField: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event_detail)
         setSupportActionBar(detail_toolbar)
 
-        val eventDetailId: Int = intent?.extras?.getInt(EVENT_ID) ?: 0
+        val eventDetailId: Int = intent?.extras?.getInt(EVENT_ID) ?: defaultValueSetForMissingIdField
 
         // Show the Up button in the action bar and hide the app name.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -86,7 +87,7 @@ class EventDetailActivity : AppCompatActivity() {
     private fun observeEventDetail(eventId: Int) {
         eventDetailViewModel.getEvent(eventId).observe(this, Observer { event ->
             event.let {
-                if (it != null && it.id > 0) {
+                if (it != null && it.id > defaultValueSetForMissingIdField) {
                     eventPhoneNumber = it.phone ?: ""
 
                     if (it.date != null)
