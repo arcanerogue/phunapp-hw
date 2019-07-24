@@ -23,6 +23,7 @@ class EventViewModel(private val eventRepo: EventRepository) : ViewModel() {
 
     init {
 //        eventsList = setEventsList()
+        updateEventsFromNetwork()
     }
 
     /**
@@ -44,7 +45,7 @@ class EventViewModel(private val eventRepo: EventRepository) : ViewModel() {
 //        return eventRepo.getEventsFromDatabase()
 //    }
 
-//    fun updateEventsFromNetwork() {
-//        eventRepo.getEventsFromNetwork()
-//    }
+    fun updateEventsFromNetwork() {
+        eventRepo.loadEvents()
+    }
 }

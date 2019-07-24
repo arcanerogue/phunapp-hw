@@ -4,8 +4,8 @@ import retrofit2.Response
 
 sealed class ApiResponse<T> {
     companion object {
-        fun <T> onFailure(error: Throwable) : Error<T> {
-            return Error(error)
+        fun <T> onFailure(errorMessage: String?) : Error<T> {
+            return Error(errorMessage)
         }
 
         fun <T> onResponse(response: Response<T>) : ApiResponse<T> {
@@ -19,14 +19,13 @@ sealed class ApiResponse<T> {
                 else
                     Success(responseBody)
             } else {
-                ResponseError(responseCode, errorBody.toString())
+                Error(errorBody.toString(), responseCode)
             }
         }
     }
 
     data class Success<T> (val body: T): ApiResponse<T> ()
-    data class Error<T>(val error: Throwable) : ApiResponse<T> ()
-    data class ResponseError<T> (val responseCode: Int, val errorBody: String): ApiResponse<T>()
+    data class Error<T>(val errorMessage: String?, val responseCode: Int = 0) : ApiResponse<T> ()
     data class EmptyBody<T>(val responseCode: Int) : ApiResponse<T>()
     data class Loading<T> (val body: T) : ApiResponse<T>()
 }

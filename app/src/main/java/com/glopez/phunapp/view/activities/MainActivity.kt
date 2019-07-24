@@ -15,7 +15,6 @@ import com.glopez.phunapp.view.adapters.EventRecyclerAdapter
 import com.glopez.phunapp.view.viewmodels.EventViewModel
 import com.glopez.phunapp.ViewModelFactory
 import com.glopez.phunapp.model.db.Resource
-import com.glopez.phunapp.model.network.ApiResponse
 import com.glopez.phunapp.utils.isNetworkAvailable
 import kotlinx.android.synthetic.main.content_main.*
 import timber.log.Timber
@@ -41,58 +40,17 @@ class MainActivity : AppCompatActivity() {
             .getInstance(application as PhunApp))
             .get(EventViewModel::class.java)
 
-//        observeApiResponseStatus()
         observeEventsList(adapter)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        eventViewModel.updateEventsFromNetwork()
     }
 
     private fun showLoading() { progress_bar.visibility = View.VISIBLE }
 
     private fun hideLoading() { progress_bar.visibility = View.GONE}
-
-    private fun observeApiResponseStatus() {
-        eventViewModel.apiResponseStatus.observe(this, Observer { status ->
-            when(status) {
-                is ApiResponse.Loading<*> -> {
-                    Timber.d("Api Loading State")
-                    showLoading()
-                }
-                is ApiResponse.Success<*> -> {
-                    Timber.d( "Api Success State")
-                    Timber.d(getString(R.string.repo_events_fetch_success))
-                    hideLoading()
-                }
-                is ApiResponse.Error -> {
-                    Timber.d("Api Error State")
-                    Timber.e(status.error, getString(R.string.repo_fetch_error))
-                    hideLoading()
-                }
-                is ApiResponse.EmptyBody -> {
-                    Timber.d(getString(R.string.repo_events_fetch_empty_body, status.responseCode.toString()))
-                }
-                is ApiResponse.ResponseError<*> -> {
-                    Timber.d(getString(R.string.repo_success_http_error,
-                        status.responseCode.toString(), status.errorBody))
-                }
-            }
-        })
-    }
-
-//    private fun observeEventsList(adapter: EventRecyclerAdapter) {
-//        eventViewModel.getEventsList().observe(this, Observer { events ->
-//            events?.let {
-//                // Display toast when there was no model retrieved from the database and
-//                // a network connection is unavailable.
-//                val connectivityManager = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-//                if (events.isEmpty() && !isNetworkAvailable(connectivityManager)) {
-//                    Timber.d(getString(R.string.main_no_network_no_database))
-//                    Toast.makeText(this, getString(R.string.main_toast_events_fetch_fail),
-//                        Toast.LENGTH_LONG).show()
-//                } else {
-//                    adapter.setEvents(it)
-//                }
-//            }
-//        })
-//    }
 
     private fun observeEventsList(adapter: EventRecyclerAdapter) {
         eventViewModel.dbResourceStatus.observe(this, Observer { resource ->
@@ -104,10 +62,6 @@ class MainActivity : AppCompatActivity() {
                             this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
                         if (resource.data.isNullOrEmpty() && !isNetworkAvailable(connectivityManager)) {
                             Timber.d(getString(R.string.main_no_network_no_database))
-//                            Toast.makeText(
-//                                this, getString(R.string.main_toast_events_fetch_fail),
-//                                Toast.LENGTH_LONG
-//                            ).show()
                         } else {
                             if (resource.data == null)
                                 Toast.makeText(this, "null resource data", Toast.LENGTH_LONG).show()
@@ -119,7 +73,7 @@ class MainActivity : AppCompatActivity() {
                         showLoading()
                     }
                     is Resource.Error -> {
-                        Timber.e(resource.error, getString(R.string.repo_fetch_error))
+                        Timber.e(resource.error, getString(R.string.main_resource_error))
                         Toast.makeText(
                             this, getString(R.string.main_toast_events_fetch_fail),
                             Toast.LENGTH_LONG

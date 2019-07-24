@@ -4,10 +4,13 @@ import android.app.Application
 import android.os.StrictMode
 import com.glopez.phunapp.model.EventRepository
 import com.glopez.phunapp.model.db.EventDatabase
+import com.glopez.phunapp.model.network.EventFeedProvider
 import com.glopez.phunapp.utils.StringsResourceProvider
 import timber.log.Timber
 
 class PhunApp : Application() {
+    private val eventApi = EventFeedProvider()
+
     override fun onCreate() {
         setTimberLogging()
         Timber.d("Creating PhunApp.")
@@ -20,7 +23,7 @@ class PhunApp : Application() {
     }
 
     fun getRepository(): EventRepository {
-        return EventRepository.getInstance(getDatabase())
+        return EventRepository.getInstance(getDatabase(), eventApi)
     }
 
     private fun setTimberLogging() {
@@ -33,7 +36,9 @@ class PhunApp : Application() {
         if(BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(
                 StrictMode.ThreadPolicy.Builder()
-                    .detectAll()
+                    .detectDiskReads()
+                    .detectDiskWrites()
+                    .detectNetwork()
                     .penaltyLog()
                     .build())
 
