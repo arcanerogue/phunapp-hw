@@ -18,8 +18,7 @@
     <string name="repo_events_fetch_success">Retrieved events successfully.</string>
     <string name="repo_response_body_count">Response Body list count: %1$d</string>
     <string name="repo_events_fetch_empty_body">Received Response with empty body</string>
-    <string name="repo_success_http_error">Failed to retrieve events. Response code:
-        %1$s with error body:\n%2$s</string>
+    <string name="repo_success_http_error">Failed to retrieve events. Response code: </string>
     <string name="repo_fetch_error">There was a problem making the request to the network.</string>
 
     <!-- MainActivity -->

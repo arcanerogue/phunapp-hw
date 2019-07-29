@@ -45,7 +45,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        eventViewModel.updateEventsFromNetwork()
+        eventViewModel.refreshEvents()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        eventViewModel.removeObservables()
     }
 
     private fun showLoading() { progress_bar.visibility = View.VISIBLE }
@@ -53,7 +58,8 @@ class MainActivity : AppCompatActivity() {
     private fun hideLoading() { progress_bar.visibility = View.GONE}
 
     private fun observeEventsList(adapter: EventRecyclerAdapter) {
-        eventViewModel.dbResourceStatus.observe(this, Observer { resource ->
+//        eventViewModel.getEventsResourceStatus().observe(this, Observer { resource ->
+        eventViewModel.getEventsResourceStatus().observe(this, Observer { resource ->
             resource?.let {
                 when (resource) {
                     is Resource.Success -> {
@@ -73,7 +79,7 @@ class MainActivity : AppCompatActivity() {
                         showLoading()
                     }
                     is Resource.Error -> {
-                        Timber.e(resource.error, getString(R.string.main_resource_error))
+                        Timber.e(resource.errorMessage, getString(R.string.main_resource_error))
                         Toast.makeText(
                             this, getString(R.string.main_toast_events_fetch_fail),
                             Toast.LENGTH_LONG
