@@ -5,6 +5,7 @@ import com.glopez.phunapp.model.Event
 import com.glopez.phunapp.model.EventRepository
 import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.model.network.ApiResponse
+import java.lang.Exception
 
 /**
  * The ViewModel for the MainActivity which displays the list of Event objects.
@@ -53,7 +54,7 @@ class EventViewModel(private val eventRepo: EventRepository) : ViewModel() {
                     eventsResourceStatus.addSource(updatedEventsFromDatabase) { data ->
                         eventsResourceStatus.removeSource(apiResponseStatus)
                         if (data.isNullOrEmpty())
-                            eventsResourceStatus.value = Resource.Error(it.errorMessage)
+                            eventsResourceStatus.value = Resource.Error(Exception(it.errorMessage))
                         else
                             eventsResourceStatus.value = Resource.Success(data)
                     }
@@ -63,10 +64,21 @@ class EventViewModel(private val eventRepo: EventRepository) : ViewModel() {
     }
 
     // Covers the case of a user rotating the device as the Main Activity is fetching events
-    fun removeObservables() {
+    fun removeSources() {
         eventsResourceStatus.removeSource(dbSource)
         eventsResourceStatus.removeSource(apiResponseStatus)
+        eventRepo.clearDisposables()
     }
+
+
+//    override fun onCleared() {
+//        super.onCleared()
+//        eventRepo.clearDisposables()
+//    }
+
+//    fun clearDisposables() {
+//        eventRepo.clearDisposables()
+//    }
 }
 
     /**

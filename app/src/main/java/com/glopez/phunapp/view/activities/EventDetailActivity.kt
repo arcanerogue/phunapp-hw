@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat.invalidateOptionsMenu
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -13,12 +14,16 @@ import com.bumptech.glide.Glide
 import com.glopez.phunapp.PhunApp
 import com.glopez.phunapp.R
 import com.glopez.phunapp.ViewModelFactory
+import com.glopez.phunapp.model.Event
 import com.glopez.phunapp.model.createEventDateFormatString
 import com.glopez.phunapp.model.createShareEventMessage
+import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.utils.*
 import com.glopez.phunapp.view.viewmodels.EventDetailViewModel
 import kotlinx.android.synthetic.main.activity_event_detail.*
 import timber.log.Timber
+import java.lang.Exception
+import java.lang.RuntimeException
 
 private const val EVENT_ID: String = "event_id"
 
@@ -35,6 +40,7 @@ class EventDetailActivity : AppCompatActivity() {
         setSupportActionBar(detail_toolbar)
 
         val eventDetailId: Int = intent?.extras?.getInt(EVENT_ID) ?: defaultValueSetForMissingIdField
+//        val eventDetailId: Int = 15
 
         // Show the Up button in the action bar and hide the app name.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -47,6 +53,7 @@ class EventDetailActivity : AppCompatActivity() {
             .get(EventDetailViewModel::class.java)
 
         observeEventDetail(eventDetailId)
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -84,30 +91,41 @@ class EventDetailActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
 
+//    private fun observeEventDetail(eventId: Int) {
+//        eventDetailViewModel.getEvent(eventId).observe(this, Observer { event ->
+//            event.let {
+//                if (it != null && it.id > defaultValueSetForMissingIdField) {
+//                    eventPhoneNumber = it.phone ?: ""
+//
+//                    if (it.date != null)
+//                        detail_event_date.text = it.createEventDateFormatString()
+//                    else
+//                        detail_event_date.visibility = View.GONE
+//
+//                    eventShareMessage = it.createShareEventMessage()
+//                    detail_event_title.text = it.title
+//                    detail_event_location.text = it.location2
+//                    detail_event_description.text = it.description
+//
+//                    Glide.with(this@EventDetailActivity)
+//                        .load(it.image)
+//                        .onlyRetrieveFromCache(true)
+//                        .error(R.drawable.placeholder_nomoon)
+//                        .centerCrop()
+//                        .into(detail_event_image)
+//                } else {
+//                    handleViewsOnError()
+//                }
+//            }
+//        })
+//    }
+
     private fun observeEventDetail(eventId: Int) {
-        eventDetailViewModel.getEvent(eventId).observe(this, Observer { event ->
-            event.let {
-                if (it != null && it.id > defaultValueSetForMissingIdField) {
-                    eventPhoneNumber = it.phone ?: ""
-
-                    if (it.date != null)
-                        detail_event_date.text = it.createEventDateFormatString()
-                    else
-                        detail_event_date.visibility = View.GONE
-
-                    eventShareMessage = it.createShareEventMessage()
-                    detail_event_title.text = it.title
-                    detail_event_location.text = it.location2
-                    detail_event_description.text = it.description
-
-                    Glide.with(this@EventDetailActivity)
-                        .load(it.image)
-                        .onlyRetrieveFromCache(true)
-                        .error(R.drawable.placeholder_nomoon)
-                        .centerCrop()
-                        .into(detail_event_image)
-                } else {
-                    handleViewsOnError()
+        eventDetailViewModel.getEventAsResource(eventId).observe(this, Observer { event ->
+            event?.let {
+                when (event) {
+                    is Resource.Error -> handleViewsOnError(event.error)
+                    is Resource.Success -> handleViewsOnSuccess(event.data)
                 }
             }
         })
@@ -116,7 +134,7 @@ class EventDetailActivity : AppCompatActivity() {
     /**
      * Displays an "empty" View when the database cannot locate an Event to display to the user
      */
-    private fun handleViewsOnError() {
+    private fun handleViewsOnError(error: Throwable?) {
         // Collapses the app bar
         app_bar.setExpanded(false)
         hideMenuOptions = true
@@ -126,7 +144,32 @@ class EventDetailActivity : AppCompatActivity() {
         nested_scroll_view_group.visibility = View.GONE
         Toast.makeText(this@EventDetailActivity, "Unable to locate Event details.", Toast.LENGTH_LONG)
             .show()
-        Timber.e("Invalid EVENT_ID passed to EventDetailActivity.")
+        Timber.e(error)
+    }
+
+    private fun handleViewsOnSuccess(event: Event?) {
+        if (event != null) {
+            eventPhoneNumber = event.phone ?: ""
+
+            if (event.date != null)
+                detail_event_date.text = event.createEventDateFormatString()
+            else
+                detail_event_date.visibility = View.GONE
+
+            eventShareMessage = event.createShareEventMessage()
+            detail_event_title.text = event.title
+            detail_event_location.text = event.location2
+            detail_event_description.text = event.description
+
+            Glide.with(this@EventDetailActivity)
+                .load(event.image)
+                .onlyRetrieveFromCache(true)
+                .error(R.drawable.placeholder_nomoon)
+                .centerCrop()
+                .into(detail_event_image)
+        } else {
+            handleViewsOnError(Exception("The database returned a null Event object."))
+        }
     }
 }
 

@@ -1,8 +1,8 @@
 package com.glopez.phunapp.model.db
 
-sealed class Resource<T> {
-    class Loading<T> (val data: T? = null) : Resource<T>()
-    data class Success<T> (val data: T?) : Resource<T>()
-//    data class Error<T>(val error: Throwable) : Resource<T>()
-    data class Error<T>(val errorMessage: String?) : Resource<T>()
+sealed class Resource<out T> {
+    class Loading<out T> (val data: T? = null) : Resource<T>()
+    data class Success<out T> (val data: T?) : Resource<T>()
+    data class Error<out T>(val error: Throwable) : Resource<T>()
+//    data class Error<out T>(val errorMessage: String?) : Resource<T>()
 }

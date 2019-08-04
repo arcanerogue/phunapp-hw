@@ -7,21 +7,26 @@ import com.glopez.phunapp.model.db.EventDatabase
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import android.os.AsyncTask
 import com.glopez.phunapp.model.network.ApiResponse
 import com.glopez.phunapp.model.network.EventFeedProvider
 import timber.log.Timber
 import android.os.SystemClock
 import com.glopez.phunapp.R
 import com.glopez.phunapp.utils.StringsResourceProvider
+import io.reactivex.Completable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
 class EventRepository(
     eventDatabase: EventDatabase,
     private val eventApi: EventFeedProvider) {
+
     private val eventDao: EventDao = eventDatabase.eventDao()
     private val minValueSetForIdField: Int = 1
     private val apiResultState = MutableLiveData<ApiResponse<List<Event>>>()
+    private val disposables = CompositeDisposable()
 
     private var refreshTimestamp: Long = 0
     private val timeoutInMinutes = 1
@@ -100,19 +105,25 @@ class EventRepository(
     }
 
     private fun insertEventsIntoDatabase(eventList: List<Event>) {
+        lateinit var disposableInsertEvent: Disposable
         for (event: Event in eventList) {
             // If the id field was not present in the Response object, the default value of 0 will be set.
             // If this is the case, the Event will not be inserted into the database.
-//            if (event.id >= minValueSetForIdField) {
             if (event.id < minValueSetForIdField) {
-//                AsyncTask.execute { eventDao.insert(event) }
                 Timber.d("Skipping event with invalid Id value.")
-            } else {
-                AsyncTask.execute { eventDao.insert(event) }
+            }
+            else {
+//                AsyncTask.execute { eventDao.insert(event) }
+                disposableInsertEvent = Completable.fromAction { eventDao.insert(event) }
+                    .doOnError { Timber.e("Error inserting into database: ${it.message}") }
+                    .doOnComplete { Timber.d("Inserted Event with id: ${event.id} into database.") }
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(Schedulers.io())
+                    .subscribe()
+                disposables.add(disposableInsertEvent)
             }
         }
     }
-
 
     fun getSingleEventFromDatabase(id: Int): LiveData<Event> {
         return eventDao.find(id)
@@ -126,6 +137,10 @@ class EventRepository(
             true
         } else
             false
+    }
+
+    fun clearDisposables() {
+        disposables.clear()
     }
 }
 

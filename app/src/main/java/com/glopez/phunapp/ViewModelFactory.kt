@@ -12,6 +12,7 @@ import java.lang.IllegalArgumentException
  * constructor parameter.
  * @param[eventRepository] The application's repository instance.
  */
+@Suppress("UNCHECKED_CAST")
 class ViewModelFactory private constructor(private val eventRepository: EventRepository
 ) : ViewModelProvider.NewInstanceFactory() {
 
