@@ -12,6 +12,7 @@ import com.glopez.phunapp.model.network.EventFeedProvider
 import timber.log.Timber
 import android.os.SystemClock
 import com.glopez.phunapp.R
+import com.glopez.phunapp.constants.DB_MINIMUM_ID_VALUE
 import com.glopez.phunapp.utils.StringsResourceProvider
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
@@ -24,7 +25,6 @@ class EventRepository(
     private val eventApi: EventFeedProvider) {
 
     private val eventDao: EventDao = eventDatabase.eventDao()
-    private val minValueSetForIdField: Int = 1
     private val apiResultState = MutableLiveData<ApiResponse<List<Event>>>()
     private val disposables = CompositeDisposable()
 
@@ -109,16 +109,14 @@ class EventRepository(
         for (event: Event in eventList) {
             // If the id field was not present in the Response object, the default value of 0 will be set.
             // If this is the case, the Event will not be inserted into the database.
-            if (event.id < minValueSetForIdField) {
+            if (event.id < DB_MINIMUM_ID_VALUE) {
                 Timber.d("Skipping event with invalid Id value.")
             }
             else {
-//                AsyncTask.execute { eventDao.insert(event) }
                 disposableInsertEvent = Completable.fromAction { eventDao.insert(event) }
                     .doOnError { Timber.e("Error inserting into database: ${it.message}") }
                     .doOnComplete { Timber.d("Inserted Event with id: ${event.id} into database.") }
                     .subscribeOn(Schedulers.io())
-                    .observeOn(Schedulers.io())
                     .subscribe()
                 disposables.add(disposableInsertEvent)
             }

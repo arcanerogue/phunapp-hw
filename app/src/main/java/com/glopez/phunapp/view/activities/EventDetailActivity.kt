@@ -5,7 +5,6 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat.invalidateOptionsMenu
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -14,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.glopez.phunapp.PhunApp
 import com.glopez.phunapp.R
 import com.glopez.phunapp.ViewModelFactory
+import com.glopez.phunapp.constants.DB_MISSING_ID_VALUE
 import com.glopez.phunapp.model.Event
 import com.glopez.phunapp.model.createEventDateFormatString
 import com.glopez.phunapp.model.createShareEventMessage
@@ -23,7 +23,6 @@ import com.glopez.phunapp.view.viewmodels.EventDetailViewModel
 import kotlinx.android.synthetic.main.activity_event_detail.*
 import timber.log.Timber
 import java.lang.Exception
-import java.lang.RuntimeException
 
 private const val EVENT_ID: String = "event_id"
 
@@ -32,22 +31,20 @@ class EventDetailActivity : AppCompatActivity() {
     private var eventPhoneNumber: String = ""
     private var eventShareMessage: String = ""
     private var hideMenuOptions: Boolean = false
-    private val defaultValueSetForMissingIdField: Int = 0
+    private var canCall: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event_detail)
         setSupportActionBar(detail_toolbar)
 
-        val eventDetailId: Int = intent?.extras?.getInt(EVENT_ID) ?: defaultValueSetForMissingIdField
-//        val eventDetailId: Int = 15
+        canCall = deviceCanCall(this.applicationContext.packageManager)
+        val eventDetailId: Int = intent?.extras?.getInt(EVENT_ID) ?: DB_MISSING_ID_VALUE
 
         // Show the Up button in the action bar and hide the app name.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        // Get the ViewModel and observe the single event specified by the user click from
-        // the list of events in MainActivity
         eventDetailViewModel = ViewModelProviders.of(this, ViewModelFactory
                 .getInstance(application as PhunApp))
             .get(EventDetailViewModel::class.java)
@@ -58,11 +55,7 @@ class EventDetailActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.detail_menu, menu)
-        val packageManager = this.applicationContext.packageManager
-        val canCall: Boolean = deviceCanCall(packageManager)
         if(eventPhoneNumber.isEmpty() || !canCall) {
-//        val canCall: Boolean = Utils.deviceCanCall(this.applicationContext)
-//        if (eventPhoneNumber.isBlank() || !canCall) {
             val callIcon: MenuItem? = menu?.findItem(R.id.detail_action_call)
             callIcon?.isVisible = false
         }
@@ -91,37 +84,8 @@ class EventDetailActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
 
-//    private fun observeEventDetail(eventId: Int) {
-//        eventDetailViewModel.getEvent(eventId).observe(this, Observer { event ->
-//            event.let {
-//                if (it != null && it.id > defaultValueSetForMissingIdField) {
-//                    eventPhoneNumber = it.phone ?: ""
-//
-//                    if (it.date != null)
-//                        detail_event_date.text = it.createEventDateFormatString()
-//                    else
-//                        detail_event_date.visibility = View.GONE
-//
-//                    eventShareMessage = it.createShareEventMessage()
-//                    detail_event_title.text = it.title
-//                    detail_event_location.text = it.location2
-//                    detail_event_description.text = it.description
-//
-//                    Glide.with(this@EventDetailActivity)
-//                        .load(it.image)
-//                        .onlyRetrieveFromCache(true)
-//                        .error(R.drawable.placeholder_nomoon)
-//                        .centerCrop()
-//                        .into(detail_event_image)
-//                } else {
-//                    handleViewsOnError()
-//                }
-//            }
-//        })
-//    }
-
     private fun observeEventDetail(eventId: Int) {
-        eventDetailViewModel.getEventAsResource(eventId).observe(this, Observer { event ->
+        eventDetailViewModel.getEventDetailResource(eventId).observe(this, Observer { event ->
             event?.let {
                 when (event) {
                     is Resource.Error -> handleViewsOnError(event.error)

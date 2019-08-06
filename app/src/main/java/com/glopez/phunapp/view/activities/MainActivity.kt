@@ -14,6 +14,7 @@ import com.glopez.phunapp.R
 import com.glopez.phunapp.view.adapters.EventRecyclerAdapter
 import com.glopez.phunapp.view.viewmodels.EventViewModel
 import com.glopez.phunapp.ViewModelFactory
+import com.glopez.phunapp.model.Event
 import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.utils.isNetworkAvailable
 import kotlinx.android.synthetic.main.content_main.*
@@ -21,26 +22,28 @@ import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
     private lateinit var eventViewModel: EventViewModel
+    private lateinit var adapter: EventRecyclerAdapter
+    private lateinit var connectivityManager: ConnectivityManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Create the layout manager for the Recycler View
+        connectivityManager =
+            this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
         val gridColumnCount: Int = resources.getInteger(R.integer.num_grid_columns)
         val gridLayoutManager = GridLayoutManager(this, gridColumnCount)
         feed_list.layoutManager = gridLayoutManager
 
-        // Create the adapter for the Recycler View
-        val adapter = EventRecyclerAdapter(this)
+        adapter = EventRecyclerAdapter(this)
         feed_list.adapter = adapter
 
-        // Get the ViewModel and observe the event feed being set by the adapter
         eventViewModel = ViewModelProviders.of(this, ViewModelFactory
             .getInstance(application as PhunApp))
             .get(EventViewModel::class.java)
 
-        observeEventsList(adapter)
+        observeEventsList()
     }
 
     override fun onResume() {
@@ -57,38 +60,43 @@ class MainActivity : AppCompatActivity() {
 
     private fun hideLoading() { progress_bar.visibility = View.GONE}
 
-    private fun observeEventsList(adapter: EventRecyclerAdapter) {
-        eventViewModel.getEventsResourceStatus().observe(this, Observer { resource ->
+    private fun observeEventsList() {
+        eventViewModel.getEventsResource().observe(this, Observer { resource ->
             resource?.let {
                 when (resource) {
                     is Resource.Success -> {
                         hideLoading()
-                        val connectivityManager =
-                            this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                        if (resource.data.isNullOrEmpty() && !isNetworkAvailable(connectivityManager)) {
-                            Timber.d(getString(R.string.main_no_network_no_database))
-                        } else {
-                            if (resource.data == null)
-                                Toast.makeText(this, "null resource data", Toast.LENGTH_LONG).show()
-                            else
-                                adapter.setEvents(resource.data)
-                        }
+                        handleViewOnSuccess(resource.data)
                     }
                     is Resource.Loading -> {
                         showLoading()
                     }
                     is Resource.Error -> {
-//                        Timber.e(resource.errorMessage, getString(R.string.main_resource_error))
-                        Timber.e(resource.error, getString(R.string.main_resource_error))
-                        Toast.makeText(
-                            this, getString(R.string.main_toast_events_fetch_fail),
-                            Toast.LENGTH_LONG
-                        ).show()
                         hideLoading()
+                        handleViewOnError(resource.error)
                     }
                 }
             }
         })
+    }
+
+    private fun handleViewOnSuccess(eventList: List<Event>?) {
+        if (eventList.isNullOrEmpty() && !isNetworkAvailable(connectivityManager)) {
+            Timber.d(getString(R.string.main_no_network_no_database))
+        } else {
+            if (eventList == null)
+                Toast.makeText(this, "Null resource data", Toast.LENGTH_LONG).show()
+            else
+                adapter.setEvents(eventList)
+        }
+    }
+
+    private fun handleViewOnError(error: Throwable) {
+        Timber.e(error, getString(R.string.main_resource_error))
+        Toast.makeText(
+            this, getString(R.string.main_toast_events_fetch_fail),
+            Toast.LENGTH_LONG
+        ).show()
     }
 }
 
