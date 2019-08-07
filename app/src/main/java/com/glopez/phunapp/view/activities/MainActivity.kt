@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity() {
             Timber.d(getString(R.string.main_no_network_no_database))
         } else {
             if (eventList == null)
-                Toast.makeText(this, "Null resource data", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Received a null EventList", Toast.LENGTH_LONG).show()
             else
                 adapter.setEvents(eventList)
         }

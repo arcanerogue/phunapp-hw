@@ -20,10 +20,8 @@ class EventViewModel(private val eventRepo: EventRepository) : ViewModel() {
     init {
         eventsResourceStatus.addSource(dbSource) { data ->
             if (data.isNullOrEmpty()) {
-//                eventsResourceStatus.removeSource(dbSource)
                 eventsResourceStatus.value = Resource.Loading(emptyList())
             } else {
-//                eventsResourceStatus.removeSource(dbSource)
                 eventsResourceStatus.value = Resource.Success(data)
             }
         }
@@ -51,13 +49,11 @@ class EventViewModel(private val eventRepo: EventRepository) : ViewModel() {
                 is ApiResponse.Success<List<Event>>,
                 is ApiResponse.EmptyBody<List<Event>> -> {
                     eventsResourceStatus.addSource(updatedEventsFromDatabase) { data ->
-//                        eventsResourceStatus.removeSource(apiResponseStatus)
                         eventsResourceStatus.value = Resource.Success(data)
                     }
                 }
                 is ApiResponse.Error -> {
                     eventsResourceStatus.addSource(updatedEventsFromDatabase) { data ->
-//                        eventsResourceStatus.removeSource(apiResponseStatus)
                         if (data.isNullOrEmpty())
                             eventsResourceStatus.value = Resource.Error(Exception(it.errorMessage))
                         else
