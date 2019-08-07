@@ -26,7 +26,7 @@ class EventRepository(
 
     private val eventDao: EventDao = eventDatabase.eventDao()
     private val apiResultState = MutableLiveData<ApiResponse<List<Event>>>()
-    private val disposables = CompositeDisposable()
+    private var disposables = CompositeDisposable()
 
     private var refreshTimestamp: Long = 0
     private val timeoutInMinutes = 1
@@ -106,6 +106,9 @@ class EventRepository(
 
     private fun insertEventsIntoDatabase(eventList: List<Event>) {
         lateinit var disposableInsertEvent: Disposable
+        if (disposables.isDisposed) {
+            disposables = CompositeDisposable()
+        }
         for (event: Event in eventList) {
             // If the id field was not present in the Response object, the default value of 0 will be set.
             // If this is the case, the Event will not be inserted into the database.
@@ -138,7 +141,9 @@ class EventRepository(
     }
 
     fun clearDisposables() {
-        disposables.clear()
+        if (!disposables.isDisposed) {
+            disposables.dispose()
+        }
     }
 }
 
