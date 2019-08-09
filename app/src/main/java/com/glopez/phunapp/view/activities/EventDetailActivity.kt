@@ -8,81 +8,61 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.glopez.phunapp.PhunApp
 import com.glopez.phunapp.R
 import com.glopez.phunapp.ViewModelFactory
+import com.glopez.phunapp.constants.DB_MISSING_ID_VALUE
+import com.glopez.phunapp.model.Event
 import com.glopez.phunapp.model.createEventDateFormatString
 import com.glopez.phunapp.model.createShareEventMessage
+import com.glopez.phunapp.model.db.Resource
+import com.glopez.phunapp.utils.*
 import com.glopez.phunapp.view.viewmodels.EventDetailViewModel
-import com.glopez.phunapp.utils.Utils
-import com.glopez.phunapp.view.viewmodels.EventViewModel
 import kotlinx.android.synthetic.main.activity_event_detail.*
+import timber.log.Timber
+import java.lang.Exception
+
+private const val EVENT_ID: String = "event_id"
 
 class EventDetailActivity : AppCompatActivity() {
     private lateinit var eventDetailViewModel: EventDetailViewModel
-    private lateinit var eventPhoneNumber: String
-    private lateinit var eventShareMessage: String
-
-    companion object {
-        private const val EVENT_ID: String = "event_id"
-        private val LOG_TAG: String = EventDetailActivity::class.java.simpleName
-    }
+    private var eventPhoneNumber: String = ""
+    private var eventShareMessage: String = ""
+    private var hideMenuOptions: Boolean = false
+    private var canCall: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_event_detail)
         setSupportActionBar(detail_toolbar)
 
-        val eventImage: ImageView = findViewById(R.id.detail_event_image)
-        val eventDate: TextView = findViewById(R.id.detail_event_date)
-        val eventTitle: TextView = findViewById(R.id.detail_event_title)
-        val eventLocation: TextView = findViewById(R.id.detail_event_location)
-        val eventDescription: TextView = findViewById(R.id.detail_event_description)
-        val ID: Int = intent.getIntExtra(EVENT_ID, 0)
+        canCall = deviceCanCall(this.applicationContext.packageManager)
+        val eventDetailId: Int = intent?.extras?.getInt(EVENT_ID) ?: DB_MISSING_ID_VALUE
 
         // Show the Up button in the action bar and hide the app name.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        // Get the ViewModel and observe the single event specified by the user click from
-        // the list of events in MainActivity
         eventDetailViewModel = ViewModelProviders.of(this, ViewModelFactory
-            .getInstance(application as PhunApp))
+                .getInstance(application as PhunApp))
             .get(EventDetailViewModel::class.java)
 
-        eventDetailViewModel.getEvent(ID).observe(this, Observer { event ->
-            event?.let {
-                eventPhoneNumber = it.phone ?: ""
+        observeEventDetail(eventDetailId)
 
-                if (it.date != null) {
-                    eventDate.text = it.createEventDateFormatString()
-                } else {
-                    eventDate.visibility = View.GONE
-                }
-                eventShareMessage = it.createShareEventMessage()
-                eventTitle.text = it.title
-                eventLocation.text = it.location2
-                eventDescription.text = it.description
-
-                Glide.with(this)
-                    .load(it.image)
-                    .onlyRetrieveFromCache(true)
-                    .error(R.drawable.placeholder_nomoon)
-                    .centerCrop()
-                    .into(eventImage)
-
-            }
-        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.detail_menu, menu)
-        if(!Utils.deviceCanCall(this.applicationContext) || eventPhoneNumber.isEmpty()) {
+        if(eventPhoneNumber.isEmpty() || !canCall) {
             val callIcon: MenuItem? = menu?.findItem(R.id.detail_action_call)
             callIcon?.isVisible = false
+        }
+
+        if(hideMenuOptions) {
+            val shareIcon: MenuItem? = menu?.findItem(R.id.detail_action_share)
+            shareIcon?.isVisible = false
         }
         return true
     }
@@ -94,16 +74,66 @@ class EventDetailActivity : AppCompatActivity() {
                 true
             }
             R.id.detail_action_call -> {
-                Utils.createCallIntent(this, eventPhoneNumber)
+                createCallIntent(this, eventPhoneNumber)
                 true
             }
             R.id.detail_action_share -> {
-//                val shareMessage = eventDetail.createShareEventMessage()
-//                Utils.createShareIntent(this, shareMessage)
-                Utils.createShareIntent(this, eventShareMessage)
+                createShareIntent(this, eventShareMessage)
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
+
+    private fun observeEventDetail(eventId: Int) {
+        eventDetailViewModel.getEventDetailResource(eventId).observe(this, Observer { event ->
+            event?.let {
+                when (event) {
+                    is Resource.Error -> handleViewsOnError(event.error)
+                    is Resource.Success -> handleViewsOnSuccess(event.data)
+                }
+            }
+        })
+    }
+
+    /**
+     * Displays an "empty" View when the database cannot locate an Event to display to the user
+     */
+    private fun handleViewsOnError(error: Throwable?) {
+        // Collapses the app bar
+        app_bar.setExpanded(false)
+        hideMenuOptions = true
+
+        // Recreate the options menu so the toolbar icons will be hidden
+        invalidateOptionsMenu()
+        nested_scroll_view_group.visibility = View.GONE
+        Toast.makeText(this@EventDetailActivity, "Unable to locate Event details.", Toast.LENGTH_LONG)
+            .show()
+        Timber.e(error)
+    }
+
+    private fun handleViewsOnSuccess(event: Event?) {
+        if (event != null) {
+            eventPhoneNumber = event.phone ?: ""
+
+            if (event.date != null)
+                detail_event_date.text = event.createEventDateFormatString()
+            else
+                detail_event_date.visibility = View.GONE
+
+            eventShareMessage = event.createShareEventMessage()
+            detail_event_title.text = event.title
+            detail_event_location.text = event.location2
+            detail_event_description.text = event.description
+
+            Glide.with(this@EventDetailActivity)
+                .load(event.image)
+                .onlyRetrieveFromCache(true)
+                .error(R.drawable.placeholder_nomoon)
+                .centerCrop()
+                .into(detail_event_image)
+        } else {
+            handleViewsOnError(Exception("The database returned a null Event object."))
+        }
+    }
 }
 

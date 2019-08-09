@@ -17,16 +17,16 @@
     <!-- Repository -->
     <string name="repo_events_fetch_success">Retrieved events successfully.</string>
     <string name="repo_response_body_count">Response Body list count: %1$d</string>
-    <string name="repo_events_fetch_empty_body">Received Response with empty body: %1$s</string>
-    <string name="repo_success_http_error">Failed to retrieve events. Response code:
-        %1$s with error body:\n%2$s</string>
-    <string name="repo_fetch_error">Problem fetching feed data.</string>
+    <string name="repo_events_fetch_empty_body">Received Response with empty body</string>
+    <string name="repo_success_http_error">Failed to retrieve events. Response code: </string>
+    <string name="repo_fetch_error">There was a problem making the request to the network.</string>
 
     <!-- MainActivity -->
     <string name="main_no_network_no_database">
         Unable to retrieve data from the database to populate the RecyclerView adapter. No network connection to populate database from remote source.
     </string>
-    <string name="main_toast_events_fetch_fail">Unable to retrieve events from the server.</string>
+    <string name="main_toast_events_fetch_fail">Unable to retrieve events from the database.</string>
+    <string name="main_resource_error">The repository returned an error while attempting to fetch events data.</string>
 
     <!-- EventDetailActivity -->
     <string name="event_detail_no_number">There is no number for this event.</string>

@@ -1,90 +1,153 @@
 package com.glopez.phunapp.model
 
 import android.arch.lifecycle.LiveData
-import android.content.Context
-import android.content.res.Resources
-import android.util.Log
+import android.arch.lifecycle.MutableLiveData
 import com.glopez.phunapp.model.db.EventDao
 import com.glopez.phunapp.model.db.EventDatabase
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import android.os.AsyncTask
+import com.glopez.phunapp.model.network.ApiResponse
+import com.glopez.phunapp.model.network.EventFeedProvider
+import timber.log.Timber
+import android.os.SystemClock
 import com.glopez.phunapp.R
-import com.glopez.phunapp.model.webservice.EventFeedProvider
+import com.glopez.phunapp.constants.DB_MINIMUM_ID_VALUE
+import com.glopez.phunapp.utils.StringsResourceProvider
+import io.reactivex.Completable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 
-class EventRepository(context: Context, eventDatabase: EventDatabase) {
-    private val LOG_TAG = EventRepository::class.java.simpleName
-    private val eventFeedRetriever = EventFeedProvider()
-    var eventFeedList: List<Event> = emptyList()
-    private val eventDao: EventDao
-    private val resources: Resources = context.resources
+class EventRepository(
+    eventDatabase: EventDatabase,
+    private val eventApi: EventFeedProvider) {
+
+    private val eventDao: EventDao = eventDatabase.eventDao()
+    private val apiResultState = MutableLiveData<ApiResponse<List<Event>>>()
+    private var disposables = CompositeDisposable()
+
+    private var refreshTimestamp: Long = 0
+    private val timeoutInMinutes = 1
+    private val refreshTimeout: Long = TimeUnit.MINUTES.toMillis(timeoutInMinutes.toLong())
 
     companion object {
         private var INSTANCE: EventRepository? = null
 
-        fun getInstance(context: Context, eventDb: EventDatabase): EventRepository {
+        fun getInstance(eventDb: EventDatabase, eventApi: EventFeedProvider): EventRepository {
             synchronized(this) {
                 if (INSTANCE == null) {
-                    // Create repository
-                    INSTANCE = EventRepository(context, eventDb)
+                    INSTANCE = EventRepository(eventDb, eventApi)
                 }
-                return INSTANCE!!
+                return INSTANCE as EventRepository
             }
         }
     }
 
-    init {
-        // Call web service to fetch events from remote source
-        eventFeedRetriever.getEventFeed(eventRepoCallback())
-        eventDao = eventDatabase.eventDao()
+    fun updateEventsFromNetwork() {
+        if (shouldRefresh()) {
+            refreshTimestamp = SystemClock.uptimeMillis()
+            getEventsFromNetwork()
+        }
     }
 
-    fun getEvents(): LiveData<List<Event>> {
+    fun getEventsFromDatabase(): LiveData<List<Event>> {
         return eventDao.getAllEvents()
     }
 
-    fun insertEvent(eventList: List<Event>) {
-        for (event: Event in eventList) {
-           AsyncTask.execute{ eventDao.insert(event) }
+    private fun getEventsFromNetwork() {
+        Timber.d("Retrieving events from network.")
+        apiResultState.value = ApiResponse.Loading(emptyList())
+
+        eventApi.getEventFeed(object : Callback<List<Event>> {
+            // Network exception occurred talking to the server or an unexpected exception
+            // occurred creating the request or processing the response
+            override fun onFailure(call: Call<List<Event>>, error: Throwable) {
+                apiResultState.value = ApiResponse.onFailure(error.message)
+                Timber.e(String.format(
+                    "${StringsResourceProvider.getString(R.string.repo_fetch_error)}. ${error.message}"))
+            }
+
+            override fun onResponse(call: Call<List<Event>>, response: Response<List<Event>>) {
+                setResponseState(ApiResponse.onResponse(response))
+            }
+        })
+    }
+
+    fun getApiResponseState() : LiveData<ApiResponse<List<Event>>> {
+        return this.apiResultState
+    }
+
+    private fun setResponseState(apiResponse: ApiResponse<List<Event>>) {
+        when (apiResponse) {
+            // HTTP Response Code is in the 200-300 range.
+            is ApiResponse.Success<List<Event>> -> {
+                apiResultState.value = apiResponse
+                insertEventsIntoDatabase(apiResponse.body)
+                Timber.d(String.format(
+                    StringsResourceProvider.getString(R.string.repo_events_fetch_success) +
+                            " Received response with count: ${apiResponse.body.size}"))
+            }
+            // Received Response with empty body.
+            is ApiResponse.EmptyBody<List<Event>> -> {
+                apiResultState.value = apiResponse
+                Timber.d(StringsResourceProvider.getString(R.string.repo_events_fetch_empty_body))
+            }
+            // HTTP Response Code is in the 300's, 400's, 500's, or application-level failure.
+            is ApiResponse.Error -> {
+                apiResultState.value = apiResponse
+                Timber.e(String.format(
+                    "${StringsResourceProvider.getString(R.string.repo_success_http_error)} ${apiResponse.responseCode}." +
+                            " ${apiResponse.errorMessage}"))
+            }
         }
     }
 
-    fun getSingleEvent(id: Int): LiveData<Event> {
+    private fun insertEventsIntoDatabase(eventList: List<Event>) {
+        lateinit var disposableInsertEvent: Disposable
+        if (disposables.isDisposed) {
+            disposables = CompositeDisposable()
+        }
+        for (event: Event in eventList) {
+            // If the id field was not present in the Response object, the default value of 0 will be set.
+            // If this is the case, the Event will not be inserted into the database.
+            if (event.id < DB_MINIMUM_ID_VALUE) {
+                Timber.d("Skipping event with invalid Id value.")
+            }
+            else {
+                disposableInsertEvent = Completable.fromAction { eventDao.insert(event) }
+                    .doOnError { Timber.e("Error inserting into database: ${it.message}") }
+                    .doOnComplete { Timber.d("Inserted Event with id: ${event.id} into database.") }
+                    .subscribeOn(Schedulers.io())
+                    .subscribe()
+                disposables.add(disposableInsertEvent)
+            }
+        }
+    }
+
+    fun getSingleEventFromDatabase(id: Int): LiveData<Event> {
         return eventDao.find(id)
     }
 
-    private fun eventRepoCallback(): Callback<List<Event>> {
-        return object: Callback<List<Event>> {
-            // Network exception occurred talking to the server or an unexpected exception
-            // occurred creating the request or processing the response
-            override fun onFailure(call: Call<List<Event>>, t: Throwable) {
-                Log.e(LOG_TAG, resources.getString(R.string.repo_fetch_error), t)
-            }
+    private fun shouldRefresh(): Boolean {
+        val lastRefresh = refreshTimestamp
+        val currentTime = SystemClock.uptimeMillis()
+        return if (currentTime - lastRefresh > refreshTimeout) {
+            refreshTimestamp = currentTime
+            true
+        } else
+            false
+    }
 
-            // Received an HTTP Response
-            override fun onResponse(call: Call<List<Event>>, response: Response<List<Event>>) {
-                // HTTP Response Code is in the 200-300 range
-                if (response.isSuccessful) {
-                    // If the Response body is not empty, populate eventFeedList with list of
-                    // events from body. Otherwise, populate with an empty list
-                    eventFeedList = response.body() ?: emptyList()
-                    Log.d(LOG_TAG, resources.getString(R.string.repo_response_body_count,
-                            eventFeedList.size))
-                    if (eventFeedList.isNotEmpty()) {
-                        Log.d(LOG_TAG, resources.getString(R.string.repo_events_fetch_success))
-                        insertEvent(eventFeedList)
-                    } else {
-                        Log.d(LOG_TAG, resources.getString(R.string.repo_events_fetch_empty_body,
-                                response.body()))
-                    }
-                } else {
-                    // HTTP Response Code is in the 300's, 400's, 500's, or
-                    // application-level failure.
-                    Log.d(LOG_TAG, resources.getString(R.string.repo_success_http_error,
-                            response.code().toString(), response.body()))
-                }
-            }
+    fun clearDisposables() {
+        if (!disposables.isDisposed) {
+            disposables.dispose()
         }
     }
 }
+
+
+
+
+
