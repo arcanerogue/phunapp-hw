@@ -5,11 +5,12 @@ import java.lang.StringBuilder
 import java.text.SimpleDateFormat
 import java.util.*
 
-fun Event.createEventDateFormatString(): String {
-    val inputPattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-    val outputPattern = "MMMM dd, yyyy 'at' h:mm a"
-    val dateFormat = SimpleDateFormat(inputPattern, Locale.getDefault())
+const val inputPattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+const val outputPattern = "MMMM dd, yyyy 'at' h:mm a"
+val dateFormat = SimpleDateFormat(inputPattern, Locale.US)
 
+fun Event.createEventDateFormatString(): String {
+    dateFormat.applyPattern(inputPattern)
     dateFormat.timeZone = TimeZone.getTimeZone("UTC")
 
     val formattedEventDate: Date = if (this.date.isNullOrBlank()) {

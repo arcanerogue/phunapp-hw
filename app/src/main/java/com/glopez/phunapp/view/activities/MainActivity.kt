@@ -12,7 +12,7 @@ import android.widget.Toast
 import com.glopez.phunapp.PhunApp
 import com.glopez.phunapp.R
 import com.glopez.phunapp.view.adapters.EventRecyclerAdapter
-import com.glopez.phunapp.view.viewmodels.EventViewModel
+import com.glopez.phunapp.view.viewmodels.FeedViewModel
 import com.glopez.phunapp.ViewModelFactory
 import com.glopez.phunapp.model.Event
 import com.glopez.phunapp.model.db.Resource
@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.content_main.*
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var eventViewModel: EventViewModel
+    private lateinit var feedViewModel: FeedViewModel
     private lateinit var adapter: EventRecyclerAdapter
     private lateinit var connectivityManager: ConnectivityManager
 
@@ -39,21 +39,21 @@ class MainActivity : AppCompatActivity() {
         adapter = EventRecyclerAdapter(this)
         feed_list.adapter = adapter
 
-        eventViewModel = ViewModelProviders.of(this, ViewModelFactory
+        feedViewModel = ViewModelProviders.of(this, ViewModelFactory
             .getInstance(application as PhunApp))
-            .get(EventViewModel::class.java)
+            .get(FeedViewModel::class.java)
 
         observeEventsList()
     }
 
     override fun onResume() {
         super.onResume()
-        eventViewModel.refreshEvents()
+        feedViewModel.refreshEvents()
     }
 
     override fun onPause() {
         super.onPause()
-        eventViewModel.removeSources()
+        feedViewModel.removeSources()
     }
 
     private fun showLoading() { progress_bar.visibility = View.VISIBLE }
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
     private fun hideLoading() { progress_bar.visibility = View.GONE}
 
     private fun observeEventsList() {
-        eventViewModel.getEventsResource().observe(this, Observer { resource ->
+        feedViewModel.getEventsResource().observe(this, Observer { resource ->
             resource?.let {
                 when (resource) {
                     is Resource.Success -> {

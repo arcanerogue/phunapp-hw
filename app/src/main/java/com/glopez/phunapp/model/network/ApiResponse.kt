@@ -17,7 +17,7 @@ sealed class ApiResponse<T> {
 
             return if (response.isSuccessful) {
                 if(responseBody == null || responseCode == HTTP_NO_CONTENT)
-                    EmptyBody(responseCode)
+                    EmptyBody("Success Response with Empty Body", responseCode)
                 else
                     Success(responseBody)
             } else {
@@ -26,8 +26,8 @@ sealed class ApiResponse<T> {
         }
     }
 
-    data class Success<T> (val body: T): ApiResponse<T> ()
-    data class Error<T>(val errorMessage: String?, val responseCode: Int = HTTP_DEFAULT_ERROR_CODE) : ApiResponse<T> ()
-    data class EmptyBody<T>(val responseCode: Int) : ApiResponse<T>()
+    data class Success<T> (val body: T): ApiResponse<T>()
+    data class Error<T>(val message: String?, val responseCode: Int = HTTP_DEFAULT_ERROR_CODE) : ApiResponse<T> ()
+    data class EmptyBody<T>(val message: String?, val responseCode: Int) : ApiResponse<T>()
     data class Loading<T> (val body: T) : ApiResponse<T>()
 }

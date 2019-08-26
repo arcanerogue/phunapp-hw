@@ -19,7 +19,7 @@ import com.glopez.phunapp.model.createEventDateFormatString
 import com.glopez.phunapp.model.createShareEventMessage
 import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.utils.*
-import com.glopez.phunapp.view.viewmodels.EventDetailViewModel
+import com.glopez.phunapp.view.viewmodels.DetailViewModel
 import kotlinx.android.synthetic.main.activity_event_detail.*
 import timber.log.Timber
 import java.lang.Exception
@@ -27,7 +27,7 @@ import java.lang.Exception
 private const val EVENT_ID: String = "event_id"
 
 class EventDetailActivity : AppCompatActivity() {
-    private lateinit var eventDetailViewModel: EventDetailViewModel
+    private lateinit var detailViewModel: DetailViewModel
     private var eventPhoneNumber: String = ""
     private var eventShareMessage: String = ""
     private var hideMenuOptions: Boolean = false
@@ -45,9 +45,9 @@ class EventDetailActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        eventDetailViewModel = ViewModelProviders.of(this, ViewModelFactory
+        detailViewModel = ViewModelProviders.of(this, ViewModelFactory
                 .getInstance(application as PhunApp))
-            .get(EventDetailViewModel::class.java)
+            .get(DetailViewModel::class.java)
 
         observeEventDetail(eventDetailId)
 
@@ -73,19 +73,27 @@ class EventDetailActivity : AppCompatActivity() {
                 navigateUpTo(Intent(this, MainActivity::class.java))
                 true
             }
+//            R.id.detail_action_call -> {
+//                createCallIntent(this, eventPhoneNumber)
+//                true
+//            }
             R.id.detail_action_call -> {
-                createCallIntent(this, eventPhoneNumber)
+                IntentFactory.create(this, IntentCategory.CALL, eventPhoneNumber)
                 true
             }
+//            R.id.detail_action_share -> {
+//                createShareIntent(this, eventShareMessage)
+//                true
+//            }
             R.id.detail_action_share -> {
-                createShareIntent(this, eventShareMessage)
+                IntentFactory.create(this, IntentCategory.SHARE, eventShareMessage)
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
 
     private fun observeEventDetail(eventId: Int) {
-        eventDetailViewModel.getEventDetailResource(eventId).observe(this, Observer { event ->
+        detailViewModel.getEventDetailResource(eventId).observe(this, Observer { event ->
             event?.let {
                 when (event) {
                     is Resource.Error -> handleViewsOnError(event.error)

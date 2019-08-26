@@ -1,4 +1,4 @@
-package com.glopez.phunapp.utils
+package com.glopez.phunapp.testutil
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer

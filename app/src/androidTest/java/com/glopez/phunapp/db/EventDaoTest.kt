@@ -4,11 +4,12 @@ import android.arch.core.executor.testing.InstantTaskExecutorRule
 import android.arch.persistence.room.Room
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
-import com.glopez.phunapp.utils.LiveDataTestUtil
-import com.glopez.phunapp.utils.TestDataUtil
-import com.glopez.phunapp.data.db.EventDao
-import com.glopez.phunapp.data.db.EventDatabase
-import junit.framework.Assert.assertEquals
+import com.glopez.phunapp.model.Event
+import com.glopez.phunapp.testutil.TestDataUtil
+import com.glopez.phunapp.model.db.EventDao
+import com.glopez.phunapp.model.db.EventDatabase
+import com.glopez.phunapp.testutil.LiveDataTestObserver
+import junit.framework.Assert.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -25,6 +26,8 @@ class EventDaoTest {
 
     private lateinit var eventDatabase: EventDatabase
     private lateinit var eventDao: EventDao
+    private val singleEventObserver = LiveDataTestObserver<Event>()
+    private val eventsListObserver = LiveDataTestObserver<List<Event>>()
 
     @Before
     fun initializeDb() {
@@ -44,23 +47,26 @@ class EventDaoTest {
     }
 
     @Test
-    fun getListOfEventsTest() {
+    fun verify_retrieval_of_events() {
         val eventCount = 2
         populateTestEventsList(eventCount)
 
-        val listFromDb = LiveDataTestUtil.getLiveDataValue(eventDao.getAllEvents())
-
-        assertEquals(listFromDb.size, eventCount)
+        val eventsFromDb = eventDao.getAllEvents()
+        eventsFromDb.observeForever(eventsListObserver)
+        assertEquals(eventCount, eventsListObserver.getData()?.size)
     }
 
     @Test
-    fun insertEventAndFindTest() {
-        val event = TestDataUtil.createEvent(1)
+    fun verify_event_can_be_inserted_and_found_by_id() {
+        val testId = 1
+        val event = TestDataUtil.createEvent(testId)
 
         eventDao.insert(event)
-        val eventFromDb = LiveDataTestUtil.getLiveDataValue(eventDao.find(1))
-        assertEquals(eventFromDb.id, event.id)
-        assertEquals(eventFromDb.title, event.title)
+        val eventDetail = eventDao.find(testId)
+        eventDetail.observeForever(singleEventObserver)
+        assertEquals(event.id, singleEventObserver.getData()?.id)
+        assertEquals(event.title, singleEventObserver.getData()?.title)
+        eventDetail.removeObserver(singleEventObserver)
     }
 
     private fun populateTestEventsList(count: Int) {

@@ -1,6 +1,6 @@
-package com.glopez.phunapp.utils
+package com.glopez.phunapp.testutil
 
-import com.glopez.phunapp.data.Event
+import com.glopez.phunapp.model.Event
 
 object TestDataUtil {
 
@@ -17,7 +17,7 @@ object TestDataUtil {
     )
 
     fun createListOfEvents(count: Int): List<Event> {
-        val testEventList: MutableList<Event> = mutableListOf<Event>()
+        val testEventList: MutableList<Event> = mutableListOf()
         for(i in 1..count) {
             testEventList.add(createEvent(i))
         }

@@ -2,18 +2,18 @@ package com.glopez.phunapp
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
-import com.glopez.phunapp.model.EventRepository
-import com.glopez.phunapp.view.viewmodels.EventDetailViewModel
-import com.glopez.phunapp.view.viewmodels.EventViewModel
+import com.glopez.phunapp.model.repository.EventFeedRepository
+import com.glopez.phunapp.view.viewmodels.DetailViewModel
+import com.glopez.phunapp.view.viewmodels.FeedViewModel
 import java.lang.IllegalArgumentException
 
 /**
  * A utility class that creates ViewModels, passing in their dependency as a
  * constructor parameter.
- * @param[eventRepository] The application's repository instance.
+ * @param[eventFeedRepository] The application's repository instance.
  */
 @Suppress("UNCHECKED_CAST")
-class ViewModelFactory private constructor(private val eventRepository: EventRepository
+class ViewModelFactory private constructor(private val eventFeedRepository: EventFeedRepository
 ) : ViewModelProvider.NewInstanceFactory() {
 
     /**
@@ -23,10 +23,10 @@ class ViewModelFactory private constructor(private val eventRepository: EventRep
      */
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return when {
-            modelClass.isAssignableFrom(EventViewModel::class.java) ->
-                EventViewModel(eventRepository) as T
-            modelClass.isAssignableFrom(EventDetailViewModel::class.java) ->
-                EventDetailViewModel(eventRepository) as T
+            modelClass.isAssignableFrom(FeedViewModel::class.java) ->
+                FeedViewModel(eventFeedRepository) as T
+            modelClass.isAssignableFrom(DetailViewModel::class.java) ->
+                DetailViewModel(eventFeedRepository) as T
             else ->
                 throw IllegalArgumentException(
                     "Unknown ViewModel class provided: ${modelClass.name}"

@@ -1,4 +1,4 @@
-package com.glopez.phunapp.model
+package com.glopez.phunapp.model.repository
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
@@ -13,6 +13,7 @@ import timber.log.Timber
 import android.os.SystemClock
 import com.glopez.phunapp.R
 import com.glopez.phunapp.constants.DB_MINIMUM_ID_VALUE
+import com.glopez.phunapp.model.Event
 import com.glopez.phunapp.utils.StringsResourceProvider
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
@@ -20,9 +21,9 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
-class EventRepository(
+class EventFeedRepository(
     eventDatabase: EventDatabase,
-    private val eventApi: EventFeedProvider) {
+    private val eventApi: EventFeedProvider): FeedRepository {
 
     private val eventDao: EventDao = eventDatabase.eventDao()
     private val apiResultState = MutableLiveData<ApiResponse<List<Event>>>()
@@ -33,30 +34,31 @@ class EventRepository(
     private val refreshTimeout: Long = TimeUnit.MINUTES.toMillis(timeoutInMinutes.toLong())
 
     companion object {
-        private var INSTANCE: EventRepository? = null
+        private var INSTANCE: EventFeedRepository? = null
 
-        fun getInstance(eventDb: EventDatabase, eventApi: EventFeedProvider): EventRepository {
+        fun getInstance(eventDb: EventDatabase, eventApi: EventFeedProvider): EventFeedRepository {
             synchronized(this) {
                 if (INSTANCE == null) {
-                    INSTANCE = EventRepository(eventDb, eventApi)
+                    INSTANCE =
+                        EventFeedRepository(eventDb, eventApi)
                 }
-                return INSTANCE as EventRepository
+                return INSTANCE as EventFeedRepository
             }
         }
     }
 
-    fun updateEventsFromNetwork() {
+    override fun updateEventsFromNetwork() {
         if (shouldRefresh()) {
             refreshTimestamp = SystemClock.uptimeMillis()
             getEventsFromNetwork()
         }
     }
 
-    fun getEventsFromDatabase(): LiveData<List<Event>> {
+    override fun getEventsFromDatabase(): LiveData<List<Event>> {
         return eventDao.getAllEvents()
     }
 
-    private fun getEventsFromNetwork() {
+    override fun getEventsFromNetwork() {
         Timber.d("Retrieving events from network.")
         apiResultState.value = ApiResponse.Loading(emptyList())
 
@@ -75,7 +77,7 @@ class EventRepository(
         })
     }
 
-    fun getApiResponseState() : LiveData<ApiResponse<List<Event>>> {
+    override fun getApiResponseState() : LiveData<ApiResponse<List<Event>>> {
         return this.apiResultState
     }
 
@@ -99,17 +101,17 @@ class EventRepository(
                 apiResultState.value = apiResponse
                 Timber.e(String.format(
                     "${StringsResourceProvider.getString(R.string.repo_success_http_error)} ${apiResponse.responseCode}." +
-                            " ${apiResponse.errorMessage}"))
+                            " ${apiResponse.message}"))
             }
         }
     }
 
-    private fun insertEventsIntoDatabase(eventList: List<Event>) {
+    override fun insertEventsIntoDatabase(events: List<Event>) {
         lateinit var disposableInsertEvent: Disposable
         if (disposables.isDisposed) {
             disposables = CompositeDisposable()
         }
-        for (event: Event in eventList) {
+        for (event: Event in events) {
             // If the id field was not present in the Response object, the default value of 0 will be set.
             // If this is the case, the Event will not be inserted into the database.
             if (event.id < DB_MINIMUM_ID_VALUE) {
@@ -126,7 +128,7 @@ class EventRepository(
         }
     }
 
-    fun getSingleEventFromDatabase(id: Int): LiveData<Event> {
+    override fun getSingleEventFromDatabase(id: Int): LiveData<Event> {
         return eventDao.find(id)
     }
 
@@ -140,7 +142,7 @@ class EventRepository(
             false
     }
 
-    fun clearDisposables() {
+    override fun clearDisposables() {
         if (!disposables.isDisposed) {
             disposables.dispose()
         }

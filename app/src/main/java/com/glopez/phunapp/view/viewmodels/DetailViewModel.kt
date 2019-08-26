@@ -5,17 +5,16 @@ import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
 import com.glopez.phunapp.constants.DB_MINIMUM_ID_VALUE
 import com.glopez.phunapp.model.Event
-import com.glopez.phunapp.model.EventRepository
 import com.glopez.phunapp.model.db.Resource
+import com.glopez.phunapp.model.repository.FeedRepository
 
 /**
  * [ViewModel] for the EventDetailActivity which displays the details of
  * a single Event.
  * @param[eventRepo] The application's repository instance.
  */
-class EventDetailViewModel(private val eventRepo: EventRepository) : ViewModel() {
-
-//    private val minValueSetForIdField: Int = 1
+//class DetailViewModel(private val eventRepo: EventFeedRepository) : ViewModel() {
+class DetailViewModel(private val eventRepo: FeedRepository) : ViewModel() {
 
     /**
      * Retrieves the Event from the repository and transforms it into a Resource State object
@@ -25,14 +24,15 @@ class EventDetailViewModel(private val eventRepo: EventRepository) : ViewModel()
      */
     fun getEventDetailResource(id: Int): LiveData<Resource<Event>> {
         return Transformations.map(eventRepo.getSingleEventFromDatabase(id)) {
-            data -> createResource(data)
+            data -> mapToResource(data)
         }
     }
 
-    private fun createResource(event: Event?): Resource<Event> {
+    private fun mapToResource(event: Event?): Resource<Event> {
         return if (event == null || event.id < DB_MINIMUM_ID_VALUE )
             Resource.Error(
-                NoSuchElementException("Invalid EVENT_ID passed to EventDetailActivity. Event not found in the Room database."))
+                NoSuchElementException("Invalid EVENT_ID passed to EventDetailActivity. Event not found in the Room database.")
+            )
         else
             Resource.Success(event)
     }

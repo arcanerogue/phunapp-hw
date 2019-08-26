@@ -2,7 +2,7 @@ package com.glopez.phunapp
 
 import android.app.Application
 import android.os.StrictMode
-import com.glopez.phunapp.model.EventRepository
+import com.glopez.phunapp.model.repository.EventFeedRepository
 import com.glopez.phunapp.model.db.EventDatabase
 import com.glopez.phunapp.model.network.EventFeedProvider
 import com.glopez.phunapp.utils.StringsResourceProvider
@@ -22,8 +22,8 @@ class PhunApp : Application() {
         return EventDatabase.getDatabase(this)
     }
 
-    fun getRepository(): EventRepository {
-        return EventRepository.getInstance(getDatabase(), eventApi)
+    fun getRepository(): EventFeedRepository {
+        return EventFeedRepository.getInstance(getDatabase(), eventApi)
     }
 
     private fun setTimberLogging() {
