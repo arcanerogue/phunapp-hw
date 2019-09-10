@@ -13,7 +13,7 @@ import retrofit2.Response
 class ApiResponseTest {
     @Test
     fun `verify api response on error`() {
-        val errorMessage = "Api returned and error response"
+        val errorMessage = "Api returned an error response"
         val errorResponse = ApiResponse.onFailure<String>(errorMessage)
         assertThat(errorResponse, instanceOf(ApiResponse.Error::class.java))
         assertEquals(errorMessage, errorResponse.message)
@@ -45,7 +45,7 @@ class ApiResponseTest {
 
     @Test
     fun `very onResponse on error response`() {
-        val errorMessage = "Api returned and error response"
+        val errorMessage = "Api returned an error response"
         val response = Response
             .error<String>(HTTP_BAD_REQUEST,
                 ResponseBody.create(MediaType.get("application/txt"), errorMessage))

@@ -12,7 +12,7 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.glopez.phunapp.PhunApp
 import com.glopez.phunapp.R
-import com.glopez.phunapp.ViewModelFactory
+import com.glopez.phunapp.view.viewmodels.ViewModelFactory
 import com.glopez.phunapp.constants.DB_MISSING_ID_VALUE
 import com.glopez.phunapp.model.Event
 import com.glopez.phunapp.model.createEventDateFormatString

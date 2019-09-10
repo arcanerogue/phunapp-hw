@@ -1,10 +1,9 @@
-package com.glopez.phunapp
+package com.glopez.phunapp.view.viewmodels
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
+import com.glopez.phunapp.PhunApp
 import com.glopez.phunapp.model.repository.EventFeedRepository
-import com.glopez.phunapp.view.viewmodels.DetailViewModel
-import com.glopez.phunapp.view.viewmodels.FeedViewModel
 import java.lang.IllegalArgumentException
 
 /**
@@ -45,7 +44,8 @@ class ViewModelFactory private constructor(private val eventFeedRepository: Even
             synchronized(this) {
                 if (INSTANCE == null) {
                     // Create ViewModelFactory
-                    INSTANCE = ViewModelFactory(application.getRepository())
+                    INSTANCE =
+                        ViewModelFactory(application.getRepository())
                 }
                 return INSTANCE as ViewModelFactory
             }

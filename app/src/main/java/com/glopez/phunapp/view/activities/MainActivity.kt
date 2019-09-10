@@ -13,7 +13,7 @@ import com.glopez.phunapp.PhunApp
 import com.glopez.phunapp.R
 import com.glopez.phunapp.view.adapters.EventRecyclerAdapter
 import com.glopez.phunapp.view.viewmodels.FeedViewModel
-import com.glopez.phunapp.ViewModelFactory
+import com.glopez.phunapp.view.viewmodels.ViewModelFactory
 import com.glopez.phunapp.model.Event
 import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.utils.isNetworkAvailable

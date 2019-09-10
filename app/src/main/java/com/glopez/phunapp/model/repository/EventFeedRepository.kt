@@ -11,6 +11,7 @@ import com.glopez.phunapp.model.network.ApiResponse
 import com.glopez.phunapp.model.network.EventFeedProvider
 import timber.log.Timber
 import android.os.SystemClock
+import android.support.annotation.VisibleForTesting
 import com.glopez.phunapp.R
 import com.glopez.phunapp.constants.DB_MINIMUM_ID_VALUE
 import com.glopez.phunapp.model.Event
@@ -27,7 +28,9 @@ class EventFeedRepository(
 
     private val eventDao: EventDao = eventDatabase.eventDao()
     private val apiResultState = MutableLiveData<ApiResponse<List<Event>>>()
-    private var disposables = CompositeDisposable()
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    var disposables = CompositeDisposable()
 
     private var refreshTimestamp: Long = 0
     private val timeoutInMinutes = 1
@@ -81,27 +84,25 @@ class EventFeedRepository(
         return this.apiResultState
     }
 
-    private fun setResponseState(apiResponse: ApiResponse<List<Event>>) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun setResponseState(apiResponse: ApiResponse<List<Event>>) {
         when (apiResponse) {
             // HTTP Response Code is in the 200-300 range.
             is ApiResponse.Success<List<Event>> -> {
                 apiResultState.value = apiResponse
                 insertEventsIntoDatabase(apiResponse.body)
-                Timber.d(String.format(
-                    StringsResourceProvider.getString(R.string.repo_events_fetch_success) +
-                            " Received response with count: ${apiResponse.body.size}"))
+                Timber.d("Received response with count: ${apiResponse.body.size}")
             }
             // Received Response with empty body.
             is ApiResponse.EmptyBody<List<Event>> -> {
                 apiResultState.value = apiResponse
-                Timber.d(StringsResourceProvider.getString(R.string.repo_events_fetch_empty_body))
+                Timber.d("Received Response with empty body")
             }
             // HTTP Response Code is in the 300's, 400's, 500's, or application-level failure.
             is ApiResponse.Error -> {
                 apiResultState.value = apiResponse
-                Timber.e(String.format(
-                    "${StringsResourceProvider.getString(R.string.repo_success_http_error)} ${apiResponse.responseCode}." +
-                            " ${apiResponse.message}"))
+                Timber.e(String.format("Failed to retrieve events. Response code:" +
+                        "${apiResponse.responseCode},Response body: ${apiResponse.message}"))
             }
         }
     }
@@ -119,7 +120,8 @@ class EventFeedRepository(
             }
             else {
                 disposableInsertEvent = Completable.fromAction { eventDao.insert(event) }
-                    .doOnError { Timber.e("Error inserting into database: ${it.message}") }
+//                    .doOnError { Timber.e("Error inserting into database: ${it.message}") }
+                    .doOnError { it.printStackTrace() }
                     .doOnComplete { Timber.d("Inserted Event with id: ${event.id} into database.") }
                     .subscribeOn(Schedulers.io())
                     .subscribe()

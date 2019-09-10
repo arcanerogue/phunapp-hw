@@ -87,7 +87,6 @@ class EventRecyclerAdapter(private val context: Context) :
 
         holder.eventShareButton?.setOnClickListener {
             val shareMessage = event.createShareEventMessage()
-//            createShareIntent(context, shareMessage)
             IntentFactory.create(context, IntentCategory.SHARE, shareMessage)
         }
 
