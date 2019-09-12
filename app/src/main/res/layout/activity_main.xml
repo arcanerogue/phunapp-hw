@@ -4,7 +4,9 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/root_layout"
         tools:context=".view.activities.MainActivity">
+
 
     <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
@@ -12,6 +14,12 @@
             android:theme="@style/AppTheme.AppBarOverlay">
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_main"/>
+<!--    <include layout="@layout/content_main"/>-->
+
+    <fragment
+            android:id="@+id/eventListFragment"
+            android:name="com.glopez.phunapp.view.feed.FeedFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
 </android.support.design.widget.CoordinatorLayout>

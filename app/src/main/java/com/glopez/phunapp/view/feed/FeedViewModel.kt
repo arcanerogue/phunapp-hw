@@ -1,4 +1,4 @@
-package com.glopez.phunapp.view.viewmodels
+package com.glopez.phunapp.view.feed
 
 import android.arch.lifecycle.*
 import com.glopez.phunapp.model.StarWarsEvent
@@ -8,10 +8,9 @@ import com.glopez.phunapp.model.repository.FeedRepository
 import java.lang.Exception
 
 /**
- * [ViewModel] for the MainActivity w$4hich displays the list of StarWarsEvent objects.
+ * [ViewModel] for the MainActivity which displays the list of StarWarsEvent objects.
  * @param[eventFeedRepo] The application's repository instance.
  */
-//class FeedViewModel(private val eventFeedRepo: EventFeedRepository) : ViewModel() {
 class FeedViewModel(private val eventFeedRepo: FeedRepository) : ViewModel() {
     private val eventsResourceStatus: MediatorLiveData<Resource<List<StarWarsEvent>>> = MediatorLiveData()
     private val apiResponseStatus: LiveData<ApiResponse<List<StarWarsEvent>>> = eventFeedRepo.getApiResponseState()
