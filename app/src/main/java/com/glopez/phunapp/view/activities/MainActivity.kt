@@ -14,7 +14,7 @@ import com.glopez.phunapp.R
 import com.glopez.phunapp.view.adapters.EventRecyclerAdapter
 import com.glopez.phunapp.view.viewmodels.FeedViewModel
 import com.glopez.phunapp.view.viewmodels.ViewModelFactory
-import com.glopez.phunapp.model.Event
+import com.glopez.phunapp.model.StarWarsEvent
 import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.utils.isNetworkAvailable
 import kotlinx.android.synthetic.main.content_main.*
@@ -80,14 +80,14 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun handleViewOnSuccess(eventList: List<Event>?) {
-        if (eventList.isNullOrEmpty() && !isNetworkAvailable(connectivityManager)) {
+    private fun handleViewOnSuccess(starWarsEventList: List<StarWarsEvent>?) {
+        if (starWarsEventList.isNullOrEmpty() && !isNetworkAvailable(connectivityManager)) {
             Timber.d(getString(R.string.main_no_network_no_database))
         } else {
-            if (eventList == null)
+            if (starWarsEventList == null)
                 Toast.makeText(this, "Received a null EventList", Toast.LENGTH_LONG).show()
             else
-                adapter.setEvents(eventList)
+                adapter.setEvents(starWarsEventList)
         }
     }
 

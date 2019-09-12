@@ -1,6 +1,6 @@
 package com.glopez.phunapp.model.network
 
-import com.glopez.phunapp.model.Event
+import com.glopez.phunapp.model.StarWarsEvent
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -28,8 +28,8 @@ class EventFeedProvider {
         service = retrofit.create(FeedProvider::class.java)
     }
 
-    fun getEventFeed(callback: Callback<List<Event>>) {
-        val call: Call<List<Event>> = service.getEvents(FEED_PATH)
+    fun getEventFeed(callback: Callback<List<StarWarsEvent>>) {
+        val call: Call<List<StarWarsEvent>> = service.getEvents(FEED_PATH)
         call.enqueue(callback)
     }
 }

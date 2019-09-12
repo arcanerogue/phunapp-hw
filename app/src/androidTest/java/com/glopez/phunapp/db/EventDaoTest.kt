@@ -4,7 +4,7 @@ import android.arch.core.executor.testing.InstantTaskExecutorRule
 import android.arch.persistence.room.Room
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
-import com.glopez.phunapp.model.Event
+import com.glopez.phunapp.model.StarWarsEvent
 import com.glopez.phunapp.testutil.TestDataUtil
 import com.glopez.phunapp.model.db.EventDao
 import com.glopez.phunapp.model.db.EventDatabase
@@ -26,8 +26,8 @@ class EventDaoTest {
 
     private lateinit var eventDatabase: EventDatabase
     private lateinit var eventDao: EventDao
-    private val singleEventObserver = LiveDataTestObserver<Event>()
-    private val eventsListObserver = LiveDataTestObserver<List<Event>>()
+    private val singleEventObserver = LiveDataTestObserver<StarWarsEvent>()
+    private val eventsListObserver = LiveDataTestObserver<List<StarWarsEvent>>()
 
     @Before
     fun initializeDb() {

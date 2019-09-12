@@ -2,7 +2,7 @@ package com.glopez.phunapp.viewmodel
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule
 import android.arch.lifecycle.MutableLiveData
-import com.glopez.phunapp.model.Event
+import com.glopez.phunapp.model.StarWarsEvent
 import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.model.network.ApiResponse
 import com.glopez.phunapp.model.repository.FeedRepository
@@ -21,12 +21,12 @@ class FeedViewModelTest {
     @JvmField
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    private val feedObserver = LiveDataTestObserver<Resource<List<Event>>>()
+    private val feedObserver = LiveDataTestObserver<Resource<List<StarWarsEvent>>>()
     private val mockEventRepository: FeedRepository = mock()
     private lateinit var feedViewModel: FeedViewModel
     private val events = TestDataUtil.createListOfEvents(2)
-    private val eventsFromDatabase: MutableLiveData<List<Event>> = MutableLiveData()
-    private val apiResponseState: MutableLiveData<ApiResponse<List<Event>>> = MutableLiveData()
+    private val eventsFromDatabase: MutableLiveData<List<StarWarsEvent>> = MutableLiveData()
+    private val apiResponseState: MutableLiveData<ApiResponse<List<StarWarsEvent>>> = MutableLiveData()
 
     @Before
     fun setUp() {
@@ -62,7 +62,7 @@ class FeedViewModelTest {
         feedViewModel.refreshEvents()
 
         assertThat(feedObserver.getData(), instanceOf(Resource.Success::class.java))
-        val resourceData = feedObserver.getData() as Resource.Success<List<Event>>
+        val resourceData = feedObserver.getData() as Resource.Success<List<StarWarsEvent>>
         assertEquals(resourceData.data, events)
         cleanUpAfterTest()
     }

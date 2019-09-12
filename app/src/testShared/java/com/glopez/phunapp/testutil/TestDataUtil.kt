@@ -1,10 +1,10 @@
 package com.glopez.phunapp.testutil
 
-import com.glopez.phunapp.model.Event
+import com.glopez.phunapp.model.StarWarsEvent
 
 object TestDataUtil {
 
-    fun createEvent(index: Int) = Event(
+    fun createEvent(index: Int) = StarWarsEvent(
         id = index,
         title = "TestEvent$index",
         description = "Description$index",
@@ -16,11 +16,11 @@ object TestDataUtil {
         location2 = "Location2_$index"
     )
 
-    fun createListOfEvents(count: Int): List<Event> {
-        val testEventList: MutableList<Event> = mutableListOf()
+    fun createListOfEvents(count: Int): List<StarWarsEvent> {
+        val testStarWarsEventList: MutableList<StarWarsEvent> = mutableListOf()
         for(i in 1..count) {
-            testEventList.add(createEvent(i))
+            testStarWarsEventList.add(createEvent(i))
         }
-        return testEventList.toList()
+        return testStarWarsEventList.toList()
     }
 }

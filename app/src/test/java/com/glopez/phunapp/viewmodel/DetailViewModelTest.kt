@@ -3,7 +3,7 @@ package com.glopez.phunapp.viewmodel
 import android.arch.core.executor.testing.InstantTaskExecutorRule
 import android.arch.lifecycle.MutableLiveData
 import com.glopez.phunapp.constants.DB_MISSING_ID_VALUE
-import com.glopez.phunapp.model.Event
+import com.glopez.phunapp.model.StarWarsEvent
 import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.model.repository.FeedRepository
 import com.glopez.phunapp.testutil.LiveDataTestObserver
@@ -22,11 +22,11 @@ class DetailViewModelTest {
     @JvmField
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    private val singleEventObserver = LiveDataTestObserver<Resource<Event>>()
+    private val singleEventObserver = LiveDataTestObserver<Resource<StarWarsEvent>>()
     private val mockEventRepository: FeedRepository = mock()
     private lateinit var detailViewModel: DetailViewModel
     private val eventId: Int = 1
-    private val testLiveData: MutableLiveData<Event> = MutableLiveData()
+    private val testLiveData: MutableLiveData<StarWarsEvent> = MutableLiveData()
 
     @Before
     fun setUp() {
@@ -47,8 +47,8 @@ class DetailViewModelTest {
 
     @Test
     fun `verify event detail resource results in error when the event is not found`() {
-        val eventDetail: Event? = null
-        testLiveData.value = eventDetail
+        val starWarsEventDetail: StarWarsEvent? = null
+        testLiveData.value = starWarsEventDetail
         assertThat(singleEventObserver.getData(), instanceOf(Resource.Error::class.java))
     }
 

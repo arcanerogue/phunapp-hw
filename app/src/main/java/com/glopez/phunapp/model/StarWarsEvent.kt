@@ -7,7 +7,7 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "events")
-data class Event(
+data class StarWarsEvent(
     @PrimaryKey
     @SerializedName("id")
     @Expose

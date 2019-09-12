@@ -1,21 +1,20 @@
 package com.glopez.phunapp.view.viewmodels
 
 import android.arch.lifecycle.*
-import android.support.annotation.VisibleForTesting
-import com.glopez.phunapp.model.Event
+import com.glopez.phunapp.model.StarWarsEvent
 import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.model.network.ApiResponse
 import com.glopez.phunapp.model.repository.FeedRepository
 import java.lang.Exception
 
 /**
- * [ViewModel] for the MainActivity w$4hich displays the list of Event objects.
+ * [ViewModel] for the MainActivity w$4hich displays the list of StarWarsEvent objects.
  * @param[eventFeedRepo] The application's repository instance.
  */
 //class FeedViewModel(private val eventFeedRepo: EventFeedRepository) : ViewModel() {
 class FeedViewModel(private val eventFeedRepo: FeedRepository) : ViewModel() {
-    private val eventsResourceStatus: MediatorLiveData<Resource<List<Event>>> = MediatorLiveData()
-    private val apiResponseStatus: LiveData<ApiResponse<List<Event>>> = eventFeedRepo.getApiResponseState()
+    private val eventsResourceStatus: MediatorLiveData<Resource<List<StarWarsEvent>>> = MediatorLiveData()
+    private val apiResponseStatus: LiveData<ApiResponse<List<StarWarsEvent>>> = eventFeedRepo.getApiResponseState()
     private val dbSource = eventFeedRepo.getEventsFromDatabase()
 
     init {
@@ -28,7 +27,7 @@ class FeedViewModel(private val eventFeedRepo: FeedRepository) : ViewModel() {
         }
     }
 
-    fun getEventsResource(): LiveData<Resource<List<Event>>> {
+    fun getEventsResource(): LiveData<Resource<List<StarWarsEvent>>> {
         return eventsResourceStatus
     }
 
@@ -47,7 +46,7 @@ class FeedViewModel(private val eventFeedRepo: FeedRepository) : ViewModel() {
         val updatedEventsFromDatabase = eventFeedRepo.getEventsFromDatabase()
         eventsResourceStatus.addSource(apiResponseStatus) {
             when (it) {
-                is ApiResponse.Success<List<Event>> -> {
+                is ApiResponse.Success<List<StarWarsEvent>> -> {
                     eventsResourceStatus.addSource(updatedEventsFromDatabase) { data ->
                         eventsResourceStatus.value = Resource.Success(data)
                     }

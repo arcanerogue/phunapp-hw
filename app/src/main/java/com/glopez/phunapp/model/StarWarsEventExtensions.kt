@@ -9,7 +9,7 @@ const val inputPattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 const val outputPattern = "MMMM dd, yyyy 'at' h:mm a"
 val dateFormat = SimpleDateFormat(inputPattern, Locale.US)
 
-fun Event.createEventDateFormatString(): String {
+fun StarWarsEvent.createEventDateFormatString(): String {
     dateFormat.applyPattern(inputPattern)
     dateFormat.timeZone = TimeZone.getTimeZone("UTC")
 
@@ -26,7 +26,7 @@ fun Event.createEventDateFormatString(): String {
     return dateFormat.format(formattedEventDate)
 }
 
-fun Event.createShareEventMessage(): String {
+fun StarWarsEvent.createShareEventMessage(): String {
     val shareString = StringBuilder()
     if(!this.title.isNullOrBlank()) {
         shareString.append("${this.title}\n")

@@ -14,7 +14,7 @@ import com.glopez.phunapp.PhunApp
 import com.glopez.phunapp.R
 import com.glopez.phunapp.view.viewmodels.ViewModelFactory
 import com.glopez.phunapp.constants.DB_MISSING_ID_VALUE
-import com.glopez.phunapp.model.Event
+import com.glopez.phunapp.model.StarWarsEvent
 import com.glopez.phunapp.model.createEventDateFormatString
 import com.glopez.phunapp.model.createShareEventMessage
 import com.glopez.phunapp.model.db.Resource
@@ -104,7 +104,7 @@ class EventDetailActivity : AppCompatActivity() {
     }
 
     /**
-     * Displays an "empty" View when the database cannot locate an Event to display to the user
+     * Displays an "empty" View when the database cannot locate an StarWarsEvent to display to the user
      */
     private fun handleViewsOnError(error: Throwable?) {
         // Collapses the app bar
@@ -114,33 +114,33 @@ class EventDetailActivity : AppCompatActivity() {
         // Recreate the options menu so the toolbar icons will be hidden
         invalidateOptionsMenu()
         nested_scroll_view_group.visibility = View.GONE
-        Toast.makeText(this@EventDetailActivity, "Unable to locate Event details.", Toast.LENGTH_LONG)
+        Toast.makeText(this@EventDetailActivity, "Unable to locate StarWarsEvent details.", Toast.LENGTH_LONG)
             .show()
         Timber.e(error)
     }
 
-    private fun handleViewsOnSuccess(event: Event?) {
-        if (event != null) {
-            eventPhoneNumber = event.phone ?: ""
+    private fun handleViewsOnSuccess(starWarsEvent: StarWarsEvent?) {
+        if (starWarsEvent != null) {
+            eventPhoneNumber = starWarsEvent.phone ?: ""
 
-            if (event.date != null)
-                detail_event_date.text = event.createEventDateFormatString()
+            if (starWarsEvent.date != null)
+                detail_event_date.text = starWarsEvent.createEventDateFormatString()
             else
                 detail_event_date.visibility = View.GONE
 
-            eventShareMessage = event.createShareEventMessage()
-            detail_event_title.text = event.title
-            detail_event_location.text = event.location2
-            detail_event_description.text = event.description
+            eventShareMessage = starWarsEvent.createShareEventMessage()
+            detail_event_title.text = starWarsEvent.title
+            detail_event_location.text = starWarsEvent.location2
+            detail_event_description.text = starWarsEvent.description
 
             Glide.with(this@EventDetailActivity)
-                .load(event.image)
+                .load(starWarsEvent.image)
                 .onlyRetrieveFromCache(true)
                 .error(R.drawable.placeholder_nomoon)
                 .centerCrop()
                 .into(detail_event_image)
         } else {
-            handleViewsOnError(Exception("The database returned a null Event object."))
+            handleViewsOnError(Exception("The database returned a null StarWarsEvent object."))
         }
     }
 }

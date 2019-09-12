@@ -19,7 +19,7 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.glopez.phunapp.model.Event
+import com.glopez.phunapp.model.StarWarsEvent
 import com.glopez.phunapp.model.createShareEventMessage
 import com.glopez.phunapp.utils.IntentCategory
 import com.glopez.phunapp.utils.IntentFactory
@@ -32,7 +32,7 @@ private const val EVENT_ID: String = "event_id"
 class EventRecyclerAdapter(private val context: Context) :
         RecyclerView.Adapter<EventRecyclerAdapter.ViewHolder>() {
 
-    private var eventList: List<Event> = emptyList()
+    private var starWarsEventList: List<StarWarsEvent> = emptyList()
     private val inflater: LayoutInflater = LayoutInflater.from(context)
     private val roundedPlaceholderImage: RoundedBitmapDrawable
 
@@ -58,22 +58,22 @@ class EventRecyclerAdapter(private val context: Context) :
     }
 
     override fun getItemCount(): Int {
-        return eventList.size
+        return starWarsEventList.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val event: Event = this.eventList[position]
+        val starWarsEvent: StarWarsEvent = this.starWarsEventList[position]
 
-        holder.eventTitle?.text = event.title
-        holder.eventLocation?.text = event.location1
-        holder.eventDescription?.text = event.description
+        holder.eventTitle?.text = starWarsEvent.title
+        holder.eventLocation?.text = starWarsEvent.location1
+        holder.eventDescription?.text = starWarsEvent.description
 
         holder.eventImage?.let {
             // This implementation will display the placeholder image as the event
             // image is fetched from the feed url.
             try {
                 Glide.with(context)
-                    .load(event.image)
+                    .load(starWarsEvent.image)
                     .placeholder(this.roundedPlaceholderImage)
                     .error(this.roundedPlaceholderImage)
                     // This transformation applies to the remotely requested resource
@@ -86,19 +86,19 @@ class EventRecyclerAdapter(private val context: Context) :
         }
 
         holder.eventShareButton?.setOnClickListener {
-            val shareMessage = event.createShareEventMessage()
+            val shareMessage = starWarsEvent.createShareEventMessage()
             IntentFactory.create(context, IntentCategory.SHARE, shareMessage)
         }
 
         holder.eventCardView?.setOnClickListener {
             val detailIntent = Intent(context, EventDetailActivity::class.java)
-            detailIntent.putExtra(EVENT_ID, event.id)
+            detailIntent.putExtra(EVENT_ID, starWarsEvent.id)
             startActivity(context, detailIntent, null)
         }
     }
 
-    fun setEvents(events: List<Event>) {
-        this.eventList = events
+    fun setEvents(starWarsEvents: List<StarWarsEvent>) {
+        this.starWarsEventList = starWarsEvents
         notifyDataSetChanged()
     }
 

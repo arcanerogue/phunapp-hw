@@ -3,7 +3,7 @@ package com.glopez.phunapp.repository
 import android.arch.core.executor.testing.InstantTaskExecutorRule
 import android.arch.lifecycle.MutableLiveData
 import com.glopez.phunapp.constants.HTTP_BAD_REQUEST
-import com.glopez.phunapp.model.Event
+import com.glopez.phunapp.model.StarWarsEvent
 import com.glopez.phunapp.model.db.EventDao
 import com.glopez.phunapp.model.db.EventDatabase
 import com.glopez.phunapp.model.network.ApiResponse
@@ -21,16 +21,16 @@ import org.junit.Test
 import retrofit2.Response
 import org.junit.Assert.*
 
-class EventFeedRepositoryTest {
+class StarWarsEventFeedRepositoryTest {
     @Rule
     @JvmField
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private val mockDatabase: EventDatabase = mock()
     private val mockEventDao: EventDao = mock()
-    private val apiResponseStateObserver = LiveDataTestObserver<ApiResponse<List<Event>>>()
+    private val apiResponseStateObserver = LiveDataTestObserver<ApiResponse<List<StarWarsEvent>>>()
     private val events = TestDataUtil.createListOfEvents(2)
-    private val eventsFromDatabase: MutableLiveData<List<Event>> = MutableLiveData()
+    private val eventsFromDatabase: MutableLiveData<List<StarWarsEvent>> = MutableLiveData()
     private lateinit var eventFeedRepo: EventFeedRepository
 
     @Before
@@ -54,8 +54,8 @@ class EventFeedRepositoryTest {
 
     @Test
     fun `verify api empty body response state is set`() {
-        val emptyEvents: List<Event>? = null
-        val response = Response.success(emptyEvents)
+        val emptyStarWarsEvents: List<StarWarsEvent>? = null
+        val response = Response.success(emptyStarWarsEvents)
         val emptyBodyResponse = ApiResponse.onResponse(response)
 
         eventFeedRepo.setResponseState(emptyBodyResponse)
@@ -66,7 +66,7 @@ class EventFeedRepositoryTest {
     fun `verify api error response state is set`() {
         val errorMessage = "Api returned an error response"
         val response = Response
-            .error<List<Event>>(
+            .error<List<StarWarsEvent>>(
                 HTTP_BAD_REQUEST,
                 ResponseBody.create(MediaType.get("application/txt"), errorMessage))
         val errorResponse = ApiResponse.onResponse(response)

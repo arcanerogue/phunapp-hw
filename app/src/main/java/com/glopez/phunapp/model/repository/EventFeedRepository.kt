@@ -14,7 +14,7 @@ import android.os.SystemClock
 import android.support.annotation.VisibleForTesting
 import com.glopez.phunapp.R
 import com.glopez.phunapp.constants.DB_MINIMUM_ID_VALUE
-import com.glopez.phunapp.model.Event
+import com.glopez.phunapp.model.StarWarsEvent
 import com.glopez.phunapp.utils.StringsResourceProvider
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
@@ -27,7 +27,7 @@ class EventFeedRepository(
     private val eventApi: EventFeedProvider): FeedRepository {
 
     private val eventDao: EventDao = eventDatabase.eventDao()
-    private val apiResultState = MutableLiveData<ApiResponse<List<Event>>>()
+    private val apiResultState = MutableLiveData<ApiResponse<List<StarWarsEvent>>>()
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     var disposables = CompositeDisposable()
@@ -57,7 +57,7 @@ class EventFeedRepository(
         }
     }
 
-    override fun getEventsFromDatabase(): LiveData<List<Event>> {
+    override fun getEventsFromDatabase(): LiveData<List<StarWarsEvent>> {
         return eventDao.getAllEvents()
     }
 
@@ -65,36 +65,36 @@ class EventFeedRepository(
         Timber.d("Retrieving events from network.")
         apiResultState.value = ApiResponse.Loading(emptyList())
 
-        eventApi.getEventFeed(object : Callback<List<Event>> {
+        eventApi.getEventFeed(object : Callback<List<StarWarsEvent>> {
             // Network exception occurred talking to the server or an unexpected exception
             // occurred creating the request or processing the response
-            override fun onFailure(call: Call<List<Event>>, error: Throwable) {
+            override fun onFailure(call: Call<List<StarWarsEvent>>, error: Throwable) {
                 apiResultState.value = ApiResponse.onFailure(error.message)
                 Timber.e(String.format(
                     "${StringsResourceProvider.getString(R.string.repo_fetch_error)}. ${error.message}"))
             }
 
-            override fun onResponse(call: Call<List<Event>>, response: Response<List<Event>>) {
+            override fun onResponse(call: Call<List<StarWarsEvent>>, response: Response<List<StarWarsEvent>>) {
                 setResponseState(ApiResponse.onResponse(response))
             }
         })
     }
 
-    override fun getApiResponseState() : LiveData<ApiResponse<List<Event>>> {
+    override fun getApiResponseState() : LiveData<ApiResponse<List<StarWarsEvent>>> {
         return this.apiResultState
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun setResponseState(apiResponse: ApiResponse<List<Event>>) {
+    fun setResponseState(apiResponse: ApiResponse<List<StarWarsEvent>>) {
         when (apiResponse) {
             // HTTP Response Code is in the 200-300 range.
-            is ApiResponse.Success<List<Event>> -> {
+            is ApiResponse.Success<List<StarWarsEvent>> -> {
                 apiResultState.value = apiResponse
                 insertEventsIntoDatabase(apiResponse.body)
                 Timber.d("Received response with count: ${apiResponse.body.size}")
             }
             // Received Response with empty body.
-            is ApiResponse.EmptyBody<List<Event>> -> {
+            is ApiResponse.EmptyBody<List<StarWarsEvent>> -> {
                 apiResultState.value = apiResponse
                 Timber.d("Received Response with empty body")
             }
@@ -107,22 +107,22 @@ class EventFeedRepository(
         }
     }
 
-    override fun insertEventsIntoDatabase(events: List<Event>) {
+    override fun insertEventsIntoDatabase(starWarsEvents: List<StarWarsEvent>) {
         lateinit var disposableInsertEvent: Disposable
         if (disposables.isDisposed) {
             disposables = CompositeDisposable()
         }
-        for (event: Event in events) {
+        for (starWarsEvent: StarWarsEvent in starWarsEvents) {
             // If the id field was not present in the Response object, the default value of 0 will be set.
-            // If this is the case, the Event will not be inserted into the database.
-            if (event.id < DB_MINIMUM_ID_VALUE) {
-                Timber.d("Skipping event with invalid Id value.")
+            // If this is the case, the StarWarsEvent will not be inserted into the database.
+            if (starWarsEvent.id < DB_MINIMUM_ID_VALUE) {
+                Timber.d("Skipping starWarsEvent with invalid Id value.")
             }
             else {
-                disposableInsertEvent = Completable.fromAction { eventDao.insert(event) }
+                disposableInsertEvent = Completable.fromAction { eventDao.insert(starWarsEvent) }
 //                    .doOnError { Timber.e("Error inserting into database: ${it.message}") }
                     .doOnError { it.printStackTrace() }
-                    .doOnComplete { Timber.d("Inserted Event with id: ${event.id} into database.") }
+                    .doOnComplete { Timber.d("Inserted StarWarsEvent with id: ${starWarsEvent.id} into database.") }
                     .subscribeOn(Schedulers.io())
                     .subscribe()
                 disposables.add(disposableInsertEvent)
@@ -130,7 +130,7 @@ class EventFeedRepository(
         }
     }
 
-    override fun getSingleEventFromDatabase(id: Int): LiveData<Event> {
+    override fun getSingleEventFromDatabase(id: Int): LiveData<StarWarsEvent> {
         return eventDao.find(id)
     }
 

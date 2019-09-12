@@ -5,10 +5,10 @@ import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.content.Context
 import com.glopez.phunapp.R
-import com.glopez.phunapp.model.Event
+import com.glopez.phunapp.model.StarWarsEvent
 import timber.log.Timber
 
-@Database(entities = [Event::class], version = 1, exportSchema = false)
+@Database(entities = [StarWarsEvent::class], version = 1, exportSchema = false)
 abstract class EventDatabase : RoomDatabase() {
 
     abstract fun eventDao(): EventDao
