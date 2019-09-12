@@ -12,14 +12,14 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.glopez.phunapp.PhunApp
 import com.glopez.phunapp.R
-import com.glopez.phunapp.view.viewmodels.ViewModelFactory
+import com.glopez.phunapp.view.ViewModelFactory
 import com.glopez.phunapp.constants.DB_MISSING_ID_VALUE
 import com.glopez.phunapp.model.StarWarsEvent
 import com.glopez.phunapp.model.createEventDateFormatString
 import com.glopez.phunapp.model.createShareEventMessage
 import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.utils.*
-import com.glopez.phunapp.view.viewmodels.DetailViewModel
+import com.glopez.phunapp.view.detail.DetailViewModel
 import kotlinx.android.synthetic.main.activity_event_detail.*
 import timber.log.Timber
 import java.lang.Exception
@@ -73,18 +73,10 @@ class EventDetailActivity : AppCompatActivity() {
                 navigateUpTo(Intent(this, MainActivity::class.java))
                 true
             }
-//            R.id.detail_action_call -> {
-//                createCallIntent(this, eventPhoneNumber)
-//                true
-//            }
             R.id.detail_action_call -> {
                 IntentFactory.create(this, IntentCategory.CALL, eventPhoneNumber)
                 true
             }
-//            R.id.detail_action_share -> {
-//                createShareIntent(this, eventShareMessage)
-//                true
-//            }
             R.id.detail_action_share -> {
                 IntentFactory.create(this, IntentCategory.SHARE, eventShareMessage)
                 true

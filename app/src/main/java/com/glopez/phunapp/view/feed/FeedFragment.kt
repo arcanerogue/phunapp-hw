@@ -18,7 +18,7 @@ import com.glopez.phunapp.model.StarWarsEvent
 import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.utils.isNetworkAvailable
 import com.glopez.phunapp.view.adapters.EventRecyclerAdapter
-import com.glopez.phunapp.view.viewmodels.ViewModelFactory
+import com.glopez.phunapp.view.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_event_list.*
 import timber.log.Timber
 
@@ -99,7 +99,6 @@ class FeedFragment : Fragment() {
     }
 
     private fun handleViewOnSuccess(starWarsEventList: List<StarWarsEvent>?) {
-//        if (starWarsEventList.isNullOrEmpty() && !isNetworkAvailable(connectivityManager)) {
         if (starWarsEventList.isNullOrEmpty() && !networkConnected) {
             Timber.d(getString(R.string.main_no_network_no_database))
         } else {

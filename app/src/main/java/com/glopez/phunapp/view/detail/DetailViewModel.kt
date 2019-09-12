@@ -1,4 +1,4 @@
-package com.glopez.phunapp.view.viewmodels
+package com.glopez.phunapp.view.detail
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Transformations

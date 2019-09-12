@@ -8,7 +8,7 @@ import com.glopez.phunapp.model.repository.FeedRepository
 import java.lang.Exception
 
 /**
- * [ViewModel] for the MainActivity which displays the list of StarWarsEvent objects.
+ * [ViewModel] for the FeedFragment which displays the list of StarWarsEvent objects.
  * @param[eventFeedRepo] The application's repository instance.
  */
 class FeedViewModel(private val eventFeedRepo: FeedRepository) : ViewModel() {

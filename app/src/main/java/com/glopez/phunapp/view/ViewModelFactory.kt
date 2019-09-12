@@ -1,9 +1,10 @@
-package com.glopez.phunapp.view.viewmodels
+package com.glopez.phunapp.view
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import com.glopez.phunapp.PhunApp
 import com.glopez.phunapp.model.repository.EventFeedRepository
+import com.glopez.phunapp.view.detail.DetailViewModel
 import com.glopez.phunapp.view.feed.FeedViewModel
 import java.lang.IllegalArgumentException
 

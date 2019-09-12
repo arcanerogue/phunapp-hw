@@ -8,7 +8,7 @@ import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.model.repository.FeedRepository
 import com.glopez.phunapp.testutil.LiveDataTestObserver
 import com.glopez.phunapp.testutil.TestDataUtil
-import com.glopez.phunapp.view.viewmodels.DetailViewModel
+import com.glopez.phunapp.view.detail.DetailViewModel
 import com.nhaarman.mockitokotlin2.*
 import org.junit.Assert.*
 import org.hamcrest.core.IsInstanceOf.instanceOf
