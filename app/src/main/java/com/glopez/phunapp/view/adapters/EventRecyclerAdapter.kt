@@ -24,6 +24,9 @@ import com.glopez.phunapp.model.createShareEventMessage
 import com.glopez.phunapp.utils.IntentCategory
 import com.glopez.phunapp.utils.IntentFactory
 import com.glopez.phunapp.view.activities.EventDetailActivity
+import com.glopez.phunapp.view.activities.MainActivity
+import com.glopez.phunapp.view.detail.DetailFragment
+import com.glopez.phunapp.view.feed.FeedFragment
 import timber.log.Timber
 import java.lang.Exception
 
@@ -91,9 +94,18 @@ class EventRecyclerAdapter(private val context: Context) :
         }
 
         holder.eventCardView?.setOnClickListener {
-            val detailIntent = Intent(context, EventDetailActivity::class.java)
-            detailIntent.putExtra(EVENT_ID, starWarsEvent.id)
-            startActivity(context, detailIntent, null)
+//            val detailIntent = Intent(context, EventDetailActivity::class.java)
+////            detailIntent.putExtra(EVENT_ID, starWarsEvent.id)
+////            startActivity(context, detailIntent, null)
+
+            val activity = it.context as MainActivity
+            val detailFragment = DetailFragment.newInstance(starWarsEvent.id)
+            activity.supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.root_layout, detailFragment, "eventDetail")
+//                .add(R.id.root_layout, detailFragment, "eventDetail")
+                .addToBackStack(null)
+                .commit()
         }
     }
 
