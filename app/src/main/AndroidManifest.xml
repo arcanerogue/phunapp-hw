@@ -22,19 +22,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".view.activities.EventDetailActivity"
-                  android:parentActivityName=".view.activities.EventDetailActivity"
-                  android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value=".view.activities.EventDetailActivity"/>
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <data android:mimeType="vnd.android.cursor.dir/starwarsevent"
-                        tools:ignore="AppLinkUrlError" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>

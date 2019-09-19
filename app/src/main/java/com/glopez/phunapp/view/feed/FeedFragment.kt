@@ -32,6 +32,7 @@ class FeedFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val listener = activity as FeedFragmentListener
         activityContext = activity as Context
         phunApp = activity?.application as PhunApp
 
@@ -40,7 +41,7 @@ class FeedFragment : Fragment() {
 
         networkConnected = isNetworkAvailable(connectivityManager)
 
-        eventRecyclerAdapter = EventRecyclerAdapter(activityContext)
+        eventRecyclerAdapter = EventRecyclerAdapter(activityContext, listener)
 
         feedViewModel = ViewModelProviders.of(this, ViewModelFactory
             .getInstance(phunApp))
@@ -115,5 +116,10 @@ class FeedFragment : Fragment() {
             activityContext, getString(R.string.main_toast_events_fetch_fail),
             Toast.LENGTH_LONG
         ).show()
+    }
+
+    interface FeedFragmentListener {
+        fun onFeedEventClicked(event: StarWarsEvent)
+        fun onShareClicked(event: StarWarsEvent)
     }
 }

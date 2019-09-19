@@ -36,6 +36,7 @@ class DetailFragment : Fragment() {
     private var canCall: Boolean = false
     private lateinit var activityContext: Context
     private lateinit var phunApp: PhunApp
+    private lateinit var listener: DetailFragmentListener
 
     companion object {
         private const val EVENT_ID: String = "event_id"
@@ -54,6 +55,7 @@ class DetailFragment : Fragment() {
         activityContext = activity as Context
         phunApp = activity?.application as PhunApp
         canCall = deviceCanCall(phunApp.packageManager)
+        listener = activity as DetailFragmentListener
 
         detailViewModel = ViewModelProviders.of(this, ViewModelFactory
             .getInstance(phunApp))
@@ -80,10 +82,11 @@ class DetailFragment : Fragment() {
             setNavigationIcon(R.drawable.ic_back_icon)
 
             setNavigationOnClickListener {
-                activity?.supportFragmentManager?.apply {
-                    beginTransaction()?.remove(this@DetailFragment)?.commit()
-                    popBackStack()
-                }
+//                activity?.supportFragmentManager?.apply {
+//                    beginTransaction()?.remove(this@DetailFragment)?.commit()
+//                    popBackStack()
+//                }
+                listener.onNavigateBackFromDetail()
             }
 
             setOnMenuItemClickListener {
@@ -164,5 +167,10 @@ class DetailFragment : Fragment() {
         } else {
             handleViewsOnError(Exception("The database returned a null StarWarsEvent object."))
         }
+    }
+
+    interface DetailFragmentListener {
+        fun onNavigateBackFromDetail()
+//        fun onMenuItemClick(menuItem: MenuItem)
     }
 }
