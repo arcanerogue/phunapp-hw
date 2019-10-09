@@ -21,7 +21,7 @@ data class StarWarsUiEvent(
     var shareMessage: String = ""
 ) {
     companion object {
-        fun mapToStarWarsUiEvent(starWarsEvent: StarWarsEvent) : StarWarsUiEvent {
+        fun mapToUiModel(starWarsEvent: StarWarsEvent) : StarWarsUiEvent {
             val starWarsUiEvent = StarWarsUiEvent(
                 id = starWarsEvent.id,
                 description = starWarsEvent.description ?: "",
@@ -30,28 +30,42 @@ data class StarWarsUiEvent(
                 phone = starWarsEvent.phone ?: "",
                 date = createEventDateFormatString(starWarsEvent.date),
                 location1 = starWarsEvent.location1 ?: "",
-                location2 = starWarsEvent.location1 ?: ""
+                location2 = starWarsEvent.location2 ?: ""
             )
             starWarsUiEvent.createShareEventMessage()
             return starWarsUiEvent
         }
 
-        private fun createEventDateFormatString(date: String?): String {
-            dateFormat.applyPattern(inputPattern)
-            dateFormat.timeZone = TimeZone.getTimeZone("UTC")
-
-            val formattedEventDate: Date = if (date.isNullOrBlank()) {
-                dateFormat.parse(
-                    Calendar.getInstance()
-                        .time.toString())
-            } else {
-                dateFormat.parse((date))
+        fun mapToUiModelList(starWarsEvents: List<StarWarsEvent>)
+                : List<StarWarsUiEvent> {
+            val uiEvents = emptyList<StarWarsUiEvent>() as MutableList<StarWarsUiEvent>
+            for (event: StarWarsEvent in starWarsEvents) {
+                uiEvents.add(mapToUiModel(event))
             }
+            return uiEvents
+        }
 
-            dateFormat.applyPattern(outputPattern)
-            dateFormat.timeZone = TimeZone.getDefault()
+        private fun createEventDateFormatString(date: String?): String {
+            if (date.isNullOrBlank()) {
+                return date ?: ""
+            } else {
+                dateFormat.applyPattern(inputPattern)
+                dateFormat.timeZone = TimeZone.getTimeZone("UTC")
+
+                val formattedEventDate: Date = if (date.isNullOrBlank()) {
+                    dateFormat.parse(
+                        Calendar.getInstance()
+                            .time.toString()
+                    )
+                } else {
+                    dateFormat.parse((date))
+                }
+
+                dateFormat.applyPattern(outputPattern)
+                dateFormat.timeZone = TimeZone.getDefault()
 //        Timber.d("SimpleDateFormat has hashCode: ${dateFormat.hashCode()}")
-            return dateFormat.format(formattedEventDate)
+                return dateFormat.format(formattedEventDate)
+            }
         }
     }
 
