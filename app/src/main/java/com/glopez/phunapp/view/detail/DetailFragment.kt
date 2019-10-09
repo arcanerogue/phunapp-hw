@@ -10,13 +10,9 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.glopez.phunapp.PhunApp
 import com.glopez.phunapp.R
-import com.glopez.phunapp.model.StarWarsEvent
-import com.glopez.phunapp.model.createEventDateFormatString
-import com.glopez.phunapp.model.createShareEventMessage
 import com.glopez.phunapp.model.db.Resource
-import com.glopez.phunapp.utils.IntentCategory
-import com.glopez.phunapp.utils.IntentFactory
 import com.glopez.phunapp.utils.deviceCanCall
+import com.glopez.phunapp.view.StarWarsUiEvent
 import com.glopez.phunapp.view.ViewModelFactory
 import kotlinx.android.synthetic.main.activity_event_detail.app_bar
 import kotlinx.android.synthetic.main.activity_event_detail.detail_event_date
@@ -80,41 +76,22 @@ class DetailFragment : Fragment() {
         fragment_detail_toolbar.apply {
             inflateMenu(R.menu.detail_menu)
             setNavigationIcon(R.drawable.ic_back_icon)
-
             setNavigationOnClickListener {
-//                activity?.supportFragmentManager?.apply {
-//                    beginTransaction()?.remove(this@DetailFragment)?.commit()
-//                    popBackStack()
-//                }
                 listener.onNavigateBackFromDetail()
             }
-
             setOnMenuItemClickListener {
-                when (it.itemId) {
-                    R.id.detail_action_call -> {
-                        IntentFactory.create(activityContext, IntentCategory.CALL, eventPhoneNumber)
-                        true
-                    }
-                    R.id.detail_action_share -> {
-                        IntentFactory.create(
-                            activityContext,
-                            IntentCategory.SHARE,
-                            eventShareMessage
-                        )
-                        true
-                    }
-                    else -> super.onOptionsItemSelected(it)
-                }
+                listener.onDetailMenuItemClick(it, eventPhoneNumber, eventShareMessage)
+                true
             }
         }
     }
 
     private fun observeEventDetail(eventId: Int) {
-        detailViewModel.getEventDetailResource(eventId).observe(this, Observer { event ->
-            event?.let {
-                when (event) {
-                    is Resource.Error -> handleViewsOnError(event.error)
-                    is Resource.Success -> handleViewsOnSuccess(event.data)
+        detailViewModel.getEventDetailResource(eventId).observe(this, Observer { resource ->
+            resource?.let {
+                when (resource) {
+                    is Resource.Error -> handleViewsOnError(resource.error)
+                    is Resource.Success -> handleViewsOnSuccess(resource.data)
                 }
             }
         })
@@ -138,28 +115,28 @@ class DetailFragment : Fragment() {
         Timber.e(error)
     }
 
-    private fun handleViewsOnSuccess(starWarsEvent: StarWarsEvent?) {
-        if (starWarsEvent != null) {
-            eventPhoneNumber = starWarsEvent.phone ?: ""
+    private fun handleViewsOnSuccess(starWarsUiEvent: StarWarsUiEvent?) {
+        if (starWarsUiEvent != null) {
+            eventPhoneNumber = starWarsUiEvent.phone
 
             fragment_detail_toolbar.menu.findItem(R.id.detail_action_call).apply {
-                if (eventPhoneNumber.isEmpty() || !canCall) {
+                if (eventPhoneNumber.isBlank() || !canCall) {
                     isVisible = false
                 }
             }
 
-            if (starWarsEvent.date != null)
-                detail_event_date.text = starWarsEvent.createEventDateFormatString()
-            else
+            if (starWarsUiEvent.date.isBlank())
                 detail_event_date.visibility = View.GONE
+            else
+                detail_event_date.text = starWarsUiEvent.date
 
-            eventShareMessage = starWarsEvent.createShareEventMessage()
-            detail_event_title.text = starWarsEvent.title
-            detail_event_location.text = starWarsEvent.location2
-            detail_event_description.text = starWarsEvent.description
+            eventShareMessage = starWarsUiEvent.shareMessage
+            detail_event_title.text = starWarsUiEvent.title
+            detail_event_location.text = starWarsUiEvent.location2
+            detail_event_description.text = starWarsUiEvent.description
 
             Glide.with(this@DetailFragment)
-                .load(starWarsEvent.image)
+                .load(starWarsUiEvent.imageUrl)
                 .onlyRetrieveFromCache(true)
                 .error(R.drawable.placeholder_nomoon)
                 .centerCrop()
@@ -171,6 +148,6 @@ class DetailFragment : Fragment() {
 
     interface DetailFragmentListener {
         fun onNavigateBackFromDetail()
-//        fun onMenuItemClick(menuItem: MenuItem)
+        fun onDetailMenuItemClick(menuItem: MenuItem, phoneNumber: String, shareMessage: String)
     }
 }

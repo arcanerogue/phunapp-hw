@@ -63,7 +63,6 @@ data class StarWarsUiEvent(
 
                 dateFormat.applyPattern(outputPattern)
                 dateFormat.timeZone = TimeZone.getDefault()
-//        Timber.d("SimpleDateFormat has hashCode: ${dateFormat.hashCode()}")
                 return dateFormat.format(formattedEventDate)
             }
         }

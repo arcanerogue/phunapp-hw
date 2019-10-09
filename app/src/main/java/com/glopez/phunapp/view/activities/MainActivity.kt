@@ -53,9 +53,17 @@ class MainActivity : AppCompatActivity(), FeedFragment.FeedFragmentListener,
         }
     }
 
-//    override fun onMenuItemClick(menuItem: MenuItem) {
-//        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-//    }
+    override fun onDetailMenuItemClick(menuItem: MenuItem, phoneNumber: String, shareMessage: String) {
+        when (menuItem.itemId) {
+            R.id.detail_action_call -> {
+                IntentFactory.create(this, IntentCategory.CALL, phoneNumber)
+            }
+            R.id.detail_action_share -> {
+                IntentFactory.create(this, IntentCategory.SHARE, shareMessage)
+            }
+            else -> super.onOptionsItemSelected(menuItem)
+        }
+    }
 }
 
 
