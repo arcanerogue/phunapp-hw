@@ -14,9 +14,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.glopez.phunapp.PhunApp
 import com.glopez.phunapp.R
-import com.glopez.phunapp.model.StarWarsEvent
 import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.utils.isNetworkAvailable
+import com.glopez.phunapp.view.StarWarsUiEvent
 import com.glopez.phunapp.view.adapters.EventRecyclerAdapter
 import com.glopez.phunapp.view.ViewModelFactory
 import kotlinx.android.synthetic.main.fragment_event_list.*
@@ -41,7 +41,8 @@ class FeedFragment : Fragment() {
 
         networkConnected = isNetworkAvailable(connectivityManager)
 
-        eventRecyclerAdapter = EventRecyclerAdapter(activityContext, listener)
+//        eventRecyclerAdapter = EventRecyclerAdapter(activityContext, listener)
+        eventRecyclerAdapter = EventRecyclerAdapter(listener)
 
         feedViewModel = ViewModelProviders.of(this, ViewModelFactory
             .getInstance(phunApp))
@@ -99,7 +100,7 @@ class FeedFragment : Fragment() {
         })
     }
 
-    private fun handleViewOnSuccess(starWarsEventList: List<StarWarsEvent>?) {
+    private fun handleViewOnSuccess(starWarsEventList: List<StarWarsUiEvent>?) {
         if (starWarsEventList.isNullOrEmpty() && !networkConnected) {
             Timber.d(getString(R.string.main_no_network_no_database))
         } else {
@@ -119,7 +120,7 @@ class FeedFragment : Fragment() {
     }
 
     interface FeedFragmentListener {
-        fun onFeedEventClicked(event: StarWarsEvent)
-        fun onShareClicked(event: StarWarsEvent)
+        fun onFeedEventClicked(event: StarWarsUiEvent)
+        fun onShareClicked(event: StarWarsUiEvent)
     }
 }

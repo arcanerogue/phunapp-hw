@@ -29,6 +29,7 @@ class IntentFactory {
                     .packageManager
                 val dialerIntent = Intent(Intent.ACTION_DIAL)
                 dialerIntent.data = Uri.parse("tel:$phoneNumber")
+
                 if (isIntentSafeToStart(packageManager, dialerIntent)) {
                     ContextCompat.startActivity(context, dialerIntent, null)
                 } else {
@@ -49,6 +50,7 @@ class IntentFactory {
 
             val packageManager = context.applicationContext
                 .packageManager
+
             if (isIntentSafeToStart(packageManager, shareIntent)) {
                 ContextCompat.startActivity(
                     context, Intent.createChooser(

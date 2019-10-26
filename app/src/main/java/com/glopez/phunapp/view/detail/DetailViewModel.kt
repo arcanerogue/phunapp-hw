@@ -14,7 +14,6 @@ import com.glopez.phunapp.view.StarWarsUiEvent
  * a single StarWarsEvent.
  * @param[eventRepo] The application's repository instance.
  */
-//class DetailViewModel(private val eventRepo: EventFeedRepository) : ViewModel() {
 class DetailViewModel(private val eventRepo: FeedRepository) : ViewModel() {
 
     /**
@@ -23,14 +22,12 @@ class DetailViewModel(private val eventRepo: FeedRepository) : ViewModel() {
      * @param[id] The id value of the requested StarWarsEvent.
      * @return The requested StarWarsEvent object wrapped in a Resource State object.
      */
-//    fun getEventDetailResource(id: Int): LiveData<Resource<StarWarsEvent>> {
     fun getEventDetailResource(id: Int): LiveData<Resource<StarWarsUiEvent>> {
         return Transformations.map(eventRepo.getSingleEventFromDatabase(id)) {
             data -> mapToResource(data)
         }
     }
 
-//    private fun mapToResource(starWarsEvent: StarWarsEvent?): Resource<StarWarsEvent> {
     private fun mapToResource(starWarsEvent: StarWarsEvent?): Resource<StarWarsUiEvent> {
         return if (starWarsEvent == null || starWarsEvent.id < DB_MINIMUM_ID_VALUE )
             Resource.Error(

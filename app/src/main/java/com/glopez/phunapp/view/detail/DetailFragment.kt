@@ -58,7 +58,6 @@ class DetailFragment : Fragment() {
             .get(DetailViewModel::class.java)
 
         val eventDetailId = arguments?.getSerializable(EVENT_ID) as Int
-//        val eventDetailId = 15
         observeEventDetail(eventDetailId)
     }
 

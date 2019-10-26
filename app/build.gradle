@@ -54,20 +54,20 @@ dependencies {
     androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
     androidTestImplementation "org.mockito:mockito-android:2.25.0"
 
-    // RetroFit components
+    // RetroFit
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
 
-    // Lifecycle components
+    // Lifecycle
     implementation "android.arch.lifecycle:extensions:$rootProject.archLifecycleVersion"
     kapt "android.arch.lifecycle:compiler:$rootProject.archLifecycleVersion"
     testImplementation "android.arch.core:core-testing:1.1.1"
 
-    // Room components
+    // Room
     implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion"
     kapt "android.arch.persistence.room:compiler:$rootProject.roomVersion"
 
-    // Glide components
+    // Glide
     implementation 'com.github.bumptech.glide:glide:4.9.0'
 
     // Timber

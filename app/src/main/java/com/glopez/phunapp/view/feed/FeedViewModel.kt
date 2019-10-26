@@ -5,6 +5,7 @@ import com.glopez.phunapp.model.StarWarsEvent
 import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.model.network.ApiResponse
 import com.glopez.phunapp.model.repository.FeedRepository
+import com.glopez.phunapp.view.StarWarsUiEvent
 import java.lang.Exception
 
 /**
@@ -12,8 +13,10 @@ import java.lang.Exception
  * @param[eventFeedRepo] The application's repository instance.
  */
 class FeedViewModel(private val eventFeedRepo: FeedRepository) : ViewModel() {
-    private val eventsResourceStatus: MediatorLiveData<Resource<List<StarWarsEvent>>> = MediatorLiveData()
-    private val apiResponseStatus: LiveData<ApiResponse<List<StarWarsEvent>>> = eventFeedRepo.getApiResponseState()
+    private val eventsResourceStatus:
+            MediatorLiveData<Resource<List<StarWarsUiEvent>>> = MediatorLiveData()
+    private val apiResponseStatus:
+            LiveData<ApiResponse<List<StarWarsEvent>>> = eventFeedRepo.getApiResponseState()
     private val dbSource = eventFeedRepo.getEventsFromDatabase()
 
     init {
@@ -21,12 +24,13 @@ class FeedViewModel(private val eventFeedRepo: FeedRepository) : ViewModel() {
             if (data.isNullOrEmpty()) {
                 eventsResourceStatus.value = Resource.Loading(emptyList())
             } else {
-                eventsResourceStatus.value = Resource.Success(data)
+                eventsResourceStatus.value = Resource.Success(
+                    StarWarsUiEvent.mapToUiModelList(data))
             }
         }
     }
 
-    fun getEventsResource(): LiveData<Resource<List<StarWarsEvent>>> {
+    fun getEventsResource(): LiveData<Resource<List<StarWarsUiEvent>>> {
         return eventsResourceStatus
     }
 
@@ -36,9 +40,9 @@ class FeedViewModel(private val eventFeedRepo: FeedRepository) : ViewModel() {
     }
 
     /**
-     * Listens for changes to the ApiResponse state from the EventFeedRepository and then pulls the latest
-     * data from the database. When the database is empty and events can't be fetched from the network,
-     * the Resource error state is set to inform the view.
+     * Listens for changes to the ApiResponse state from the EventFeedRepository and then pulls
+     * the latest data from the database. When the database is empty and events can't be fetched
+     * from the network, the Resource error state is set to inform the view.
      */
     private fun setEventsResourceStatus() {
         eventsResourceStatus.value = Resource.Loading(emptyList())
@@ -47,16 +51,22 @@ class FeedViewModel(private val eventFeedRepo: FeedRepository) : ViewModel() {
             when (it) {
                 is ApiResponse.Success<List<StarWarsEvent>> -> {
                     eventsResourceStatus.addSource(updatedEventsFromDatabase) { data ->
-                        eventsResourceStatus.value = Resource.Success(data)
+                        if (data.isNullOrEmpty())
+                            eventsResourceStatus.value = Resource.Success(data = emptyList())
+                        else
+                            eventsResourceStatus.value =
+                                Resource.Success(StarWarsUiEvent.mapToUiModelList(data))
                     }
                 }
                 is ApiResponse.EmptyBody,
                 is ApiResponse.Error -> {
                     eventsResourceStatus.addSource(updatedEventsFromDatabase) { data ->
                         if (data.isNullOrEmpty())
-                            eventsResourceStatus.value = Resource.Error(Exception("Unable to populate the database with events."))
+                            eventsResourceStatus.value = Resource.Error(
+                                Exception("Unable to populate the database with events."))
                         else
-                            eventsResourceStatus.value = Resource.Success(data)
+                            eventsResourceStatus.value = Resource.Success(
+                                StarWarsUiEvent.mapToUiModelList(data))
                     }
                 }
             }

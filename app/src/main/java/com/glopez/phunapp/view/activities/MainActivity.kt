@@ -4,10 +4,9 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import com.glopez.phunapp.R
-import com.glopez.phunapp.model.StarWarsEvent
-import com.glopez.phunapp.model.createShareEventMessage
 import com.glopez.phunapp.utils.IntentCategory
 import com.glopez.phunapp.utils.IntentFactory
+import com.glopez.phunapp.view.StarWarsUiEvent
 import com.glopez.phunapp.view.detail.DetailFragment
 import com.glopez.phunapp.view.feed.FeedFragment
 
@@ -26,7 +25,7 @@ class MainActivity : AppCompatActivity(), FeedFragment.FeedFragmentListener,
         }
     }
 
-    override fun onFeedEventClicked(event: StarWarsEvent) {
+    override fun onFeedEventClicked(event: StarWarsUiEvent) {
         val detailFragment = DetailFragment.newInstance(event.id)
 
         supportFragmentManager
@@ -36,9 +35,8 @@ class MainActivity : AppCompatActivity(), FeedFragment.FeedFragmentListener,
             .commit()
     }
 
-    override fun onShareClicked(event: StarWarsEvent) {
-        val shareMessage = event.createShareEventMessage()
-        IntentFactory.create(this, IntentCategory.SHARE, shareMessage)
+    override fun onShareClicked(event: StarWarsUiEvent) {
+        IntentFactory.create(this, IntentCategory.SHARE, event.shareMessage)
     }
 
     override fun onNavigateBackFromDetail() {
