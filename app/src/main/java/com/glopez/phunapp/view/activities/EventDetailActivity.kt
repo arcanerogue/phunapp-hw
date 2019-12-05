@@ -10,7 +10,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import com.bumptech.glide.Glide
-import com.glopez.phunapp.PhunApp
 import com.glopez.phunapp.R
 import com.glopez.phunapp.view.viewmodels.ViewModelFactory
 import com.glopez.phunapp.constants.DB_MISSING_ID_VALUE
@@ -45,12 +44,11 @@ class EventDetailActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        detailViewModel = ViewModelProviders.of(this, ViewModelFactory
-                .getInstance(application as PhunApp))
+        detailViewModel = ViewModelProviders.of(this, ViewModelFactory)
             .get(DetailViewModel::class.java)
 
-        observeEventDetail(eventDetailId)
-
+        detailViewModel.getEventById(eventDetailId)
+        observeEventDetail()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -78,7 +76,8 @@ class EventDetailActivity : AppCompatActivity() {
 //                true
 //            }
             R.id.detail_action_call -> {
-                IntentFactory.create(this, IntentCategory.CALL, eventPhoneNumber)
+//                IntentFactory.create(this, IntentCategory.CALL, eventPhoneNumber)
+                CallHelper.createCallIntent(this, eventPhoneNumber)
                 true
             }
 //            R.id.detail_action_share -> {
@@ -86,14 +85,17 @@ class EventDetailActivity : AppCompatActivity() {
 //                true
 //            }
             R.id.detail_action_share -> {
-                IntentFactory.create(this, IntentCategory.SHARE, eventShareMessage)
+//                IntentFactory.create(this, IntentCategory.SHARE, eventShareMessage)
+                ShareHelper.createShareIntent(this, eventShareMessage)
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
 
-    private fun observeEventDetail(eventId: Int) {
-        detailViewModel.getEventDetailResource(eventId).observe(this, Observer { event ->
+    private fun observeEventDetail() {
+//    private fun observeEventDetail(eventId: Int) {
+//        detailViewModel.getEventById(eventId).observe(this, Observer { event ->
+        detailViewModel.eventDetail.observe(this, Observer { event ->
             event?.let {
                 when (event) {
                     is Resource.Error -> handleViewsOnError(event.error)
@@ -123,10 +125,12 @@ class EventDetailActivity : AppCompatActivity() {
         if (starWarsEvent != null) {
             eventPhoneNumber = starWarsEvent.phone ?: ""
 
-            if (starWarsEvent.date != null)
+            if (starWarsEvent.date != null) {
+                detail_event_date.visibility = View.VISIBLE
                 detail_event_date.text = starWarsEvent.createEventDateFormatString()
-            else
+            } else {
                 detail_event_date.visibility = View.GONE
+            }
 
             eventShareMessage = starWarsEvent.createShareEventMessage()
             detail_event_title.text = starWarsEvent.title
@@ -135,7 +139,6 @@ class EventDetailActivity : AppCompatActivity() {
 
             Glide.with(this@EventDetailActivity)
                 .load(starWarsEvent.image)
-                .onlyRetrieveFromCache(true)
                 .error(R.drawable.placeholder_nomoon)
                 .centerCrop()
                 .into(detail_event_image)

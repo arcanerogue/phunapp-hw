@@ -23,6 +23,7 @@ import com.glopez.phunapp.model.StarWarsEvent
 import com.glopez.phunapp.model.createShareEventMessage
 import com.glopez.phunapp.utils.IntentCategory
 import com.glopez.phunapp.utils.IntentFactory
+import com.glopez.phunapp.utils.ShareHelper
 import com.glopez.phunapp.view.activities.EventDetailActivity
 import timber.log.Timber
 import java.lang.Exception
@@ -87,7 +88,8 @@ class EventRecyclerAdapter(private val context: Context) :
 
         holder.eventShareButton?.setOnClickListener {
             val shareMessage = starWarsEvent.createShareEventMessage()
-            IntentFactory.create(context, IntentCategory.SHARE, shareMessage)
+//            IntentFactory.create(context, IntentCategory.SHARE, shareMessage)
+            ShareHelper.createShareIntent(context, shareMessage)
         }
 
         holder.eventCardView?.setOnClickListener {

@@ -34,7 +34,7 @@ class DetailViewModelTest {
             .doReturn(testLiveData)
 
         detailViewModel = DetailViewModel(mockEventRepository)
-        detailViewModel.getEventDetailResource(eventId)
+        detailViewModel.getEventById(eventId)
             .observeForever(singleEventObserver)
     }
 
@@ -61,7 +61,7 @@ class DetailViewModelTest {
 
     @After
     fun cleanUp() {
-        detailViewModel.getEventDetailResource(eventId)
+        detailViewModel.getEventById(eventId)
             .removeObserver(singleEventObserver)
     }
 }

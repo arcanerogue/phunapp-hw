@@ -9,22 +9,24 @@ import com.glopez.phunapp.utils.StringsResourceProvider
 import timber.log.Timber
 
 class PhunApp : Application() {
-    private val eventApi = EventFeedProvider()
+//    private val eventApi = EventFeedProvider()
 
     override fun onCreate() {
+        super.onCreate()
         setTimberLogging()
         Timber.d("Creating PhunApp.")
-        super.onCreate()
-        setStrictMode()
-        StringsResourceProvider.init(this.applicationContext.resources)
-    }
-    private fun getDatabase(): EventDatabase {
-        return EventDatabase.getDatabase(this)
+//        setStrictMode()
+        StringsResourceProvider.init(this.resources)
+        EventFeedRepository.init(EventDatabase.getDatabase(this))
     }
 
-    fun getRepository(): EventFeedRepository {
-        return EventFeedRepository.getInstance(getDatabase(), eventApi)
-    }
+//    private fun getDatabase(): EventDatabase {
+//        return EventDatabase.getDatabase(this)
+//    }
+
+//    fun getRepository(): EventFeedRepository {
+//        return EventFeedRepository.getInstance(getDatabase())
+//    }
 
     private fun setTimberLogging() {
         if (BuildConfig.DEBUG) {

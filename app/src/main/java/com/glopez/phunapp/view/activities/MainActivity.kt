@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.view.View
 import android.widget.Toast
-import com.glopez.phunapp.PhunApp
 import com.glopez.phunapp.R
 import com.glopez.phunapp.view.adapters.EventRecyclerAdapter
 import com.glopez.phunapp.view.viewmodels.FeedViewModel
@@ -39,8 +38,7 @@ class MainActivity : AppCompatActivity() {
         adapter = EventRecyclerAdapter(this)
         feed_list.adapter = adapter
 
-        feedViewModel = ViewModelProviders.of(this, ViewModelFactory
-            .getInstance(application as PhunApp))
+        feedViewModel = ViewModelProviders.of(this, ViewModelFactory)
             .get(FeedViewModel::class.java)
 
         observeEventsList()
@@ -49,11 +47,6 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         feedViewModel.refreshEvents()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        feedViewModel.removeSources()
     }
 
     private fun showLoading() { progress_bar.visibility = View.VISIBLE }
@@ -82,12 +75,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleViewOnSuccess(starWarsEventList: List<StarWarsEvent>?) {
         if (starWarsEventList.isNullOrEmpty() && !isNetworkAvailable(connectivityManager)) {
-            Timber.d(getString(R.string.main_no_network_no_database))
+            Toast.makeText(this, R.string.main_no_network_no_database, Toast.LENGTH_LONG).show()
         } else {
             if (starWarsEventList == null)
                 Toast.makeText(this, "Received a null EventList", Toast.LENGTH_LONG).show()
-            else
+            else {
                 adapter.setEvents(starWarsEventList)
+            }
         }
     }
 

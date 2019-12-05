@@ -35,7 +35,8 @@ class StarWarsEventFeedRepositoryTest {
 
     @Before
     fun setUp() {
-       eventFeedRepo = EventFeedRepository.getInstance(mockDatabase, EventFeedProvider())
+        EventFeedRepository.init(mockDatabase)
+        eventFeedRepo = EventFeedRepository
 
         whenever(mockEventDao.getAllEvents())
             .doReturn(eventsFromDatabase)

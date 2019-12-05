@@ -6,14 +6,9 @@ import com.glopez.phunapp.PhunApp
 import com.glopez.phunapp.model.repository.EventFeedRepository
 import java.lang.IllegalArgumentException
 
-/**
- * A utility class that creates ViewModels, passing in their dependency as a
- * constructor parameter.
- * @param[eventFeedRepository] The application's repository instance.
- */
 @Suppress("UNCHECKED_CAST")
-class ViewModelFactory private constructor(private val eventFeedRepository: EventFeedRepository
-) : ViewModelProvider.NewInstanceFactory() {
+object ViewModelFactory : ViewModelProvider.NewInstanceFactory() {
+    private val eventFeedRepository = EventFeedRepository
 
     /**
      * Creates a new instance of the given class.
@@ -30,25 +25,6 @@ class ViewModelFactory private constructor(private val eventFeedRepository: Even
                 throw IllegalArgumentException(
                     "Unknown ViewModel class provided: ${modelClass.name}"
                 )
-        }
-    }
-    companion object {
-        private var INSTANCE: ViewModelFactory? = null
-
-        /**
-         * Gets or creates the ViewModelFactory Singleton instance.
-         * @param[application] The application object.
-         * @return The ViewModelFactory instance.
-         */
-        fun getInstance(application: PhunApp): ViewModelFactory {
-            synchronized(this) {
-                if (INSTANCE == null) {
-                    // Create ViewModelFactory
-                    INSTANCE =
-                        ViewModelFactory(application.getRepository())
-                }
-                return INSTANCE as ViewModelFactory
-            }
         }
     }
 }
