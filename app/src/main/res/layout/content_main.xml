@@ -13,14 +13,16 @@
             android:id="@+id/feed_list"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="@dimen/mobile_recyclerview_vertical_margin"
-            android:layout_marginStart="@dimen/mobile_recyclerview_horizontal_margin"
-            android:layout_marginEnd="@dimen/mobile_recyclerview_horizontal_margin"
+            android:layout_marginTop="@dimen/feed_list_margin_top_bottom"
+            android:layout_marginStart="@dimen/feed_list_margin_start_end"
+            android:layout_marginEnd="@dimen/feed_list_margin_start_end"
+            android:layout_marginBottom="@dimen/feed_list_margin_top_bottom"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:listitem="@layout/item_event_list" app:layout_constraintHorizontal_bias="1.0"
+            tools:listitem="@layout/item_event_list"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintVertical_bias="1.0">
 
     </android.support.v7.widget.RecyclerView>

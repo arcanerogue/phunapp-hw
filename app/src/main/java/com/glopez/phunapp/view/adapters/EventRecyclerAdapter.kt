@@ -21,8 +21,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.glopez.phunapp.model.StarWarsEvent
 import com.glopez.phunapp.model.createShareEventMessage
-import com.glopez.phunapp.utils.IntentCategory
-import com.glopez.phunapp.utils.IntentFactory
 import com.glopez.phunapp.utils.ShareHelper
 import com.glopez.phunapp.view.activities.EventDetailActivity
 import timber.log.Timber

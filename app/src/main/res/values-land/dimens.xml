@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="item_event_list_image_view_margin_top">16dp</dimen>
+    <dimen name="item_event_list_image_view_margin_bottom">16dp</dimen>
+    <dimen name="item_event_list_image_view_margin_end_start">16dp</dimen>
+    <dimen name="item_event_list_event_title_margin_top">24dp</dimen>
+    <dimen name="feed_list_margin_top_bottom">16dp</dimen>
+    <dimen name="feed_list_margin_start_end">48dp</dimen>
+</resources>
