@@ -38,10 +38,7 @@ class FeedFragment : Fragment() {
 
         connectivityManager =
             activity?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
         networkConnected = isNetworkAvailable(connectivityManager)
-
-//        eventRecyclerAdapter = EventRecyclerAdapter(activityContext, listener)
         eventRecyclerAdapter = EventRecyclerAdapter(listener)
 
         feedViewModel = ViewModelProviders.of(this, ViewModelFactory
@@ -62,6 +59,7 @@ class FeedFragment : Fragment() {
             layoutManager = GridLayoutManager(activityContext, gridColumnCount)
             adapter = eventRecyclerAdapter
         }
+
         observeEventsList()
         return view
     }
@@ -85,7 +83,7 @@ class FeedFragment : Fragment() {
             resource?.let {
                 when (resource) {
                     is Resource.Success -> {
-                        hideLoading()
+                        showLoading()
                         handleViewOnSuccess(resource.data)
                     }
                     is Resource.Loading -> {
@@ -106,8 +104,10 @@ class FeedFragment : Fragment() {
         } else {
             if (starWarsEventList == null)
                 Toast.makeText(activityContext, "Received a null EventList", Toast.LENGTH_LONG).show()
-            else
+            else {
                 eventRecyclerAdapter.setEvents(starWarsEventList)
+                hideLoading()
+            }
         }
     }
 
