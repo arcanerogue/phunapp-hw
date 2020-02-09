@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="mobile_image_view_height">200dp</dimen>
-    <dimen name="tablet_image_view_height">400dp</dimen>
-    <dimen name="mobile_recyclerview_vertical_margin">8dp</dimen>
-    <dimen name="mobile_recyclerview_horizontal_margin">8dp</dimen>
-    <dimen name="tablet_recyclerview_vertical_margin">48dp</dimen>
-    <dimen name="tablet_recyclerview_horizontal_margin">16dp</dimen>
-    <dimen name="mobile_detail_vertical_margin">16dp</dimen>
-    <dimen name="tablet_detail_vertical_margin">48dp</dimen>
+    <dimen name="detail_image_view_height">200dp</dimen>
+    <dimen name="detail_text_view_vertical_margin">16dp</dimen>
+    <dimen name="item_event_list_image_view_margin_top">8dp</dimen>
+    <dimen name="item_event_list_image_view_margin_bottom">0dp</dimen>
+    <dimen name="item_event_list_image_view_margin_end_start">8dp</dimen>
+    <dimen name="item_event_list_event_title_margin_top">16dp</dimen>
+    <dimen name="feed_list_margin_top_bottom">8dp</dimen>
+    <dimen name="feed_list_margin_start_end">8dp</dimen>
 </resources>

@@ -11,6 +11,7 @@ android {
     defaultConfig {
         applicationId "com.glopez.phunapp"
         minSdkVersion 19
+        //noinspection OldTargetApi
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -20,6 +21,15 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        String sharedDirectory = 'src/testShared/java'
+        test {
+            test.java.srcDirs += sharedDirectory
+        }
+        androidTest {
+            androidTest.java.srcDirs += sharedDirectory
         }
     }
 }
@@ -36,10 +46,13 @@ dependencies {
     androidTestImplementation 'com.android.support.test:rules:1.0.2'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    androidTestImplementation 'org.mockito:mockito-core:2.19.0'
     androidTestImplementation "android.arch.core:core-testing:1.1.1"
-    androidTestImplementation "com.nhaarman:mockito-kotlin:1.5.0"
-    androidTestImplementation "org.mockito:mockito-android:2.8.47"
+
+    // Mockito
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
+    testImplementation "org.mockito:mockito-core:2.25.0"
+    androidTestImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
+    androidTestImplementation "org.mockito:mockito-android:2.25.0"
 
     // RetroFit components
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
@@ -56,4 +69,12 @@ dependencies {
 
     // Glide components
     implementation 'com.github.bumptech.glide:glide:4.9.0'
+
+    // Timber
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+
+    // RxJava, RxAndroid
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.10'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+
 }

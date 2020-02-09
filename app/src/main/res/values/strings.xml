@@ -15,25 +15,25 @@
     <string name="database_created">Created database.</string>
 
     <!-- Repository -->
-    <string name="repo_events_fetch_success">Retrieved events successfully.</string>
+    <string name="repo_events_fetch_success">Retrieved starWarsEvents successfully.</string>
     <string name="repo_response_body_count">Response Body list count: %1$d</string>
-    <string name="repo_events_fetch_empty_body">Received Response with empty body: %1$s</string>
-    <string name="repo_success_http_error">Failed to retrieve events. Response code:
-        %1$s with error body:\n%2$s</string>
-    <string name="repo_fetch_error">Problem fetching feed data.</string>
+    <string name="repo_events_fetch_empty_body">Received Response with empty body</string>
+    <string name="repo_success_http_error">Failed to retrieve starWarsEvents. Response code: </string>
+    <string name="repo_fetch_error">There was a problem making the request to the network.</string>
 
     <!-- MainActivity -->
     <string name="main_no_network_no_database">
         Unable to retrieve data from the database to populate the RecyclerView adapter. No network connection to populate database from remote source.
     </string>
-    <string name="main_toast_events_fetch_fail">Unable to retrieve events from the server.</string>
+    <string name="main_toast_events_fetch_fail">Unable to retrieve starWarsEvents from the database.</string>
+    <string name="main_resource_error">The repository returned an error while attempting to fetch starWarsEvents data.</string>
 
     <!-- EventDetailActivity -->
-    <string name="event_detail_no_number">There is no number for this event.</string>
+    <string name="event_detail_no_number">There is no number for this starWarsEvent.</string>
     <string name="event_detail_unable_call">Unable to place a call.</string>
 
     <!-- Sharing -->
     <string name="share_intent_title">Share with</string>
-    <string name="share_failed">Unable to share this event.</string>
+    <string name="share_failed">Unable to share this starWarsEvent.</string>
     <string name="share_message">%1$s \n %2$s, %3$s \n %4$s \n %5$s</string>
 </resources>

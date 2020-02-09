@@ -2,54 +2,96 @@ package com.glopez.phunapp.view.activities
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
+import android.net.ConnectivityManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
-import android.util.Log
+import android.view.View
 import android.widget.Toast
-import com.glopez.phunapp.PhunApp
 import com.glopez.phunapp.R
 import com.glopez.phunapp.view.adapters.EventRecyclerAdapter
-import com.glopez.phunapp.view.viewmodels.EventViewModel
-import com.glopez.phunapp.ViewModelFactory
-import com.glopez.phunapp.utils.Utils
+import com.glopez.phunapp.view.viewmodels.FeedViewModel
+import com.glopez.phunapp.view.viewmodels.ViewModelFactory
+import com.glopez.phunapp.model.StarWarsEvent
+import com.glopez.phunapp.model.db.Resource
+import com.glopez.phunapp.utils.isNetworkAvailable
 import kotlinx.android.synthetic.main.content_main.*
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
-
-    private val LOG_TAG: String = MainActivity::class.java.simpleName
-    private lateinit var eventViewModel: EventViewModel
+    private lateinit var feedViewModel: FeedViewModel
+    private lateinit var adapter: EventRecyclerAdapter
+    private lateinit var connectivityManager: ConnectivityManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Create the layout manager for the Recycler View
+        connectivityManager =
+            this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
         val gridColumnCount: Int = resources.getInteger(R.integer.num_grid_columns)
         val gridLayoutManager = GridLayoutManager(this, gridColumnCount)
         feed_list.layoutManager = gridLayoutManager
 
-        // Create the adapter for the Recycler View
-        val adapter = EventRecyclerAdapter(this)
+        adapter = EventRecyclerAdapter(this)
         feed_list.adapter = adapter
 
-        // Get the ViewModel and observe the event feed being set by the adapter
-        eventViewModel = ViewModelProviders.of(this, ViewModelFactory
-            .getInstance(application as PhunApp))
-            .get(EventViewModel::class.java)
+        feedViewModel = ViewModelProviders.of(this, ViewModelFactory)
+            .get(FeedViewModel::class.java)
 
-        eventViewModel.getEventsList().observe(this, Observer { events ->
-            events?.let {
-                // Display toast when there was no model retrieved from the database and
-                // a network connection is unavailable.
-                if (events.isEmpty() && !Utils.isNetworkAvailable(this)) {
-                    Log.d(LOG_TAG, getString(R.string.main_no_network_no_database))
-                    Toast.makeText(this, getString(R.string.main_toast_events_fetch_fail),
-                        Toast.LENGTH_LONG).show()
-                } else {
-                    adapter.setEvents(it)
+        observeEventsList()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        feedViewModel.refreshEvents()
+    }
+
+    private fun showLoading() { progress_bar.visibility = View.VISIBLE }
+
+    private fun hideLoading() { progress_bar.visibility = View.GONE}
+
+    private fun observeEventsList() {
+        feedViewModel.getEventsResource().observe(this, Observer { resource ->
+            resource?.let {
+                when (resource) {
+                    is Resource.Success -> {
+                        hideLoading()
+                        handleViewOnSuccess(resource.data)
+                    }
+                    is Resource.Loading -> {
+                        showLoading()
+                    }
+                    is Resource.Error -> {
+                        hideLoading()
+                        handleViewOnError(resource.error)
+                    }
                 }
             }
         })
     }
+
+    private fun handleViewOnSuccess(starWarsEventList: List<StarWarsEvent>?) {
+        if (starWarsEventList.isNullOrEmpty() && !isNetworkAvailable(connectivityManager)) {
+            Toast.makeText(this, R.string.main_no_network_no_database, Toast.LENGTH_LONG).show()
+        } else {
+            if (starWarsEventList == null)
+                Toast.makeText(this, "Received a null EventList", Toast.LENGTH_LONG).show()
+            else {
+                adapter.setEvents(starWarsEventList)
+            }
+        }
+    }
+
+    private fun handleViewOnError(error: Throwable) {
+        Timber.e(error, getString(R.string.main_resource_error))
+        Toast.makeText(
+            this, getString(R.string.main_toast_events_fetch_fail),
+            Toast.LENGTH_LONG
+        ).show()
+    }
 }
+
+
