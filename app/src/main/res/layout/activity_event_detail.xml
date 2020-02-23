@@ -28,7 +28,7 @@
             <ImageView
                     android:id="@+id/detail_event_image"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/mobile_image_view_height"
+                    android:layout_height="@dimen/detail_image_view_height"
                     tools:src="@drawable/placeholder_nomoon"
                     android:scaleType="centerCrop"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -65,8 +65,8 @@
                     android:text="@string/detail_event_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/mobile_detail_vertical_margin"
-                    android:layout_marginEnd="@dimen/mobile_detail_vertical_margin"
+                    android:layout_marginStart="@dimen/detail_text_view_vertical_margin"
+                    android:layout_marginEnd="@dimen/detail_text_view_vertical_margin"
                     android:layout_marginTop="16dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                     android:textColor="@color/textColor"/>
@@ -76,8 +76,8 @@
                     android:text="@string/event_title_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/mobile_detail_vertical_margin"
-                    android:layout_marginEnd="@dimen/mobile_detail_vertical_margin"
+                    android:layout_marginStart="@dimen/detail_text_view_vertical_margin"
+                    android:layout_marginEnd="@dimen/detail_text_view_vertical_margin"
                     android:layout_marginTop="8dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="@color/textColor"/>
@@ -86,8 +86,8 @@
                     android:text="@string/event_location_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/mobile_detail_vertical_margin"
-                    android:layout_marginEnd="@dimen/mobile_detail_vertical_margin"
+                    android:layout_marginStart="@dimen/detail_text_view_vertical_margin"
+                    android:layout_marginEnd="@dimen/detail_text_view_vertical_margin"
                     android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                     android:textColor="@color/textColor"/>
 
@@ -97,8 +97,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:layout_marginStart="@dimen/mobile_detail_vertical_margin"
-                    android:layout_marginEnd="@dimen/mobile_detail_vertical_margin"
+                    android:layout_marginStart="@dimen/detail_text_view_vertical_margin"
+                    android:layout_marginEnd="@dimen/detail_text_view_vertical_margin"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     android:textColor="@color/textColor"/>
         </LinearLayout>

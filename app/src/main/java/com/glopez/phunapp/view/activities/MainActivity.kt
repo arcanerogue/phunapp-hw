@@ -4,8 +4,8 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import com.glopez.phunapp.R
-import com.glopez.phunapp.utils.IntentCategory
-import com.glopez.phunapp.utils.IntentFactory
+import com.glopez.phunapp.utils.CallHelper
+import com.glopez.phunapp.utils.ShareHelper
 import com.glopez.phunapp.view.StarWarsUiEvent
 import com.glopez.phunapp.view.detail.DetailFragment
 import com.glopez.phunapp.view.feed.FeedFragment
@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity(), FeedFragment.FeedFragmentListener,
     }
 
     override fun onShareClicked(event: StarWarsUiEvent) {
-        IntentFactory.create(this, IntentCategory.SHARE, event.shareMessage)
+        ShareHelper.createShareIntent(this, event.shareMessage)
     }
 
     override fun onNavigateBackFromDetail() {
@@ -54,10 +54,10 @@ class MainActivity : AppCompatActivity(), FeedFragment.FeedFragmentListener,
     override fun onDetailMenuItemClick(menuItem: MenuItem, phoneNumber: String, shareMessage: String) {
         when (menuItem.itemId) {
             R.id.detail_action_call -> {
-                IntentFactory.create(this, IntentCategory.CALL, phoneNumber)
+                CallHelper.createCallIntent(this, phoneNumber)
             }
             R.id.detail_action_share -> {
-                IntentFactory.create(this, IntentCategory.SHARE, shareMessage)
+                ShareHelper.createShareIntent(this, shareMessage)
             }
             else -> super.onOptionsItemSelected(menuItem)
         }

@@ -28,19 +28,19 @@ fun StarWarsEvent.createEventDateFormatString(): String {
 
 fun StarWarsEvent.createShareEventMessage(): String {
     val shareString = StringBuilder()
-    if(!this.title.isNullOrBlank()) {
+    if(this.title?.isNotBlank() == true) {
         shareString.append("${this.title}\n")
     }
-    if(!this.location1.isNullOrBlank()) {
+    if(this.location1?.isNotBlank() == true) {
         shareString.append("${this.location1}, ")
     }
-    if(!this.location2.isNullOrBlank()) {
+    if(this.location2?.isNotBlank() == true) {
         shareString.append("${this.location2}\n")
     }
-    if(!this.date.isNullOrBlank()) {
+    if(this.date?.isNotBlank() == true) {
         shareString.append("${this.createEventDateFormatString()}\n")
     }
-    if(!this.description.isNullOrBlank()) {
+    if(this.description?.isNotBlank() == true) {
         shareString.append("${this.description}")
     }
     return shareString.toString()

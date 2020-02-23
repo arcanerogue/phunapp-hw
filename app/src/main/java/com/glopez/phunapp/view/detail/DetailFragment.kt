@@ -53,12 +53,12 @@ class DetailFragment : Fragment() {
         canCall = deviceCanCall(phunApp.packageManager)
         listener = activity as DetailFragmentListener
 
-        detailViewModel = ViewModelProviders.of(this, ViewModelFactory
-            .getInstance(phunApp))
+        detailViewModel = ViewModelProviders.of(this, ViewModelFactory)
             .get(DetailViewModel::class.java)
 
         val eventDetailId = arguments?.getSerializable(EVENT_ID) as Int
-        observeEventDetail(eventDetailId)
+        detailViewModel.getEventById(eventDetailId)
+        observeEventDetail()
     }
 
     override fun onCreateView(
@@ -85,8 +85,8 @@ class DetailFragment : Fragment() {
         }
     }
 
-    private fun observeEventDetail(eventId: Int) {
-        detailViewModel.getEventDetailResource(eventId).observe(this, Observer { resource ->
+    private fun observeEventDetail() {
+        detailViewModel.eventDetail.observe(this, Observer { resource ->
             resource?.let {
                 when (resource) {
                     is Resource.Error -> handleViewsOnError(resource.error)

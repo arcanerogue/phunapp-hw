@@ -41,8 +41,7 @@ class FeedFragment : Fragment() {
         networkConnected = isNetworkAvailable(connectivityManager)
         eventRecyclerAdapter = EventRecyclerAdapter(listener)
 
-        feedViewModel = ViewModelProviders.of(this, ViewModelFactory
-            .getInstance(phunApp))
+        feedViewModel = ViewModelProviders.of(this, ViewModelFactory)
             .get(FeedViewModel::class.java)
     }
 
@@ -69,17 +68,17 @@ class FeedFragment : Fragment() {
         feedViewModel.refreshEvents()
     }
 
-    override fun onPause() {
-        super.onPause()
-        feedViewModel.removeSources()
-    }
+//    override fun onPause() {
+//        super.onPause()
+//        feedViewModel.removeSources()
+//    }
 
     private fun showLoading() { fragment_progress_bar.visibility = View.VISIBLE }
 
     private fun hideLoading() { fragment_progress_bar.visibility = View.GONE}
 
     private fun observeEventsList() {
-        feedViewModel.getEventsResource().observe(this, Observer { resource ->
+        feedViewModel.eventsFeed.observe(this, Observer { resource ->
             resource?.let {
                 when (resource) {
                     is Resource.Success -> {

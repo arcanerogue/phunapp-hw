@@ -85,7 +85,7 @@ class EventDetailActivity : AppCompatActivity() {
 //        }
 //
 //    private fun observeEventDetail(eventId: Int) {
-//        detailViewModel.getEventDetailResource(eventId).observe(this, Observer { event ->
+//        detailViewModel.getEventById(eventId).observe(this, Observer { event ->
 //            event?.let {
 //                when (event) {
 //                    is Resource.Error -> handleViewsOnError(event.error)

@@ -8,6 +8,7 @@ import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.model.repository.FeedRepository
 import com.glopez.phunapp.testutil.LiveDataTestObserver
 import com.glopez.phunapp.testutil.TestDataUtil
+import com.glopez.phunapp.view.StarWarsUiEvent
 import com.glopez.phunapp.view.detail.DetailViewModel
 import com.nhaarman.mockitokotlin2.*
 import org.junit.Assert.*
@@ -22,7 +23,7 @@ class DetailViewModelTest {
     @JvmField
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    private val singleEventObserver = LiveDataTestObserver<Resource<StarWarsEvent>>()
+    private val singleEventObserver = LiveDataTestObserver<Resource<StarWarsUiEvent>>()
     private val mockEventRepository: FeedRepository = mock()
     private lateinit var detailViewModel: DetailViewModel
     private val eventId: Int = 1
@@ -34,7 +35,7 @@ class DetailViewModelTest {
             .doReturn(testLiveData)
 
         detailViewModel = DetailViewModel(mockEventRepository)
-        detailViewModel.getEventDetailResource(eventId)
+        detailViewModel.getEventById(eventId)
             .observeForever(singleEventObserver)
     }
 
@@ -61,7 +62,7 @@ class DetailViewModelTest {
 
     @After
     fun cleanUp() {
-        detailViewModel.getEventDetailResource(eventId)
+        detailViewModel.getEventById(eventId)
             .removeObserver(singleEventObserver)
     }
 }
