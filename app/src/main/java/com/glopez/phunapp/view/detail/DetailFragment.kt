@@ -1,12 +1,12 @@
 package com.glopez.phunapp.view.detail
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.*
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.glopez.phunapp.PhunApp
 import com.glopez.phunapp.R
@@ -46,7 +46,10 @@ class DetailFragment : Fragment() {
         canCall = deviceCanCall(phunApp.packageManager)
         listener = activity as DetailFragmentListener
 
-        detailViewModel = ViewModelProviders.of(this, ViewModelFactory)
+//        detailViewModel = ViewModelProviders.of(this, ViewModelFactory)
+//            .get(DetailViewModel::class.java)
+
+        detailViewModel = ViewModelProvider(this, ViewModelFactory)
             .get(DetailViewModel::class.java)
 
         val eventDetailId = arguments?.getSerializable(EVENT_ID) as Int

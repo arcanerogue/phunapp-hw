@@ -1,7 +1,7 @@
 package com.glopez.phunapp.view
 
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.glopez.phunapp.model.repository.EventFeedRepository
 import com.glopez.phunapp.view.detail.DetailViewModel
 import com.glopez.phunapp.view.feed.FeedViewModel

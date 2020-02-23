@@ -1,17 +1,17 @@
 package com.glopez.phunapp.view.feed
 
-import android.arch.lifecycle.Observer
-import android.support.v4.app.Fragment
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.glopez.phunapp.PhunApp
 import com.glopez.phunapp.R
 import com.glopez.phunapp.model.db.Resource
@@ -41,8 +41,12 @@ class FeedFragment : Fragment() {
         networkConnected = isNetworkAvailable(connectivityManager)
         eventRecyclerAdapter = EventRecyclerAdapter(listener)
 
-        feedViewModel = ViewModelProviders.of(this, ViewModelFactory)
+//        feedViewModel = ViewModelProviders.of(this, ViewModelFactory)
+//            .get(FeedViewModel::class.java)
+
+        feedViewModel = ViewModelProvider(this, ViewModelFactory)
             .get(FeedViewModel::class.java)
+
     }
 
     override fun onCreateView(
@@ -73,7 +77,7 @@ class FeedFragment : Fragment() {
     private fun hideLoading() { fragment_progress_bar.visibility = View.GONE}
 
     private fun observeEventsList() {
-        feedViewModel.eventsFeed.observe(this, Observer { resource ->
+        feedViewModel.eventsFeed.observe(viewLifecycleOwner, Observer { resource ->
             resource?.let {
                 when (resource) {
                     is Resource.Success -> {

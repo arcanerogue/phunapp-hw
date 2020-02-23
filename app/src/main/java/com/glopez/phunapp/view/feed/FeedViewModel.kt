@@ -1,6 +1,9 @@
 package com.glopez.phunapp.view.feed
 
-import android.arch.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import androidx.lifecycle.ViewModel
 import com.glopez.phunapp.model.StarWarsEvent
 import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.model.repository.FeedRepository
@@ -21,7 +24,7 @@ class FeedViewModel(private val eventFeedRepo: FeedRepository) : ViewModel() {
 
     private fun getEventsResource(): LiveData<Resource<List<StarWarsUiEvent>>> {
         eventsFeedResource = Transformations.map(eventFeedRepo.getEvents()) {
-            data -> mapToResource(data)
+            data: Resource<List<StarWarsEvent>> -> mapToResource(data)
         } as MutableLiveData<Resource<List<StarWarsUiEvent>>>
         return eventsFeedResource
     }

@@ -1,9 +1,9 @@
 package com.glopez.phunapp.view.detail
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.Transformations
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import androidx.lifecycle.ViewModel
 import com.glopez.phunapp.constants.DB_MINIMUM_ID_VALUE
 import com.glopez.phunapp.model.StarWarsEvent
 import com.glopez.phunapp.model.db.Resource
@@ -31,7 +31,7 @@ class DetailViewModel(private val eventRepo: FeedRepository) : ViewModel() {
      */
     fun getEventById(id: Int): LiveData<Resource<StarWarsUiEvent>> {
         eventDetailResource = Transformations.map(eventRepo.getSingleEventFromDatabase(id)) {
-            data -> mapToResource(data)
+            data: StarWarsEvent -> mapToResource(data)
         } as MutableLiveData<Resource<StarWarsUiEvent>>
         return eventDetailResource
     }

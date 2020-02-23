@@ -1,8 +1,8 @@
 package com.glopez.phunapp.view.activities
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import com.glopez.phunapp.R
 import com.glopez.phunapp.utils.CallHelper
 import com.glopez.phunapp.utils.ShareHelper
@@ -43,10 +43,11 @@ class MainActivity : AppCompatActivity(), FeedFragment.FeedFragmentListener,
         supportFragmentManager.apply {
             val detailFragment = this.findFragmentByTag("eventDetail")
 
-            beginTransaction()
-            .remove(detailFragment)
-            .commit()
-
+            if (detailFragment != null) {
+                beginTransaction()
+                    .remove(detailFragment)
+                    .commit()
+            }
             popBackStack()
         }
     }

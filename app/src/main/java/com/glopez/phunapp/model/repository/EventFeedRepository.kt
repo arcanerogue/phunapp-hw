@@ -1,8 +1,5 @@
 package com.glopez.phunapp.model.repository
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MediatorLiveData
-import android.arch.lifecycle.MutableLiveData
 import com.glopez.phunapp.model.db.EventDao
 import com.glopez.phunapp.model.db.EventDatabase
 import retrofit2.Call
@@ -11,7 +8,10 @@ import retrofit2.Response
 import com.glopez.phunapp.model.network.ApiResponse
 import com.glopez.phunapp.model.network.EventFeedProvider
 import timber.log.Timber
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import com.glopez.phunapp.R
 import com.glopez.phunapp.constants.DB_MINIMUM_ID_VALUE
 import com.glopez.phunapp.model.StarWarsEvent
