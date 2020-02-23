@@ -16,7 +16,6 @@ class CallHelper {
                     Toast.LENGTH_LONG
                 ).show()
             } else {
-//                val packageManager = context.applicationContext.packageManager
                 val packageManager = context.packageManager
                 val dialerIntent = Intent(Intent.ACTION_DIAL)
                 dialerIntent.data = Uri.parse("tel:$phoneNumber")

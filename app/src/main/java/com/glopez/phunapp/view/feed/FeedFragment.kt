@@ -68,11 +68,6 @@ class FeedFragment : Fragment() {
         feedViewModel.refreshEvents()
     }
 
-//    override fun onPause() {
-//        super.onPause()
-//        feedViewModel.removeSources()
-//    }
-
     private fun showLoading() { fragment_progress_bar.visibility = View.VISIBLE }
 
     private fun hideLoading() { fragment_progress_bar.visibility = View.GONE}

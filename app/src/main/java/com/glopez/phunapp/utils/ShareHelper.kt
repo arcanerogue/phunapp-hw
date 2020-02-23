@@ -15,7 +15,6 @@ class ShareHelper {
                 type = "text/plain"
             }
 
-//            val packageManager = context.applicationContext.packageManager
             val packageManager = context.packageManager
 
             if (isIntentSafeToStart(packageManager, shareIntent)) {

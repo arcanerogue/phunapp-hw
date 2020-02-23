@@ -14,13 +14,6 @@ import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.utils.deviceCanCall
 import com.glopez.phunapp.view.StarWarsUiEvent
 import com.glopez.phunapp.view.ViewModelFactory
-import kotlinx.android.synthetic.main.activity_event_detail.app_bar
-import kotlinx.android.synthetic.main.activity_event_detail.detail_event_date
-import kotlinx.android.synthetic.main.activity_event_detail.detail_event_description
-import kotlinx.android.synthetic.main.activity_event_detail.detail_event_image
-import kotlinx.android.synthetic.main.activity_event_detail.detail_event_location
-import kotlinx.android.synthetic.main.activity_event_detail.detail_event_title
-import kotlinx.android.synthetic.main.activity_event_detail.nested_scroll_view_group
 import kotlinx.android.synthetic.main.fragment_event_detail.*
 import timber.log.Timber
 import java.lang.Exception
