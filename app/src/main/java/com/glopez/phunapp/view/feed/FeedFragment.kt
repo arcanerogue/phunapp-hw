@@ -41,12 +41,8 @@ class FeedFragment : Fragment() {
         networkConnected = isNetworkAvailable(connectivityManager)
         eventRecyclerAdapter = EventRecyclerAdapter(listener)
 
-//        feedViewModel = ViewModelProviders.of(this, ViewModelFactory)
-//            .get(FeedViewModel::class.java)
-
         feedViewModel = ViewModelProvider(this, ViewModelFactory)
             .get(FeedViewModel::class.java)
-
     }
 
     override fun onCreateView(

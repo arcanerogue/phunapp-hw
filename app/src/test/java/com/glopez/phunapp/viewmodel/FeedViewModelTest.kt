@@ -32,7 +32,7 @@ class FeedViewModelTest {
     fun setUp() {
         whenever(mockEventRepository.getApiResponseState())
             .doReturn(apiResponseState)
-        whenever(mockEventRepository.getEventsFromDatabase())
+        whenever(mockEventRepository.getEvents())
             .doReturn(eventsFromDatabase)
 
         feedViewModel = FeedViewModel(mockEventRepository)

@@ -46,14 +46,11 @@ class DetailFragment : Fragment() {
         canCall = deviceCanCall(phunApp.packageManager)
         listener = activity as DetailFragmentListener
 
-//        detailViewModel = ViewModelProviders.of(this, ViewModelFactory)
-//            .get(DetailViewModel::class.java)
-
         detailViewModel = ViewModelProvider(this, ViewModelFactory)
             .get(DetailViewModel::class.java)
 
         val eventDetailId = arguments?.getSerializable(EVENT_ID) as Int
-        detailViewModel.getEventById(eventDetailId)
+        detailViewModel.getEventDetail(eventDetailId)
         observeEventDetail()
     }
 

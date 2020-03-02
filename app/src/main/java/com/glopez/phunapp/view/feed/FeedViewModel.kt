@@ -2,12 +2,12 @@ package com.glopez.phunapp.view.feed
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.glopez.phunapp.model.StarWarsEvent
+import androidx.lifecycle.viewModelScope
 import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.model.repository.FeedRepository
 import com.glopez.phunapp.view.StarWarsUiEvent
+import kotlinx.coroutines.launch
 
 /**
  * [ViewModel] for the MainActivity which displays the list of StarWarsEvent objects.
@@ -15,38 +15,31 @@ import com.glopez.phunapp.view.StarWarsUiEvent
  */
 class FeedViewModel(private val eventFeedRepo: FeedRepository) : ViewModel() {
     private var eventsFeedResource = MutableLiveData<Resource<List<StarWarsUiEvent>>>()
-    val eventsFeed: LiveData<Resource<List<StarWarsUiEvent>>> = getEventsResource()
-
+    val eventsFeed: LiveData<Resource<List<StarWarsUiEvent>>>
+        get() = eventsFeedResource
 
     init {
-        eventsFeedResource.value = Resource.Loading()
-    }
-
-    private fun getEventsResource(): LiveData<Resource<List<StarWarsUiEvent>>> {
-        eventsFeedResource = Transformations.map(eventFeedRepo.getEvents()) {
-            data: Resource<List<StarWarsEvent>> -> mapToResource(data)
-        } as MutableLiveData<Resource<List<StarWarsUiEvent>>>
-        return eventsFeedResource
-    }
-
-    fun refreshEvents() {
-        eventFeedRepo.updateEventsFromNetwork()
-    }
-
-    private fun mapToResource(starWarsEventList: Resource<List<StarWarsEvent>>): Resource<List<StarWarsUiEvent>> {
-        return when (starWarsEventList) {
-            is Resource.Success -> Resource.Success(starWarsEventList.data?.let { StarWarsUiEvent.mapToUiModelList(it) })
-            is Resource.Loading -> Resource.Loading(emptyList())
-            is Resource.Error -> Resource.Error(starWarsEventList.error)
+        viewModelScope.launch {
+            val resource = eventFeedRepo.getEvents()
+            if (resource.isNullOrEmpty()) {
+                eventsFeedResource.value = Resource.Loading(emptyList())
+            } else {
+                eventsFeedResource.value =
+                    Resource.Success(StarWarsUiEvent.mapToUiModelList(resource))
+            }
         }
     }
 
-    /**
-     * Clears database insert disposables
-     */
-    override fun onCleared() {
-        super.onCleared()
-        eventFeedRepo.clearDisposables()
+    fun refreshEvents() {
+        viewModelScope.launch {
+            eventFeedRepo.updateEventsFromNetwork()
+            val resource = eventFeedRepo.getEvents()
+            if (resource.isNullOrEmpty()) {
+                eventsFeedResource.value = Resource.Error(Exception("no list found"))
+            } else {
+                eventsFeedResource.value = Resource.Success(StarWarsUiEvent.mapToUiModelList(resource))
+            }
+        }
     }
 }
 

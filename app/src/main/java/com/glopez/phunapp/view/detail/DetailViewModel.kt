@@ -1,14 +1,12 @@
 package com.glopez.phunapp.view.detail
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.glopez.phunapp.constants.DB_MINIMUM_ID_VALUE
 import com.glopez.phunapp.model.StarWarsEvent
 import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.model.repository.FeedRepository
 import com.glopez.phunapp.view.StarWarsUiEvent
+import kotlinx.coroutines.launch
 
 /**
  * [ViewModel] for the EventDetailActivity which displays the details of
@@ -20,20 +18,18 @@ class DetailViewModel(private val eventRepo: FeedRepository) : ViewModel() {
     val eventDetail: LiveData<Resource<StarWarsUiEvent>>
         get() = eventDetailResource
 
-    init {
-        eventDetailResource.value = Resource.Loading()
-    }
+    init { eventDetailResource.value = Resource.Loading() }
+
     /**
      * Retrieves the StarWarsEvent from the repository and transforms it into a Resource State object
      * to inform the View of the current state.
      * @param[id] The id value of the requested StarWarsEvent.
      * @return The requested StarWarsEvent object wrapped in a Resource State object.
      */
-    fun getEventById(id: Int): LiveData<Resource<StarWarsUiEvent>> {
-        eventDetailResource = Transformations.map(eventRepo.getSingleEventFromDatabase(id)) {
-            data: StarWarsEvent -> mapToResource(data)
-        } as MutableLiveData<Resource<StarWarsUiEvent>>
-        return eventDetailResource
+    fun getEventDetail(id: Int) {
+        viewModelScope.launch {
+            eventDetailResource.value = mapToResource(eventRepo.getEventById(id))
+        }
     }
 
     private fun mapToResource(starWarsEvent: StarWarsEvent?): Resource<StarWarsUiEvent> {
