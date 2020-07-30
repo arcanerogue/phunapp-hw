@@ -1,78 +1,76 @@
 package com.glopez.phunapp.repository
 
-import android.arch.core.executor.testing.InstantTaskExecutorRule
-import android.arch.lifecycle.MutableLiveData
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.MutableLiveData
 import com.glopez.phunapp.constants.HTTP_BAD_REQUEST
 import com.glopez.phunapp.model.StarWarsEvent
 import com.glopez.phunapp.model.db.EventDao
 import com.glopez.phunapp.model.db.EventDatabase
 import com.glopez.phunapp.model.network.ApiResponse
 import com.glopez.phunapp.model.network.EventFeedProvider
+import com.glopez.phunapp.model.network.FeedProvider
 import com.glopez.phunapp.model.repository.EventFeedRepository
-import com.glopez.phunapp.testutil.LiveDataTestObserver
-import com.glopez.phunapp.testutil.TestDataUtil
+import com.glopez.phunapp.testutil.*
 import org.junit.Rule
 import com.nhaarman.mockitokotlin2.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.*
 import okhttp3.MediaType
 import okhttp3.ResponseBody
 import org.hamcrest.core.IsInstanceOf.instanceOf
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Response
 import org.junit.Assert.*
 
+@ExperimentalCoroutinesApi
 class StarWarsEventFeedRepositoryTest {
     @Rule
     @JvmField
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    private val mockDatabase: EventDatabase = mock()
-    private val mockEventDao: EventDao = mock()
-    private val apiResponseStateObserver = LiveDataTestObserver<ApiResponse<List<StarWarsEvent>>>()
+    @get:Rule
+    var coroutineTestRule = CoroutineTestRule()
+
+    private val testDispatcher = coroutineTestRule.testDispatcher
     private val events = TestDataUtil.createListOfEvents(2)
-    private val eventsFromDatabase: MutableLiveData<List<StarWarsEvent>> = MutableLiveData()
+    private val mockEventDao: EventDao = EventDaoMock()
+    private val mockEventApi: FeedProvider = FeedProviderMock(events)
     private lateinit var eventFeedRepo: EventFeedRepository
 
     @Before
     fun setUp() {
-        EventFeedRepository.init(mockDatabase)
+        EventFeedRepository
+            .init(mockEventDao, mockEventApi, coroutineTestRule.testDispatcherProvider)
         eventFeedRepo = EventFeedRepository
-
-        whenever(mockEventDao.getAllEvents())
-            .doReturn(eventsFromDatabase)
-
-        eventFeedRepo.getApiResponseState().observeForever(apiResponseStateObserver)
     }
 
     @Test
-    fun `verify api success state is set`() {
-        val response = Response.success(events)
-        val successResponse = ApiResponse.onResponse(response)
-
-        eventFeedRepo.setResponseState(successResponse)
-        assertThat(apiResponseStateObserver.getData(), instanceOf(ApiResponse.Success::class.java))
-    }
-
-    @Test
-    fun `verify api empty body response state is set`() {
-        val emptyStarWarsEvents: List<StarWarsEvent>? = null
-        val response = Response.success(emptyStarWarsEvents)
-        val emptyBodyResponse = ApiResponse.onResponse(response)
-
-        eventFeedRepo.setResponseState(emptyBodyResponse)
-        assertThat(apiResponseStateObserver.getData(), instanceOf(ApiResponse.EmptyBody::class.java))
-    }
+    fun `verify events are retrieved from database`() =
+        testDispatcher.runBlockingTest {
+            for (event: StarWarsEvent in events) {
+                mockEventDao.insert(event)
+            }
+            val events = eventFeedRepo.getEvents()
+            assertEquals(events.size, events.size)
+        }
 
     @Test
-    fun `verify api error response state is set`() {
-        val errorMessage = "Api returned an error response"
-        val response = Response
-            .error<List<StarWarsEvent>>(
-                HTTP_BAD_REQUEST,
-                ResponseBody.create(MediaType.get("application/txt"), errorMessage))
-        val errorResponse = ApiResponse.onResponse(response)
+    fun `verify empty list is retrieved when no events in database`() =
+        testDispatcher.runBlockingTest {
 
-        eventFeedRepo.setResponseState(errorResponse)
-        assertThat(apiResponseStateObserver.getData(), instanceOf(ApiResponse.Error::class.java))
-    }
+            assertEquals(0, eventFeedRepo.getEvents().size)
+        }
+
+    @Test
+    fun `verify event can be retrieved by id`() =
+        testDispatcher.runBlockingTest {
+
+            mockEventDao.insert(TestDataUtil.createEvent(10))
+
+            val event = eventFeedRepo.getEventById(10)
+            assertEquals(event?.id, 10)
+        }
 }

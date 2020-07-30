@@ -11,7 +11,7 @@ object TestDataUtil {
         timestamp = "Timestamp$index",
         image = "ImageUrl$index",
         phone = "Phone$index",
-        date = "Date$index",
+        date = "2015-08-07T21:39:00.000Z",
         location1 = "Location1_$index",
         location2 = "Location2_$index"
     )

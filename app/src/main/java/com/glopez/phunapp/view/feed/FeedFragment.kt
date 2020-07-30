@@ -1,7 +1,5 @@
 package com.glopez.phunapp.view.feed
 
-import android.content.Context
-import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +10,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.glopez.phunapp.PhunApp
 import com.glopez.phunapp.R
 import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.utils.isNetworkAvailable
@@ -25,42 +22,30 @@ import timber.log.Timber
 class FeedFragment : Fragment() {
     private lateinit var eventRecyclerAdapter: EventRecyclerAdapter
     private lateinit var feedViewModel: FeedViewModel
-    private lateinit var connectivityManager: ConnectivityManager
-    private lateinit var activityContext: Context
-    private lateinit var phunApp: PhunApp
-    private var networkConnected: Boolean = false
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val listener = activity as FeedFragmentListener
-        activityContext = activity as Context
-        phunApp = activity?.application as PhunApp
-
-        connectivityManager =
-            activity?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        networkConnected = isNetworkAvailable(connectivityManager)
-        eventRecyclerAdapter = EventRecyclerAdapter(listener)
-
-        feedViewModel = ViewModelProvider(this, ViewModelFactory)
-            .get(FeedViewModel::class.java)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_event_list, container, false)
+        return inflater.inflate(R.layout.fragment_event_list, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         val recyclerView = view.findViewById<RecyclerView>(R.id.feed_fragment_recycler_view)
+        eventRecyclerAdapter = EventRecyclerAdapter(activity as FeedFragmentListener)
 
         recyclerView.apply {
             val gridColumnCount: Int = resources.getInteger(R.integer.num_grid_columns)
-            layoutManager = GridLayoutManager(activityContext, gridColumnCount)
+            layoutManager = GridLayoutManager(activity, gridColumnCount)
             adapter = eventRecyclerAdapter
         }
 
+        feedViewModel = ViewModelProvider(this, ViewModelFactory)
+            .get(FeedViewModel::class.java)
+
         observeEventsList()
-        return view
     }
 
     override fun onResume() {
@@ -93,24 +78,33 @@ class FeedFragment : Fragment() {
     }
 
     private fun handleViewOnSuccess(starWarsEventList: List<StarWarsUiEvent>?) {
-        if (starWarsEventList.isNullOrEmpty() && !networkConnected) {
-            Timber.d(getString(R.string.main_no_network_no_database))
-        } else {
-            if (starWarsEventList == null)
-                Toast.makeText(activityContext, "Received a null EventList", Toast.LENGTH_LONG).show()
-            else {
-                eventRecyclerAdapter.setEvents(starWarsEventList)
-                hideLoading()
+        context?.run {
+            if (starWarsEventList.isNullOrEmpty() && !isNetworkAvailable(this)) {
+                Timber.d(getString(R.string.main_no_network_no_database))
+            } else {
+                if (starWarsEventList == null)
+                    Toast.makeText(
+                        this,
+                        "Received a null EventList",
+                        Toast.LENGTH_LONG
+                    ).show()
+                else {
+                    eventRecyclerAdapter.setEvents(starWarsEventList)
+                    hideLoading()
+                }
             }
         }
     }
 
     private fun handleViewOnError(error: Throwable) {
         Timber.e(error, getString(R.string.main_resource_error))
-        Toast.makeText(
-            activityContext, getString(R.string.main_toast_events_fetch_fail),
-            Toast.LENGTH_LONG
-        ).show()
+        context?.run {
+            Toast.makeText(
+                this,
+                getString(R.string.main_toast_events_fetch_fail),
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
 
     interface FeedFragmentListener {

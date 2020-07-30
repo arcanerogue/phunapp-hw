@@ -21,7 +21,7 @@ data class StarWarsUiEvent(
     var shareMessage: String = ""
 ) {
     companion object {
-        fun mapToUiModel(starWarsEvent: StarWarsEvent) : StarWarsUiEvent {
+        fun mapToUiModel(starWarsEvent: StarWarsEvent): StarWarsUiEvent {
             val starWarsUiEvent = StarWarsUiEvent(
                 id = starWarsEvent.id,
                 description = starWarsEvent.description ?: "",
@@ -69,19 +69,19 @@ data class StarWarsUiEvent(
 
     private fun createShareEventMessage() {
         val shareString = StringBuilder()
-        if(!title.isBlank()) {
+        if (!title.isBlank()) {
             shareString.append("${title}\n")
         }
-        if(!location1.isBlank()) {
+        if (!location1.isBlank()) {
             shareString.append("${location1}, ")
         }
-        if(!location2.isBlank()) {
+        if (!location2.isBlank()) {
             shareString.append("${location2}\n")
         }
-        if(!date.isBlank()) {
+        if (!date.isBlank()) {
             shareString.append("${date}\n")
         }
-        if(!description.isBlank()) {
+        if (!description.isBlank()) {
             shareString.append(description)
         }
         this.shareMessage = shareString.toString()
@@ -93,9 +93,14 @@ data class StarWarsUiEvent(
         }
 
         other as StarWarsUiEvent
-        return this.id != other.id && this.description != other.description && this.imageUrl != other.imageUrl &&
-                this.phone != other.phone && this.date != other.date && this.location1 != other.location1 &&
-                this.location2 != other.location2 && this.shareMessage != other.shareMessage
+        return this.id == other.id
+                && this.description == other.description
+                && this.imageUrl == other.imageUrl
+                && this.phone == other.phone
+                && this.date == other.date
+                && this.location1 == other.location1
+                && this.location2 == other.location2
+                && this.shareMessage == other.shareMessage
     }
 
     override fun hashCode(): Int {

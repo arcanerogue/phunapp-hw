@@ -1,6 +1,6 @@
 package com.glopez.phunapp.testutil
 
-import android.arch.lifecycle.Observer
+import androidx.lifecycle.Observer
 
 class LiveDataTestObserver<T> : Observer<T> {
     private var data: T? = null

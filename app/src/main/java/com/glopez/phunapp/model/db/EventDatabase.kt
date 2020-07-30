@@ -13,7 +13,7 @@ abstract class EventDatabase : RoomDatabase() {
 
     abstract fun eventDao(): EventDao
 
-        companion object {
+    companion object {
         private var INSTANCE: EventDatabase? = null
 
         fun getDatabase(context: Context): EventDatabase {

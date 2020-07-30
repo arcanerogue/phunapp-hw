@@ -32,7 +32,7 @@ class FeedViewModel(private val eventFeedRepo: FeedRepository) : ViewModel() {
 
     fun refreshEvents() {
         viewModelScope.launch {
-            eventFeedRepo.updateEventsFromNetwork()
+            eventFeedRepo.updateEvents()
             val resource = eventFeedRepo.getEvents()
             if (resource.isNullOrEmpty()) {
                 eventsFeedResource.value = Resource.Error(Exception("no list found"))

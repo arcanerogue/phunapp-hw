@@ -4,6 +4,7 @@ import android.app.Application
 import android.os.StrictMode
 import com.glopez.phunapp.model.repository.EventFeedRepository
 import com.glopez.phunapp.model.db.EventDatabase
+import com.glopez.phunapp.model.network.EventFeedProvider
 import com.glopez.phunapp.utils.StringsResourceProvider
 import timber.log.Timber
 
@@ -15,7 +16,9 @@ class PhunApp : Application() {
         Timber.d("Creating PhunApp.")
 //        setStrictMode()
         StringsResourceProvider.init(this.resources)
-        EventFeedRepository.init(EventDatabase.getDatabase(this))
+        EventFeedRepository.init(
+            EventDatabase.getDatabase(this).eventDao(),
+            EventFeedProvider().getService())
     }
 
     private fun setTimberLogging() {
