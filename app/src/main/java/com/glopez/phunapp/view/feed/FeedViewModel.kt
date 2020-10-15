@@ -7,7 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.model.repository.FeedRepository
 import com.glopez.phunapp.view.StarWarsUiEvent
+import com.glopez.phunapp.view.StarWarsUiEventMapper
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * [ViewModel] for the MainActivity which displays the list of StarWarsEvent objects.
@@ -15,6 +17,7 @@ import kotlinx.coroutines.launch
  */
 class FeedViewModel(private val eventFeedRepo: FeedRepository) : ViewModel() {
     private var eventsFeedResource = MutableLiveData<Resource<List<StarWarsUiEvent>>>()
+    private val uiEventMapper by lazy { StarWarsUiEventMapper() }
     val eventsFeed: LiveData<Resource<List<StarWarsUiEvent>>>
         get() = eventsFeedResource
 
@@ -23,9 +26,11 @@ class FeedViewModel(private val eventFeedRepo: FeedRepository) : ViewModel() {
             val resource = eventFeedRepo.getEvents()
             if (resource.isNullOrEmpty()) {
                 eventsFeedResource.value = Resource.Loading(emptyList())
+                Timber.d("init eventsFeedResource loading set on ${Thread.currentThread().name}")
             } else {
                 eventsFeedResource.value =
-                    Resource.Success(StarWarsUiEvent.mapToUiModelList(resource))
+                    Resource.Success(resource.map { uiEventMapper.mapToModel(it) })
+                Timber.d("init eventsFeedResource success set on ${Thread.currentThread().name}")
             }
         }
     }
@@ -37,7 +42,7 @@ class FeedViewModel(private val eventFeedRepo: FeedRepository) : ViewModel() {
             if (resource.isNullOrEmpty()) {
                 eventsFeedResource.value = Resource.Error(Exception("no list found"))
             } else {
-                eventsFeedResource.value = Resource.Success(StarWarsUiEvent.mapToUiModelList(resource))
+                eventsFeedResource.value = Resource.Success(resource.map { uiEventMapper.mapToModel(it) })
             }
         }
     }

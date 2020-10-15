@@ -1,28 +1,16 @@
 package com.glopez.phunapp.repository
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.MutableLiveData
-import com.glopez.phunapp.constants.HTTP_BAD_REQUEST
 import com.glopez.phunapp.model.StarWarsEvent
 import com.glopez.phunapp.model.db.EventDao
-import com.glopez.phunapp.model.db.EventDatabase
-import com.glopez.phunapp.model.network.ApiResponse
-import com.glopez.phunapp.model.network.EventFeedProvider
 import com.glopez.phunapp.model.network.FeedProvider
 import com.glopez.phunapp.model.repository.EventFeedRepository
 import com.glopez.phunapp.testutil.*
 import org.junit.Rule
-import com.nhaarman.mockitokotlin2.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
-import okhttp3.MediaType
-import okhttp3.ResponseBody
-import org.hamcrest.core.IsInstanceOf.instanceOf
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import retrofit2.Response
 import org.junit.Assert.*
 
 @ExperimentalCoroutinesApi
@@ -70,7 +58,7 @@ class StarWarsEventFeedRepositoryTest {
 
             mockEventDao.insert(TestDataUtil.createEvent(10))
 
-            val event = eventFeedRepo.getEventById(10)
+            val event = eventFeedRepo.getEvent(10)
             assertEquals(event?.id, 10)
         }
 }

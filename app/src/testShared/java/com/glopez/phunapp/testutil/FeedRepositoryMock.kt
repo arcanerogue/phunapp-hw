@@ -10,7 +10,7 @@ class FeedRepositoryMock : FeedRepository {
         return fakeEvents
     }
 
-    override suspend fun getEventById(id: Int): StarWarsEvent =
+    override suspend fun getEvent(id: Int): StarWarsEvent =
         fakeEvents.find { event -> event.id  == id }
             ?: throw NoSuchElementException("No element found with that id")
 
@@ -18,7 +18,7 @@ class FeedRepositoryMock : FeedRepository {
         return // no-op
     }
 
-    override suspend fun insertEventsIntoDatabase(starWarsEvents: List<StarWarsEvent>) {
+    override suspend fun saveEvents(starWarsEvents: List<StarWarsEvent>) {
         fakeEvents.addAll(starWarsEvents)
     }
 }

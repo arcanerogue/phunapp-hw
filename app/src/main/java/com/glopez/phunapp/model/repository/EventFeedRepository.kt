@@ -1,7 +1,6 @@
 package com.glopez.phunapp.model.repository
 
 import com.glopez.phunapp.model.db.EventDao
-import com.glopez.phunapp.model.db.EventDatabase
 import com.glopez.phunapp.model.network.ApiResponse
 import timber.log.Timber
 import com.glopez.phunapp.R
@@ -11,8 +10,6 @@ import com.glopez.phunapp.model.network.FeedProvider
 import com.glopez.phunapp.utils.DefaultDispatcherProvider
 import com.glopez.phunapp.utils.DispatcherProvider
 import com.glopez.phunapp.utils.StringsResourceProvider
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.lang.Exception
@@ -40,7 +37,7 @@ object EventFeedRepository : FeedRepository {
         return withContext(dispatcher.io()) { eventDao.getAllEvents() }
     }
 
-    override suspend fun getEventById(id: Int): StarWarsEvent? {
+    override suspend fun getEvent(id: Int): StarWarsEvent? {
         return withContext(dispatcher.io()) { eventDao.find(id) }
     }
 
@@ -66,7 +63,7 @@ object EventFeedRepository : FeedRepository {
                 apiResponse = ApiResponse.onResponse(response)
                 when (apiResponse) {
                     is ApiResponse.Success -> {
-                        insertEventsIntoDatabase((apiResponse as ApiResponse.Success<List<StarWarsEvent>>).body)
+                        saveEvents((apiResponse as ApiResponse.Success<List<StarWarsEvent>>).body)
                     }
                 }
             } catch (exception: Exception) {
@@ -76,7 +73,7 @@ object EventFeedRepository : FeedRepository {
         }
     }
 
-    override suspend fun insertEventsIntoDatabase(starWarsEvents: List<StarWarsEvent>) {
+    override suspend fun saveEvents(starWarsEvents: List<StarWarsEvent>) {
         for (starWarsEvent: StarWarsEvent in starWarsEvents) {
             // If the id field was not present in the Response object, the default value of 0 will be set.
             // If this is the case, the StarWarsEvent will not be inserted into the database.

@@ -22,25 +22,27 @@ import timber.log.Timber
 class FeedFragment : Fragment() {
     private lateinit var eventRecyclerAdapter: EventRecyclerAdapter
     private lateinit var feedViewModel: FeedViewModel
+    private var recyclerView: RecyclerView? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_event_list, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_event_list, container, false)
+        recyclerView = rootView.findViewById(R.id.feed_fragment_recycler_view)
+        eventRecyclerAdapter = EventRecyclerAdapter(activity as FeedFragmentListener)
+
+        recyclerView?.apply {
+            val gridColumnCount: Int = resources.getInteger(R.integer.num_grid_columns)
+            layoutManager = GridLayoutManager(rootView?.context, gridColumnCount)
+            adapter = eventRecyclerAdapter
+        }
+        return rootView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val recyclerView = view.findViewById<RecyclerView>(R.id.feed_fragment_recycler_view)
-        eventRecyclerAdapter = EventRecyclerAdapter(activity as FeedFragmentListener)
-
-        recyclerView.apply {
-            val gridColumnCount: Int = resources.getInteger(R.integer.num_grid_columns)
-            layoutManager = GridLayoutManager(activity, gridColumnCount)
-            adapter = eventRecyclerAdapter
-        }
 
         feedViewModel = ViewModelProvider(this, ViewModelFactory)
             .get(FeedViewModel::class.java)

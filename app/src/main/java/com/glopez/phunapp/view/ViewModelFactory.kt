@@ -3,13 +3,14 @@ package com.glopez.phunapp.view
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.glopez.phunapp.model.repository.EventFeedRepository
+import com.glopez.phunapp.model.repository.FeedRepository
 import com.glopez.phunapp.view.detail.DetailViewModel
 import com.glopez.phunapp.view.feed.FeedViewModel
 import java.lang.IllegalArgumentException
 
 @Suppress("UNCHECKED_CAST")
 object ViewModelFactory : ViewModelProvider.NewInstanceFactory() {
-    private val eventFeedRepository = EventFeedRepository
+    private val eventFeedRepository: FeedRepository = EventFeedRepository
 
     /**
      * Creates a new instance of the given class.

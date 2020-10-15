@@ -36,9 +36,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    packagingOptions {
-        pickFirst 'META-INF/*'
-    }
+//    packagingOptions {
+//        pickFirst 'META-INF/*'
+//    }
 }
 
 dependencies {
@@ -73,7 +73,8 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.lifecycle"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$versions.lifecycle"
     implementation "androidx.lifecycle:lifecycle-extensions:$versions.lifecycle"
-    kapt "androidx.lifecycle:lifecycle-compiler:$versions.lifecycle"
+//    kapt "androidx.lifecycle:lifecycle-compiler:$versions.lifecycle"
+    implementation "androidx.lifecycle:lifecycle-common-java8:$versions.lifecycle"
     testImplementation "androidx.arch.core:core-testing:$versions.lifecycle_testing"
     androidTestImplementation "androidx.arch.core:core-testing:$versions.lifecycle_testing"
 
@@ -93,4 +94,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.coroutines"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$versions.coroutines"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$versions.coroutines"
+    
+    // Leak Canary
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.4'
 }

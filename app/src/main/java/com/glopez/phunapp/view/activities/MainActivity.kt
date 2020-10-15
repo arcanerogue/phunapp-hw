@@ -11,7 +11,7 @@ import com.glopez.phunapp.view.detail.DetailFragment
 import com.glopez.phunapp.view.feed.FeedFragment
 
 class MainActivity : AppCompatActivity(), FeedFragment.FeedFragmentListener,
-    DetailFragment.DetailFragmentListener{
+    DetailFragment.DetailFragmentListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +26,9 @@ class MainActivity : AppCompatActivity(), FeedFragment.FeedFragmentListener,
     }
 
     override fun onFeedEventClicked(event: StarWarsUiEvent) {
-        val detailFragment = DetailFragment.newInstance(event.id)
+        val detailFragment = supportFragmentManager
+            .findFragmentByTag("eventDetail") as DetailFragment?
+            ?: DetailFragment.newInstance(event.id)
 
         supportFragmentManager
             .beginTransaction()
@@ -52,7 +54,11 @@ class MainActivity : AppCompatActivity(), FeedFragment.FeedFragmentListener,
         }
     }
 
-    override fun onDetailMenuItemClick(menuItem: MenuItem, phoneNumber: String, shareMessage: String) {
+    override fun onDetailMenuItemClick(
+        menuItem: MenuItem,
+        phoneNumber: String,
+        shareMessage: String
+    ) {
         when (menuItem.itemId) {
             R.id.detail_action_call -> {
                 CallHelper.createCallIntent(this, phoneNumber)

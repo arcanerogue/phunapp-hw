@@ -6,6 +6,7 @@ import com.glopez.phunapp.model.StarWarsEvent
 import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.model.repository.FeedRepository
 import com.glopez.phunapp.view.StarWarsUiEvent
+import com.glopez.phunapp.view.StarWarsUiEventMapper
 import kotlinx.coroutines.launch
 
 /**
@@ -14,6 +15,7 @@ import kotlinx.coroutines.launch
  * @param[eventRepo] The application's repository instance.
  */
 class DetailViewModel(private val eventRepo: FeedRepository) : ViewModel() {
+    private val uiEventMapper by lazy { StarWarsUiEventMapper() }
     private var eventDetailResource = MutableLiveData<Resource<StarWarsUiEvent>>()
     val eventDetail: LiveData<Resource<StarWarsUiEvent>>
         get() = eventDetailResource
@@ -28,7 +30,7 @@ class DetailViewModel(private val eventRepo: FeedRepository) : ViewModel() {
      */
     fun getEventDetail(id: Int) {
         viewModelScope.launch {
-            eventDetailResource.value = mapToResource(eventRepo.getEventById(id))
+            eventDetailResource.value = mapToResource(eventRepo.getEvent(id))
         }
     }
 
@@ -38,6 +40,6 @@ class DetailViewModel(private val eventRepo: FeedRepository) : ViewModel() {
                 NoSuchElementException("Invalid EVENT_ID passed to EventDetailActivity. StarWarsEvent not found in the Room database.")
             )
         else
-            Resource.Success(StarWarsUiEvent.mapToUiModel(starWarsEvent))
+            Resource.Success(uiEventMapper.mapToModel(starWarsEvent))
     }
 }

@@ -11,7 +11,6 @@ import com.glopez.phunapp.testutil.TestDataUtil
 import com.glopez.phunapp.view.StarWarsUiEvent
 import com.glopez.phunapp.view.detail.DetailViewModel
 import com.nhaarman.mockitokotlin2.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
 import org.junit.Assert.*
@@ -47,7 +46,7 @@ class DetailViewModelTest {
             val eventId = 1
             val eventDetail = TestDataUtil.createEvent(eventId)
 
-            whenever(mockEventRepository.getEventById(any()))
+            whenever(mockEventRepository.getEvent(any()))
                 .doReturn(eventDetail)
 
             detailViewModel.getEventDetail(eventId)
@@ -59,7 +58,7 @@ class DetailViewModelTest {
         testDispatcher.runBlockingTest {
             val starWarsEventDetail: StarWarsEvent? = null
 
-            whenever(mockEventRepository.getEventById(any()))
+            whenever(mockEventRepository.getEvent(any()))
                 .doReturn(starWarsEventDetail)
 
             detailViewModel.getEventDetail(any())
@@ -71,7 +70,7 @@ class DetailViewModelTest {
         testDispatcher.runBlockingTest {
             val eventDetail = TestDataUtil.createEvent(DB_MISSING_ID_VALUE)
 
-            whenever(mockEventRepository.getEventById(any()))
+            whenever(mockEventRepository.getEvent(any()))
                 .doReturn(eventDetail)
 
             detailViewModel.getEventDetail(any())
