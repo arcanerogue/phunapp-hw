@@ -16,7 +16,8 @@
             android:theme="@style/AppTheme.NoActionBar"
             tools:ignore="GoogleAppIndexingWarning" tools:targetApi="n">
 
-        <activity android:name=".view.activities.MainActivity">
+        <activity android:name=".view.activities.MainActivity"
+                android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

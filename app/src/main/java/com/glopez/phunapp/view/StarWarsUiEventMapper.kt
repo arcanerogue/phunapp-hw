@@ -33,13 +33,13 @@ class StarWarsUiEventMapper {
             dateFormat.applyPattern(inputPattern)
             dateFormat.timeZone = TimeZone.getTimeZone("UTC")
 
-            val formattedEventDate: Date = if (date.isNullOrBlank()) {
+            val formattedEventDate: Date = if (date.isBlank()) {
                 dateFormat.parse(
                     Calendar.getInstance()
                         .time.toString()
-                )
+                ) as Date
             } else {
-                dateFormat.parse((date))
+                dateFormat.parse((date)) as Date
             }
 
             dateFormat.applyPattern(outputPattern)

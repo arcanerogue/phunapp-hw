@@ -9,13 +9,11 @@ import com.glopez.phunapp.testutil.TestDataUtil
 import com.glopez.phunapp.view.StarWarsUiEvent
 import com.glopez.phunapp.view.feed.FeedViewModel
 import com.nhaarman.mockitokotlin2.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
-import org.junit.Assert.*
 import org.hamcrest.core.IsInstanceOf.instanceOf
 import org.junit.After
-import org.junit.Before
+import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 
