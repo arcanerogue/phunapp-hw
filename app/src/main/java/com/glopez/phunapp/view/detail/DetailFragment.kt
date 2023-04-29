@@ -12,14 +12,15 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.glopez.phunapp.R
+import com.glopez.phunapp.di.Injector
 import com.glopez.phunapp.model.db.Resource
 import com.glopez.phunapp.utils.deviceCanCall
 import com.glopez.phunapp.view.StarWarsUiEvent
 import com.glopez.phunapp.view.ViewModelFactory
 import com.google.android.material.appbar.AppBarLayout
-import kotlinx.android.synthetic.main.fragment_event_detail.*
 import timber.log.Timber
 import java.lang.Exception
+import javax.inject.Inject
 
 class DetailFragment : Fragment() {
     private lateinit var detailViewModel: DetailViewModel
@@ -34,6 +35,8 @@ class DetailFragment : Fragment() {
     private lateinit var eventLocation: TextView
     private lateinit var eventDescription: TextView
     private lateinit var eventImageView: ImageView
+
+    @Inject lateinit var viewModelFactory: ViewModelFactory
 
     companion object {
         private const val EVENT_ID: String = "event_id"
@@ -50,6 +53,9 @@ class DetailFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         listener = activity as DetailFragmentListener
+
+//        Injector.getInjector().inject(this)
+        this.viewModelFactory = Injector.get().getViewModelFactory()
     }
 
     override fun onCreateView(
@@ -74,7 +80,7 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        detailViewModel = ViewModelProvider(this, ViewModelFactory)
+        detailViewModel = ViewModelProvider(this, viewModelFactory)
             .get(DetailViewModel::class.java)
 
         val eventDetailId = arguments?.getSerializable(EVENT_ID) as Int

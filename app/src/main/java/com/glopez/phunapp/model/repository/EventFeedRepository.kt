@@ -1,37 +1,27 @@
 package com.glopez.phunapp.model.repository
 
-import com.glopez.phunapp.model.db.EventDao
-import com.glopez.phunapp.model.network.ApiResponse
-import timber.log.Timber
 import com.glopez.phunapp.R
 import com.glopez.phunapp.constants.DB_MINIMUM_ID_VALUE
 import com.glopez.phunapp.model.StarWarsEvent
+import com.glopez.phunapp.model.db.EventDao
+import com.glopez.phunapp.model.network.ApiResponse
 import com.glopez.phunapp.model.network.FeedProvider
-import com.glopez.phunapp.utils.DefaultDispatcherProvider
 import com.glopez.phunapp.utils.DispatcherProvider
 import com.glopez.phunapp.utils.StringsResourceProvider
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.IOException
-import java.lang.Exception
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-object EventFeedRepository : FeedRepository {
-    private lateinit var eventApi: FeedProvider
-    private lateinit var eventDao: EventDao
-    private lateinit var dispatcher: DispatcherProvider
+class EventFeedRepository @Inject constructor(
+    private val eventApi: FeedProvider,
+    private val eventDao: EventDao,
+    private val dispatcher: DispatcherProvider
+) : FeedRepository {
     private var apiResponse: ApiResponse<List<StarWarsEvent>> = ApiResponse.Loading(emptyList())
     private var refreshTimestamp: Long = 0
     private val refreshTimeout: Long = TimeUnit.MINUTES.toMillis(1)
-
-    fun init(
-        eventDao: EventDao,
-        eventFeedProvider: FeedProvider,
-        dispatcher: DispatcherProvider = DefaultDispatcherProvider()
-    ) {
-        this.eventDao = eventDao
-        this.eventApi = eventFeedProvider
-        this.dispatcher = dispatcher
-    }
 
     override suspend fun getEvents(): List<StarWarsEvent> {
         return withContext(dispatcher.io()) { eventDao.getAllEvents() }

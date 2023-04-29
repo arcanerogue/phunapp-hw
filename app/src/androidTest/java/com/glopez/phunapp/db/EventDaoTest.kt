@@ -1,13 +1,13 @@
 package com.glopez.phunapp.db
 
 import androidx.room.Room
-import androidx.test.InstrumentationRegistry
-import androidx.test.runner.AndroidJUnit4
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import com.glopez.phunapp.testutil.TestDataUtil
 import com.glopez.phunapp.model.db.EventDao
 import com.glopez.phunapp.model.db.EventDatabase
 import com.glopez.phunapp.testutil.CoroutineTestRule
-import junit.framework.Assert.*
+import org.junit.Assert.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.test.runBlockingTest
